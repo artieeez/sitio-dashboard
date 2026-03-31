@@ -1,0 +1,18 @@
+export const ptBR = {
+  appTitle: 'Sitio — Viagens escolares',
+  schools: 'Escolas',
+  trips: 'Viagens',
+  tripDetail: 'Detalhe da viagem',
+  passengers: 'Passageiros',
+  payment: 'Pagamento',
+  document: 'Documento',
+  flagged: 'Sinalizado',
+  loading: 'Carregando…',
+  error: 'Erro ao carregar',
+  manualAdd: 'Adicionar passageiro',
+  import: 'Importar planilha',
+  shareTrip: 'Compartilhar (viagem)',
+  shareSchool: 'Compartilhar (escola)',
+  pending: 'Pendente',
+  paid: 'Pago',
+};
