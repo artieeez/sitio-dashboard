@@ -7,6 +7,10 @@ import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 
 const config = defineConfig({
+  // SPA: client-rendered app; API on another origin/port (see VITE_API_URL).
+  server: {
+    port: 5173,
+  },
   plugins: [
     devtools(),
     nitro(),

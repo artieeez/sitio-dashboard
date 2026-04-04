@@ -1,6 +1,10 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+
+import { queryClient } from "@/lib/query-client";
 
 import appCss from "../styles.css?url";
 
@@ -15,7 +19,7 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "Sítio — Viagens escolares",
       },
     ],
     links: [
@@ -30,12 +34,20 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
       <body>
-        {children}
+        <QueryClientProvider client={queryClient}>
+          {children}
+          {import.meta.env.DEV ? (
+            <ReactQueryDevtools
+              buttonPosition="bottom-left"
+              initialIsOpen={false}
+            />
+          ) : null}
+        </QueryClientProvider>
         <TanStackDevtools
           config={{
             position: "bottom-right",

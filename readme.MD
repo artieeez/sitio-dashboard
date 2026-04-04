@@ -6,15 +6,17 @@ Staff-facing **SPA** for **Sítio** — feature **001-school-trip-payments**: sc
 
 | Variable         | Description |
 |------------------|-------------|
-| `VITE_API_URL`   | Base URL of the Nest API (no trailing slash), e.g. `http://localhost:3000`. Used by the dashboard client for fetch calls (wired in depth in Phase 2). |
+| `VITE_API_URL`   | Base URL of the Nest API **including** the `/api` global prefix, no trailing slash (matches OpenAPI `servers`). Example: `http://localhost:3000/api`. Used by `src/lib/api-client.ts`. |
 
-Example `.env` / shell:
+Copy `.env.example` to `.env` and adjust if your API runs on another host or port.
+
+Example:
 
 ```bash
-VITE_API_URL=http://localhost:3000
+VITE_API_URL=http://localhost:3000/api
 ```
 
-**Note:** The dev server may use port **3000** by default; align API port or set `VITE_API_URL` to the backend’s actual origin.
+**Note:** The Vite dev server defaults to port **5173** (`vite.config.ts`) so it does not clash with the API on **3000**.
 
 ## Scripts
 
@@ -31,7 +33,8 @@ pnpm run format      # Biome format only
 
 ## Stack
 
-- TanStack Start (template + shadcn preset `b1Fk0lmym`, base **base**)
+- TanStack Start (template + shadcn preset `b1Fk0lmym`, base **base**), client-rendered SPA
+- TanStack Query (`QueryClientProvider` in `src/routes/__root.tsx`), Zustand (theme + UI toggles), Zod (DTOs in `src/lib/schemas/`)
 - TypeScript **strict** (`tsconfig.json`)
 - Tailwind CSS v4, Biome for lint/format
 
@@ -48,4 +51,4 @@ Initialized with:
 pnpm dlx shadcn@latest init --preset b1Fk0lmym --base base --template start -y -n sitio-dashboard
 ```
 
-(Project files live at this repo root; TanStack Query, Form, Zustand, and API client wiring follow in Phase 2.)
+(Project files live at this repo root; TanStack Form wiring follows in later user-story tasks.)
