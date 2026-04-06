@@ -1,0 +1,135 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
+import { SchoolForm } from "@/components/schools/SchoolForm";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { apiDelete, apiJson } from "@/lib/api-client";
+import { queryKeys } from "@/lib/query-keys";
+import { schoolSchema } from "@/lib/schemas/school";
+import { cn } from "@/lib/utils";
+import { isUuid } from "@/lib/uuid";
+import { ptBR } from "@/messages/pt-BR";
+import { useUiPreferencesStore } from "@/stores/ui-preferences-store";
+
+export const Route = createFileRoute("/schools/$schoolId/")({
+  component: SchoolDetailPage,
+});
+
+function SchoolDetailPage() {
+  const { schoolId } = Route.useParams();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const includeInactive = useUiPreferencesStore(
+    (s) => s.includeInactiveSchools,
+  );
+  const schoolIdValid = isUuid(schoolId);
+
+  const schoolQuery = useQuery({
+    queryKey: queryKeys.school(schoolId),
+    queryFn: async () => {
+      const raw = await apiJson<unknown>(`/schools/${schoolId}`);
+      return schoolSchema.parse(raw);
+    },
+    enabled: schoolIdValid,
+  });
+
+  if (!schoolIdValid) {
+    return (
+      <RouteInvalidRecovery
+        backTo="/schools"
+        linkLabel={ptBR.entities.schools}
+      />
+    );
+  }
+
+  if (schoolQuery.isLoading) {
+    return (
+      <div className="p-6">
+        <p className="text-sm text-muted-foreground">Carregando…</p>
+      </div>
+    );
+  }
+
+  if (schoolQuery.isError || !schoolQuery.data) {
+    return (
+      <div className="p-6">
+        <p className="text-sm text-red-600" role="alert">
+          Escola não encontrada.
+        </p>
+        <Link
+          to="/schools"
+          className={cn(
+            buttonVariants({ variant: "link" }),
+            "mt-2 inline-block",
+          )}
+        >
+          ← {ptBR.entities.schools}
+        </Link>
+      </div>
+    );
+  }
+
+  const s = schoolQuery.data;
+
+  return (
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <Link
+            to="/schools"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            ← {ptBR.entities.schools}
+          </Link>
+          <h1 className="mt-1 text-lg font-medium">
+            {s.title?.trim() ||
+              `${ptBR.entities.school} ${schoolId.slice(0, 8)}…`}
+          </h1>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to="/schools/$schoolId/trips"
+            params={{ schoolId }}
+            className={cn(buttonVariants({ variant: "default" }))}
+          >
+            {ptBR.entities.trips}
+          </Link>
+          {s.url ? (
+            <a
+              href={s.url}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(buttonVariants({ variant: "outline" }))}
+            >
+              {ptBR.actions.openLanding}
+            </a>
+          ) : null}
+          <Button
+            variant="destructive"
+            type="button"
+            onClick={async () => {
+              await apiDelete(`/schools/${schoolId}`);
+              await qc.invalidateQueries({
+                queryKey: queryKeys.schools(includeInactive),
+              });
+              await navigate({ to: "/schools" });
+            }}
+          >
+            {ptBR.actions.delete}
+          </Button>
+        </div>
+      </div>
+
+      <SchoolForm
+        mode="edit"
+        school={s}
+        onSuccess={async () => {
+          await qc.invalidateQueries({ queryKey: queryKeys.school(schoolId) });
+          await qc.invalidateQueries({
+            queryKey: queryKeys.schools(includeInactive),
+          });
+        }}
+      />
+    </div>
+  );
+}
