@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { PassengerRowActions } from "@/components/trips/PassengerRowActions";
 import { Button } from "@/components/ui/button";
+import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { ApiError, apiPatchJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import {
@@ -95,7 +96,9 @@ export function PassengerTable(props: {
               <th className="p-2 font-medium">
                 {ptBR.fields.manualPaidWithoutInfo}
               </th>
-              <th className="p-2 font-medium">⋯</th>
+              <th className="p-2 font-medium">
+                <span className="sr-only">{ptBR.aria.rowMenu}</span>
+              </th>
               <th className="p-2 font-medium">{ptBR.actions.restore}</th>
             </tr>
           </thead>
@@ -125,37 +128,26 @@ export function PassengerTable(props: {
                     <PassengerRowActions tripId={tripId} passenger={p} />
                   </td>
                   <td className="p-2">
-                    <details className="relative group">
-                      <summary
-                        className="cursor-pointer list-none rounded-md px-2 py-1 hover:bg-muted [&::-webkit-details-marker]:hidden"
-                        aria-label="Ações do passageiro"
+                    <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
+                      <Link
+                        role="menuitem"
+                        to="/trips/$tripId/passengers/$passengerId/payments"
+                        params={{ tripId, passengerId: p.id }}
+                        className="rounded px-2 py-1.5 text-sm hover:bg-muted"
                       >
-                        ⋮
-                      </summary>
-                      <div
-                        className="absolute right-0 z-20 mt-1 flex min-w-[12rem] flex-col gap-1 rounded-md border border-border bg-background p-1 text-left shadow-md"
-                        role="menu"
-                      >
+                        {ptBR.actions.paymentHistory}
+                      </Link>
+                      {!p.removedAt ? (
                         <Link
                           role="menuitem"
-                          to="/trips/$tripId/passengers/$passengerId/payments"
+                          to="/trips/$tripId/passengers/$passengerId/payments/new"
                           params={{ tripId, passengerId: p.id }}
                           className="rounded px-2 py-1.5 text-sm hover:bg-muted"
                         >
-                          {ptBR.actions.paymentHistory}
+                          {ptBR.actions.newPayment}
                         </Link>
-                        {!p.removedAt ? (
-                          <Link
-                            role="menuitem"
-                            to="/trips/$tripId/passengers/$passengerId/payments/new"
-                            params={{ tripId, passengerId: p.id }}
-                            className="rounded px-2 py-1.5 text-sm hover:bg-muted"
-                          >
-                            {ptBR.actions.newPayment}
-                          </Link>
-                        ) : null}
-                      </div>
-                    </details>
+                      ) : null}
+                    </RowKebabMenu>
                   </td>
                   <td className="p-2">
                     {p.removedAt ? (

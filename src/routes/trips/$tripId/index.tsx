@@ -1,15 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { z } from "zod";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
-import { PassengerCreateForm } from "@/components/trips/PassengerCreateForm";
-import { PassengerTable } from "@/components/trips/PassengerTable";
 import { TripForm } from "@/components/trips/TripForm";
 import { TripStatusSummary } from "@/components/trips/TripStatusSummary";
+import { buttonVariants } from "@/components/ui/button";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
-import { passengerWithStatusSchema } from "@/lib/schemas/passenger";
 import { tripSchema } from "@/lib/schemas/trip";
+import { cn } from "@/lib/utils";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 import { useUiPreferencesStore } from "@/stores/ui-preferences-store";
@@ -35,22 +33,6 @@ function TripDetailPage() {
   const includeInactiveTrips = useUiPreferencesStore(
     (s) => s.includeInactiveTrips,
   );
-  const includeRemoved = useUiPreferencesStore(
-    (s) => s.includeRemovedPassengers,
-  );
-  const setIncludeRemoved = useUiPreferencesStore(
-    (s) => s.setIncludeRemovedPassengers,
-  );
-
-  const passengersQuery = useQuery({
-    queryKey: queryKeys.passengers(tripId, includeRemoved),
-    queryFn: async () => {
-      const q = includeRemoved ? "?includeRemoved=true" : "";
-      const raw = await apiJson<unknown>(`/trips/${tripId}/passengers${q}`);
-      return z.array(passengerWithStatusSchema).parse(raw);
-    },
-    enabled: tripIdValid,
-  });
 
   if (!tripIdValid) {
     return (
@@ -114,10 +96,22 @@ function TripDetailPage() {
             >
               ← {ptBR.entities.trips}
             </Link>
-            <h1 className="mt-2 text-lg font-medium">
-              {trip.title?.trim() ||
-                `${ptBR.entities.trip} ${tripId.slice(0, 8)}…`}
-            </h1>
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+              <h1 className="text-lg font-medium">
+                {trip.title?.trim() ||
+                  `${ptBR.entities.trip} ${tripId.slice(0, 8)}…`}
+              </h1>
+              <Link
+                to="/trips/$tripId/passengers"
+                params={{ tripId }}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "no-underline",
+                )}
+              >
+                {ptBR.entities.passengers}
+              </Link>
+            </div>
           </div>
 
           <section className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 shadow-sm">
@@ -146,30 +140,6 @@ function TripDetailPage() {
                 });
               }}
             />
-          </section>
-
-          <section className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 shadow-sm">
-            <h2 className="text-sm font-medium">{ptBR.entities.passengers}</h2>
-            {passengersQuery.isLoading ? (
-              <p className="text-sm text-muted-foreground">Carregando…</p>
-            ) : passengersQuery.isError ? (
-              <p className="text-sm text-red-600" role="alert">
-                Não foi possível carregar os passageiros.
-              </p>
-            ) : (
-              <PassengerTable
-                tripId={tripId}
-                rows={passengersQuery.data ?? []}
-                includeRemoved={includeRemoved}
-                onIncludeRemovedChange={(v) => {
-                  setIncludeRemoved(v);
-                }}
-              />
-            )}
-          </section>
-
-          <section className="rounded-xl border border-dashed border-border bg-muted/20 p-4">
-            <PassengerCreateForm tripId={tripId} />
           </section>
         </div>
         <div className="lg:col-span-1">

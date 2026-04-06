@@ -1,11 +1,13 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
-import { TripForm } from "@/components/trips/TripForm";
+import { buttonVariants } from "@/components/ui/button";
+import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { tripSchema } from "@/lib/schemas/trip";
+import { cn } from "@/lib/utils";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 import { useUiPreferencesStore } from "@/stores/ui-preferences-store";
@@ -16,7 +18,6 @@ export const Route = createFileRoute("/schools/$schoolId/trips/")({
 
 function SchoolTripsPage() {
   const { schoolId } = Route.useParams();
-  const qc = useQueryClient();
   const includeInactive = useUiPreferencesStore((s) => s.includeInactiveTrips);
   const setIncludeInactive = useUiPreferencesStore(
     (s) => s.setIncludeInactiveTrips,
@@ -52,7 +53,19 @@ function SchoolTripsPage() {
         >
           ← {ptBR.entities.school}
         </Link>
-        <h1 className="mt-2 text-lg font-medium">{ptBR.entities.trips}</h1>
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-lg font-medium">{ptBR.entities.trips}</h1>
+          <Link
+            to="/schools/$schoolId/trips/new"
+            params={{ schoolId }}
+            className={cn(
+              buttonVariants({ variant: "default", size: "sm" }),
+              "w-fit",
+            )}
+          >
+            {ptBR.actions.create} {ptBR.entities.trip}
+          </Link>
+        </div>
         <label className="mt-3 flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -77,41 +90,40 @@ function SchoolTripsPage() {
             </li>
           ) : null}
           {tripsQuery.data?.map((t) => (
-            <li key={t.id}>
-              <Link
-                to="/trips/$tripId"
-                params={{ tripId: t.id }}
-                className="block rounded-md border border-border px-3 py-2 font-medium text-primary hover:bg-muted/50"
-              >
+            <li
+              key={t.id}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border px-3 py-2"
+            >
+              <span className="min-w-0 flex-1 font-medium text-foreground">
                 {t.title?.trim() || `Viagem ${t.id.slice(0, 8)}…`}
                 {!t.active ? (
                   <span className="ml-2 text-xs font-normal text-muted-foreground">
                     ({ptBR.fields.inactive})
                   </span>
                 ) : null}
-              </Link>
+              </span>
+              <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
+                <Link
+                  role="menuitem"
+                  to="/trips/$tripId"
+                  params={{ tripId: t.id }}
+                  className="rounded px-2 py-1.5 text-sm hover:bg-muted"
+                >
+                  {ptBR.actions.edit} {ptBR.entities.trip}
+                </Link>
+                <Link
+                  role="menuitem"
+                  to="/trips/$tripId/passengers"
+                  params={{ tripId: t.id }}
+                  className="rounded px-2 py-1.5 text-sm hover:bg-muted"
+                >
+                  {ptBR.actions.viewPassengers}
+                </Link>
+              </RowKebabMenu>
             </li>
           ))}
         </ul>
       )}
-
-      <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium">
-          {ptBR.actions.create} {ptBR.entities.trip}
-        </h2>
-        <p className="text-xs text-muted-foreground">
-          A viagem é sempre criada para esta escola (sem seletor de escola).
-        </p>
-        <TripForm
-          mode="create"
-          schoolId={schoolId}
-          onSuccess={async () => {
-            await qc.invalidateQueries({
-              queryKey: queryKeys.trips(schoolId, includeInactive),
-            });
-          }}
-        />
-      </section>
     </div>
   );
 }

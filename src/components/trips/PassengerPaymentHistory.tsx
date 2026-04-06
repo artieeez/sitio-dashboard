@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { z } from "zod";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { apiDelete, apiJson } from "@/lib/api-client";
@@ -8,7 +7,6 @@ import { queryKeys } from "@/lib/query-keys";
 import { paymentSchema } from "@/lib/schemas/payment";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
-import { PaymentForm } from "./PaymentForm";
 
 function brlMinor(minor: number): string {
   return (minor / 100).toLocaleString("pt-BR", {
@@ -25,7 +23,6 @@ export function PassengerPaymentHistory(props: {
 }) {
   const { tripId, passengerId, removedAt } = props;
   const qc = useQueryClient();
-  const [editingId, setEditingId] = useState<string | null>(null);
 
   const list = useQuery({
     queryKey: queryKeys.payments(passengerId),
@@ -55,8 +52,6 @@ export function PassengerPaymentHistory(props: {
     },
   });
 
-  const editing = list.data?.find((p) => p.id === editingId);
-
   return (
     <div
       className={`flex flex-col gap-4 ${removedAt ? "rounded-lg border border-amber-600/50 bg-amber-50/40 p-3 dark:border-amber-500/40 dark:bg-amber-950/30" : ""}`}
@@ -77,14 +72,14 @@ export function PassengerPaymentHistory(props: {
             </Link>
           ) : null}
           <Link
-            to="/trips/$tripId"
+            to="/trips/$tripId/passengers"
             params={{ tripId }}
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
               "no-underline",
             )}
           >
-            ← {ptBR.entities.trip}
+            ← {ptBR.entities.passengers}
           </Link>
         </div>
       </div>
@@ -130,16 +125,20 @@ export function PassengerPaymentHistory(props: {
                     <td className="p-2">{p.payerIdentity}</td>
                     <td className="p-2">
                       <div className="flex flex-wrap gap-1">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setEditingId((id) => (id === p.id ? null : p.id))
-                          }
+                        <Link
+                          to="/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit"
+                          params={{
+                            tripId,
+                            passengerId,
+                            paymentId: p.id,
+                          }}
+                          className={cn(
+                            buttonVariants({ variant: "outline", size: "sm" }),
+                            "inline-flex no-underline",
+                          )}
                         >
                           {ptBR.actions.edit}
-                        </Button>
+                        </Link>
                         <Button
                           type="button"
                           variant="destructive"
@@ -166,17 +165,6 @@ export function PassengerPaymentHistory(props: {
           </table>
         </div>
       )}
-      {editing && editingId ? (
-        <PaymentForm
-          key={editingId}
-          tripId={tripId}
-          passengerId={passengerId}
-          mode="edit"
-          payment={editing}
-          onCancel={() => setEditingId(null)}
-          onSuccess={() => setEditingId(null)}
-        />
-      ) : null}
     </div>
   );
 }

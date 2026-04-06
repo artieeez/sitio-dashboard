@@ -9,8 +9,12 @@ import {
 } from "@/lib/schemas/passenger";
 import { ptBR } from "@/messages/pt-BR";
 
-export function PassengerCreateForm(props: { tripId: string }) {
-  const { tripId } = props;
+export function PassengerCreateForm(props: {
+  tripId: string;
+  /** Called after a successful create (after cache invalidation). */
+  onCreated?: () => void;
+}) {
+  const { tripId, onCreated } = props;
   const qc = useQueryClient();
   const [fullName, setFullName] = useState("");
   const [cpf, setCpf] = useState("");
@@ -61,6 +65,7 @@ export function PassengerCreateForm(props: { tripId: string }) {
       await qc.invalidateQueries({
         queryKey: ["passengerAggregates", tripId],
       });
+      onCreated?.();
     },
     onError: (e: unknown) => {
       if (e instanceof ApiError && e.status === 428) {

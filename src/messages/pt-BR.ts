@@ -59,6 +59,9 @@ export const ptBR = {
     clearManualPaid: "Desmarcar pago manual",
     openLanding: "Abrir página",
     fetchMetadata: "Buscar dados da página",
+    viewSchool: "Ver escola",
+    viewTrips: "Viagens",
+    viewPassengers: "Passageiros",
   },
   theme: {
     light: "Claro",
@@ -67,6 +70,9 @@ export const ptBR = {
   },
   nav: {
     home: "Início",
+  },
+  aria: {
+    rowMenu: "Menu da linha",
   },
   shell: {
     sidebarNav: "Navegação principal",

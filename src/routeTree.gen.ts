@@ -14,9 +14,13 @@ import { Route as SchoolsIndexRouteImport } from './routes/schools/index'
 import { Route as SchoolsNewRouteImport } from './routes/schools/new'
 import { Route as TripsTripIdIndexRouteImport } from './routes/trips/$tripId/index'
 import { Route as SchoolsSchoolIdIndexRouteImport } from './routes/schools/$schoolId/index'
+import { Route as TripsTripIdPassengersIndexRouteImport } from './routes/trips/$tripId/passengers/index'
 import { Route as SchoolsSchoolIdTripsIndexRouteImport } from './routes/schools/$schoolId/trips/index'
+import { Route as TripsTripIdPassengersNewRouteImport } from './routes/trips/$tripId/passengers/new'
+import { Route as SchoolsSchoolIdTripsNewRouteImport } from './routes/schools/$schoolId/trips/new'
 import { Route as TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport } from './routes/trips/$tripId/passengers/$passengerId/payments/index'
 import { Route as TripsTripIdPassengersPassengerIdPaymentsNewRouteImport } from './routes/trips/$tripId/passengers/$passengerId/payments/new'
+import { Route as TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport } from './routes/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -43,12 +47,29 @@ const SchoolsSchoolIdIndexRoute = SchoolsSchoolIdIndexRouteImport.update({
   path: '/schools/$schoolId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TripsTripIdPassengersIndexRoute =
+  TripsTripIdPassengersIndexRouteImport.update({
+    id: '/trips/$tripId/passengers/',
+    path: '/trips/$tripId/passengers/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SchoolsSchoolIdTripsIndexRoute =
   SchoolsSchoolIdTripsIndexRouteImport.update({
     id: '/schools/$schoolId/trips/',
     path: '/schools/$schoolId/trips/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const TripsTripIdPassengersNewRoute =
+  TripsTripIdPassengersNewRouteImport.update({
+    id: '/trips/$tripId/passengers/new',
+    path: '/trips/$tripId/passengers/new',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SchoolsSchoolIdTripsNewRoute = SchoolsSchoolIdTripsNewRouteImport.update({
+  id: '/schools/$schoolId/trips/new',
+  path: '/schools/$schoolId/trips/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TripsTripIdPassengersPassengerIdPaymentsIndexRoute =
   TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport.update({
     id: '/trips/$tripId/passengers/$passengerId/payments/',
@@ -61,6 +82,12 @@ const TripsTripIdPassengersPassengerIdPaymentsNewRoute =
     path: '/trips/$tripId/passengers/$passengerId/payments/new',
     getParentRoute: () => rootRouteImport,
   } as any)
+const TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute =
+  TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport.update({
+    id: '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit',
+    path: '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,9 +95,13 @@ export interface FileRoutesByFullPath {
   '/schools/': typeof SchoolsIndexRoute
   '/schools/$schoolId/': typeof SchoolsSchoolIdIndexRoute
   '/trips/$tripId/': typeof TripsTripIdIndexRoute
+  '/schools/$schoolId/trips/new': typeof SchoolsSchoolIdTripsNewRoute
+  '/trips/$tripId/passengers/new': typeof TripsTripIdPassengersNewRoute
   '/schools/$schoolId/trips/': typeof SchoolsSchoolIdTripsIndexRoute
+  '/trips/$tripId/passengers/': typeof TripsTripIdPassengersIndexRoute
   '/trips/$tripId/passengers/$passengerId/payments/new': typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute
   '/trips/$tripId/passengers/$passengerId/payments/': typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute
+  '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,9 +109,13 @@ export interface FileRoutesByTo {
   '/schools': typeof SchoolsIndexRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdIndexRoute
   '/trips/$tripId': typeof TripsTripIdIndexRoute
+  '/schools/$schoolId/trips/new': typeof SchoolsSchoolIdTripsNewRoute
+  '/trips/$tripId/passengers/new': typeof TripsTripIdPassengersNewRoute
   '/schools/$schoolId/trips': typeof SchoolsSchoolIdTripsIndexRoute
+  '/trips/$tripId/passengers': typeof TripsTripIdPassengersIndexRoute
   '/trips/$tripId/passengers/$passengerId/payments/new': typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute
   '/trips/$tripId/passengers/$passengerId/payments': typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute
+  '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,9 +124,13 @@ export interface FileRoutesById {
   '/schools/': typeof SchoolsIndexRoute
   '/schools/$schoolId/': typeof SchoolsSchoolIdIndexRoute
   '/trips/$tripId/': typeof TripsTripIdIndexRoute
+  '/schools/$schoolId/trips/new': typeof SchoolsSchoolIdTripsNewRoute
+  '/trips/$tripId/passengers/new': typeof TripsTripIdPassengersNewRoute
   '/schools/$schoolId/trips/': typeof SchoolsSchoolIdTripsIndexRoute
+  '/trips/$tripId/passengers/': typeof TripsTripIdPassengersIndexRoute
   '/trips/$tripId/passengers/$passengerId/payments/new': typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute
   '/trips/$tripId/passengers/$passengerId/payments/': typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute
+  '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,9 +140,13 @@ export interface FileRouteTypes {
     | '/schools/'
     | '/schools/$schoolId/'
     | '/trips/$tripId/'
+    | '/schools/$schoolId/trips/new'
+    | '/trips/$tripId/passengers/new'
     | '/schools/$schoolId/trips/'
+    | '/trips/$tripId/passengers/'
     | '/trips/$tripId/passengers/$passengerId/payments/new'
     | '/trips/$tripId/passengers/$passengerId/payments/'
+    | '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,9 +154,13 @@ export interface FileRouteTypes {
     | '/schools'
     | '/schools/$schoolId'
     | '/trips/$tripId'
+    | '/schools/$schoolId/trips/new'
+    | '/trips/$tripId/passengers/new'
     | '/schools/$schoolId/trips'
+    | '/trips/$tripId/passengers'
     | '/trips/$tripId/passengers/$passengerId/payments/new'
     | '/trips/$tripId/passengers/$passengerId/payments'
+    | '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
   id:
     | '__root__'
     | '/'
@@ -121,9 +168,13 @@ export interface FileRouteTypes {
     | '/schools/'
     | '/schools/$schoolId/'
     | '/trips/$tripId/'
+    | '/schools/$schoolId/trips/new'
+    | '/trips/$tripId/passengers/new'
     | '/schools/$schoolId/trips/'
+    | '/trips/$tripId/passengers/'
     | '/trips/$tripId/passengers/$passengerId/payments/new'
     | '/trips/$tripId/passengers/$passengerId/payments/'
+    | '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,9 +183,13 @@ export interface RootRouteChildren {
   SchoolsIndexRoute: typeof SchoolsIndexRoute
   SchoolsSchoolIdIndexRoute: typeof SchoolsSchoolIdIndexRoute
   TripsTripIdIndexRoute: typeof TripsTripIdIndexRoute
+  SchoolsSchoolIdTripsNewRoute: typeof SchoolsSchoolIdTripsNewRoute
+  TripsTripIdPassengersNewRoute: typeof TripsTripIdPassengersNewRoute
   SchoolsSchoolIdTripsIndexRoute: typeof SchoolsSchoolIdTripsIndexRoute
+  TripsTripIdPassengersIndexRoute: typeof TripsTripIdPassengersIndexRoute
   TripsTripIdPassengersPassengerIdPaymentsNewRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute
   TripsTripIdPassengersPassengerIdPaymentsIndexRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute
+  TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute: typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -174,11 +229,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SchoolsSchoolIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trips/$tripId/passengers/': {
+      id: '/trips/$tripId/passengers/'
+      path: '/trips/$tripId/passengers'
+      fullPath: '/trips/$tripId/passengers/'
+      preLoaderRoute: typeof TripsTripIdPassengersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/schools/$schoolId/trips/': {
       id: '/schools/$schoolId/trips/'
       path: '/schools/$schoolId/trips'
       fullPath: '/schools/$schoolId/trips/'
       preLoaderRoute: typeof SchoolsSchoolIdTripsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trips/$tripId/passengers/new': {
+      id: '/trips/$tripId/passengers/new'
+      path: '/trips/$tripId/passengers/new'
+      fullPath: '/trips/$tripId/passengers/new'
+      preLoaderRoute: typeof TripsTripIdPassengersNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schools/$schoolId/trips/new': {
+      id: '/schools/$schoolId/trips/new'
+      path: '/schools/$schoolId/trips/new'
+      fullPath: '/schools/$schoolId/trips/new'
+      preLoaderRoute: typeof SchoolsSchoolIdTripsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trips/$tripId/passengers/$passengerId/payments/': {
@@ -195,6 +271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': {
+      id: '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
+      path: '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
+      fullPath: '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
+      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,11 +287,16 @@ const rootRouteChildren: RootRouteChildren = {
   SchoolsIndexRoute: SchoolsIndexRoute,
   SchoolsSchoolIdIndexRoute: SchoolsSchoolIdIndexRoute,
   TripsTripIdIndexRoute: TripsTripIdIndexRoute,
+  SchoolsSchoolIdTripsNewRoute: SchoolsSchoolIdTripsNewRoute,
+  TripsTripIdPassengersNewRoute: TripsTripIdPassengersNewRoute,
   SchoolsSchoolIdTripsIndexRoute: SchoolsSchoolIdTripsIndexRoute,
+  TripsTripIdPassengersIndexRoute: TripsTripIdPassengersIndexRoute,
   TripsTripIdPassengersPassengerIdPaymentsNewRoute:
     TripsTripIdPassengersPassengerIdPaymentsNewRoute,
   TripsTripIdPassengersPassengerIdPaymentsIndexRoute:
     TripsTripIdPassengersPassengerIdPaymentsIndexRoute,
+  TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute:
+    TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

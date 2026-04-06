@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { schoolSchema } from "@/lib/schemas/school";
@@ -74,38 +75,52 @@ function SchoolsPage() {
               key={s.id}
               className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border px-3 py-2"
             >
-              <div className="min-w-0">
-                <Link
-                  to="/schools/$schoolId"
-                  params={{ schoolId: s.id }}
-                  className="font-medium text-primary hover:underline"
-                >
+              <div className="min-w-0 flex-1">
+                <span className="font-medium text-foreground">
                   {s.title?.trim() ||
                     `${ptBR.entities.school} ${s.id.slice(0, 8)}…`}
-                </Link>
+                </span>
                 {!s.active ? (
                   <span className="ml-2 text-xs text-muted-foreground">
                     ({ptBR.fields.inactive})
                   </span>
                 ) : null}
               </div>
-              <div className="flex flex-wrap gap-2">
+              <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
+                <Link
+                  role="menuitem"
+                  to="/schools/$schoolId"
+                  params={{ schoolId: s.id }}
+                  className="rounded px-2 py-1.5 text-sm hover:bg-muted"
+                >
+                  {ptBR.actions.viewSchool}
+                </Link>
+                <Link
+                  role="menuitem"
+                  to="/schools/$schoolId/trips"
+                  params={{ schoolId: s.id }}
+                  className="rounded px-2 py-1.5 text-sm hover:bg-muted"
+                >
+                  {ptBR.actions.viewTrips}
+                </Link>
                 {s.url ? (
                   <a
+                    role="menuitem"
                     href={s.url}
                     target="_blank"
                     rel="noreferrer"
                     className={cn(
-                      buttonVariants({ variant: "outline", size: "sm" }),
+                      buttonVariants({ variant: "ghost", size: "sm" }),
+                      "justify-start rounded px-2 py-1.5 font-normal",
                     )}
                   >
                     {ptBR.actions.openLanding}
                   </a>
                 ) : null}
-                <Button
-                  variant="destructive"
-                  size="sm"
+                <button
                   type="button"
+                  role="menuitem"
+                  className="rounded px-2 py-1.5 text-left text-sm text-destructive hover:bg-muted"
                   onClick={async () => {
                     await apiDelete(`/schools/${s.id}`);
                     await qc.invalidateQueries({
@@ -114,8 +129,8 @@ function SchoolsPage() {
                   }}
                 >
                   {ptBR.actions.delete}
-                </Button>
-              </div>
+                </button>
+              </RowKebabMenu>
             </li>
           ))}
         </ul>
