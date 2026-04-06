@@ -58,6 +58,9 @@ export function PassengerCreateForm(props: { tripId: string }) {
       await qc.invalidateQueries({
         queryKey: queryKeys.passengers(tripId, true),
       });
+      await qc.invalidateQueries({
+        queryKey: ["passengerAggregates", tripId],
+      });
     },
     onError: (e: unknown) => {
       if (e instanceof ApiError && e.status === 428) {

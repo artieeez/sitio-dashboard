@@ -68,4 +68,18 @@ export const ptBR = {
   nav: {
     home: "Início",
   },
+  shell: {
+    sidebarNav: "Navegação principal",
+    loading: "Carregando resumo…",
+    aggregatesError: "Não foi possível carregar o resumo da viagem.",
+    invalidRoute:
+      "Endereço inválido ou recurso não encontrado. Volte para uma lista válida.",
+  },
+  aggregates: {
+    title: "Resumo por situação de pagamento",
+  },
+  emptyStates: {
+    schools: "Nenhuma escola na lista (com os filtros atuais).",
+    trips: "Nenhuma viagem para esta escola (com os filtros atuais).",
+  },
 } as const;

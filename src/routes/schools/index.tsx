@@ -53,7 +53,12 @@ function SchoolsPage() {
           Não foi possível carregar as escolas.
         </p>
       ) : (
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-2 rounded-xl border border-border bg-card p-3 shadow-sm">
+          {schoolsQuery.data?.length === 0 ? (
+            <li className="p-4 text-sm text-muted-foreground">
+              {ptBR.emptyStates.schools}
+            </li>
+          ) : null}
           {schoolsQuery.data?.map((s) => (
             <li
               key={s.id}

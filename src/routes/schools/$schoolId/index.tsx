@@ -1,11 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { SchoolForm } from "@/components/schools/SchoolForm";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { schoolSchema } from "@/lib/schemas/school";
 import { cn } from "@/lib/utils";
+import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 import { useUiPreferencesStore } from "@/stores/ui-preferences-store";
 
@@ -20,6 +22,7 @@ function SchoolDetailPage() {
   const includeInactive = useUiPreferencesStore(
     (s) => s.includeInactiveSchools,
   );
+  const schoolIdValid = isUuid(schoolId);
 
   const schoolQuery = useQuery({
     queryKey: queryKeys.school(schoolId),
@@ -27,7 +30,17 @@ function SchoolDetailPage() {
       const raw = await apiJson<unknown>(`/schools/${schoolId}`);
       return schoolSchema.parse(raw);
     },
+    enabled: schoolIdValid,
   });
+
+  if (!schoolIdValid) {
+    return (
+      <RouteInvalidRecovery
+        backTo="/schools"
+        linkLabel={ptBR.entities.schools}
+      />
+    );
+  }
 
   if (schoolQuery.isLoading) {
     return (

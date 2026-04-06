@@ -1,10 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
+import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { TripForm } from "@/components/trips/TripForm";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { tripSchema } from "@/lib/schemas/trip";
+import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 import { useUiPreferencesStore } from "@/stores/ui-preferences-store";
 
@@ -19,6 +21,7 @@ function SchoolTripsPage() {
   const setIncludeInactive = useUiPreferencesStore(
     (s) => s.setIncludeInactiveTrips,
   );
+  const schoolIdValid = isUuid(schoolId);
 
   const tripsQuery = useQuery({
     queryKey: queryKeys.trips(schoolId, includeInactive),
@@ -27,7 +30,17 @@ function SchoolTripsPage() {
       const raw = await apiJson<unknown>(`/schools/${schoolId}/trips${q}`);
       return z.array(tripSchema).parse(raw);
     },
+    enabled: schoolIdValid,
   });
+
+  if (!schoolIdValid) {
+    return (
+      <RouteInvalidRecovery
+        backTo="/schools"
+        linkLabel={ptBR.entities.schools}
+      />
+    );
+  }
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
@@ -57,7 +70,12 @@ function SchoolTripsPage() {
           Não foi possível carregar as viagens.
         </p>
       ) : (
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-2 rounded-xl border border-border bg-card p-3 shadow-sm">
+          {tripsQuery.data?.length === 0 ? (
+            <li className="p-4 text-sm text-muted-foreground">
+              {ptBR.emptyStates.trips}
+            </li>
+          ) : null}
           {tripsQuery.data?.map((t) => (
             <li key={t.id}>
               <Link

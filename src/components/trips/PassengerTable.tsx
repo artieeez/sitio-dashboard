@@ -69,6 +69,9 @@ export function PassengerTable(props: {
       await qc.invalidateQueries({
         queryKey: queryKeys.payments(vars.passengerId),
       });
+      await qc.invalidateQueries({
+        queryKey: ["passengerAggregates", tripId],
+      });
     },
   });
 
@@ -123,7 +126,10 @@ export function PassengerTable(props: {
                   </td>
                   <td className="p-2">
                     <details className="relative group">
-                      <summary className="cursor-pointer list-none rounded-md px-2 py-1 hover:bg-muted [&::-webkit-details-marker]:hidden">
+                      <summary
+                        className="cursor-pointer list-none rounded-md px-2 py-1 hover:bg-muted [&::-webkit-details-marker]:hidden"
+                        aria-label="Ações do passageiro"
+                      >
                         ⋮
                       </summary>
                       <div

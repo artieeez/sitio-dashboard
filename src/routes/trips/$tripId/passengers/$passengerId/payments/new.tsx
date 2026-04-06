@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
+import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { PaymentForm } from "@/components/trips/PaymentForm";
 import { buttonVariants } from "@/components/ui/button";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { passengerWithStatusSchema } from "@/lib/schemas/passenger";
 import { cn } from "@/lib/utils";
+import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 
 export const Route = createFileRoute(
@@ -18,6 +20,7 @@ export const Route = createFileRoute(
 function NewPassengerPaymentPage() {
   const { tripId, passengerId } = Route.useParams();
   const navigate = useNavigate();
+  const idsValid = isUuid(tripId) && isUuid(passengerId);
 
   const passengersQuery = useQuery({
     queryKey: queryKeys.passengers(tripId, true),
@@ -27,7 +30,17 @@ function NewPassengerPaymentPage() {
       );
       return z.array(passengerWithStatusSchema).parse(raw);
     },
+    enabled: idsValid,
   });
+
+  if (!idsValid) {
+    return (
+      <RouteInvalidRecovery
+        backTo="/schools"
+        linkLabel={ptBR.entities.schools}
+      />
+    );
+  }
 
   const passenger = passengersQuery.data?.find((p) => p.id === passengerId);
 

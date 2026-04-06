@@ -7,6 +7,13 @@ import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 
 const config = defineConfig({
+  test: {
+    environment: "jsdom",
+    globals: true,
+    include: ["src/**/*.test.{ts,tsx}"],
+    setupFiles: ["./src/test/setup.ts"],
+    pool: "forks",
+  },
   // SPA: client-rendered app; API on another origin/port (see VITE_API_URL).
   server: {
     port: 5173,

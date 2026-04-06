@@ -25,7 +25,7 @@ pnpm install
 pnpm run dev         # Vite dev server
 pnpm run build
 pnpm run preview
-pnpm run test        # Vitest
+pnpm run test        # Vitest (see vite.config.ts `test`; uses `--pool=forks`)
 pnpm run typecheck
 pnpm run lint        # Biome check + format fixes
 pnpm run format      # Biome format only

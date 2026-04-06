@@ -49,13 +49,18 @@ export function PassengerPaymentHistory(props: {
       await qc.invalidateQueries({
         queryKey: queryKeys.passengers(tripId, true),
       });
+      await qc.invalidateQueries({
+        queryKey: ["passengerAggregates", tripId],
+      });
     },
   });
 
   const editing = list.data?.find((p) => p.id === editingId);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div
+      className={`flex flex-col gap-4 ${removedAt ? "rounded-lg border border-amber-600/50 bg-amber-50/40 p-3 dark:border-amber-500/40 dark:bg-amber-950/30" : ""}`}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-medium">{ptBR.entities.payments}</h2>
         <div className="flex flex-wrap items-center gap-2">

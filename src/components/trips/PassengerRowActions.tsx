@@ -33,6 +33,9 @@ export function PassengerRowActions(props: {
       await qc.invalidateQueries({
         queryKey: queryKeys.payments(passenger.id),
       });
+      await qc.invalidateQueries({
+        queryKey: ["passengerAggregates", tripId],
+      });
     },
   });
 

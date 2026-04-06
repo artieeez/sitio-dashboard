@@ -8,4 +8,7 @@ export const queryKeys = {
   passengers: (tripId: string, includeRemoved: boolean) =>
     ["passengers", tripId, { includeRemoved }] as const,
   payments: (passengerId: string) => ["payments", passengerId] as const,
+  /** Prefix with `tripId` invalidates all `includeRemoved` variants. */
+  passengerAggregates: (tripId: string, includeRemoved: boolean) =>
+    ["passengerAggregates", tripId, { includeRemoved }] as const,
 };

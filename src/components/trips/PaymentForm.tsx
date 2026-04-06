@@ -96,6 +96,9 @@ export function PaymentForm(props: {
       await qc.invalidateQueries({
         queryKey: queryKeys.passengers(tripId, true),
       });
+      await qc.invalidateQueries({
+        queryKey: ["passengerAggregates", tripId],
+      });
       onSuccess?.();
     },
     onError: (e: unknown) => {
