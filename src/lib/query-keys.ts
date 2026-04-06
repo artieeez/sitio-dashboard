@@ -5,6 +5,7 @@ export const queryKeys = {
   trips: (schoolId: string, includeInactive: boolean) =>
     ["trips", schoolId, { includeInactive }] as const,
   trip: (id: string) => ["trip", id] as const,
+  passenger: (id: string) => ["passenger", id] as const,
   passengers: (tripId: string, includeRemoved: boolean) =>
     ["passengers", tripId, { includeRemoved }] as const,
   payments: (passengerId: string) => ["payments", passengerId] as const,

@@ -5,6 +5,7 @@ import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { queryClient } from "@/lib/query-client";
 
 import appCss from "../styles.css?url";
@@ -41,7 +42,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          <DashboardShell>{children}</DashboardShell>
+          <TooltipProvider>
+            <DashboardShell>{children}</DashboardShell>
+          </TooltipProvider>
           {import.meta.env.DEV ? (
             <ReactQueryDevtools
               buttonPosition="bottom-left"

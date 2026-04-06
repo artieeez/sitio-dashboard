@@ -75,6 +75,7 @@ export const ptBR = {
     rowMenu: "Menu da linha",
   },
   shell: {
+    mainNavGroup: "Menu",
     sidebarNav: "Navegação principal",
     loading: "Carregando resumo…",
     aggregatesError: "Não foi possível carregar o resumo da viagem.",

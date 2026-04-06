@@ -7,6 +7,9 @@ import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 
 const config = defineConfig({
+  resolve: {
+    dedupe: ["react", "react-dom"],
+  },
   test: {
     environment: "jsdom",
     globals: true,
