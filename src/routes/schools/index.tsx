@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
-import { SchoolForm } from "@/components/schools/SchoolForm";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -34,8 +33,19 @@ function SchoolsPage() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-lg font-medium">{ptBR.entities.schools}</h1>
+      <header className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-lg font-medium">{ptBR.entities.schools}</h1>
+          <Link
+            to="/schools/new"
+            className={cn(
+              buttonVariants({ variant: "default", size: "sm" }),
+              "w-fit",
+            )}
+          >
+            {ptBR.actions.create} {ptBR.entities.school}
+          </Link>
+        </div>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -110,20 +120,6 @@ function SchoolsPage() {
           ))}
         </ul>
       )}
-
-      <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium">
-          {ptBR.actions.create} {ptBR.entities.school}
-        </h2>
-        <SchoolForm
-          mode="create"
-          onSuccess={async () => {
-            await qc.invalidateQueries({
-              queryKey: queryKeys.schools(includeInactive),
-            });
-          }}
-        />
-      </section>
     </div>
   );
 }
