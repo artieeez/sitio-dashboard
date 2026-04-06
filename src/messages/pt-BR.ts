@@ -52,6 +52,11 @@ export const ptBR = {
     cancel: "Cancelar",
     delete: "Excluir",
     restore: "Restaurar",
+    paymentHistory: "Pagamentos",
+    newPayment: "Novo pagamento",
+    editPayment: "Editar pagamento",
+    markManualPaid: "Marcar pago (sem informações)",
+    clearManualPaid: "Desmarcar pago manual",
     openLanding: "Abrir página",
     fetchMetadata: "Buscar dados da página",
   },
@@ -59,5 +64,8 @@ export const ptBR = {
     light: "Claro",
     dark: "Escuro",
     toggle: "Alternar tema",
+  },
+  nav: {
+    home: "Início",
   },
 } as const;

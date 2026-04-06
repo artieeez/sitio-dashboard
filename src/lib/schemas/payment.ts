@@ -11,8 +11,8 @@ export const paymentSchema = z.object({
   passengerId: uuidStringSchema,
   amountMinor: moneyMinorSchema,
   paidOn: dateOnlySchema,
-  location: z.string().min(1),
-  payerIdentity: z.string().min(1),
+  location: z.string(),
+  payerIdentity: z.string(),
   createdAt: dateTimeStringSchema,
   updatedAt: dateTimeStringSchema,
 });
@@ -27,3 +27,4 @@ export const paymentCreateSchema = z.object({
 export const paymentUpdateSchema = paymentCreateSchema;
 
 export type Payment = z.infer<typeof paymentSchema>;
+export type PaymentCreate = z.infer<typeof paymentCreateSchema>;

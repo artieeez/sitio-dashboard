@@ -73,3 +73,42 @@ export async function apiPostJson<TRes>(
     body: JSON.stringify(body),
   });
 }
+
+export async function apiPatchJson<TRes>(
+  path: string,
+  body: unknown,
+  init?: Omit<RequestInit, "body" | "method">,
+): Promise<TRes> {
+  return apiJson<TRes>(path, {
+    ...init,
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function apiPutJson<TRes>(
+  path: string,
+  body: unknown,
+  init?: Omit<RequestInit, "body" | "method">,
+): Promise<TRes> {
+  return apiJson<TRes>(path, {
+    ...init,
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function apiDelete(path: string): Promise<void> {
+  const res = await fetch(resolveUrl(path), {
+    method: "DELETE",
+    headers: { Accept: "application/json" },
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    throw new ApiError(
+      res.status,
+      text ? parseJsonSafe(text) : null,
+      typeof text === "string" ? text : undefined,
+    );
+  }
+}

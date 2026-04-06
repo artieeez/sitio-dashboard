@@ -8,61 +8,197 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as SchoolsSchoolIdIndexRouteImport } from "./routes/schools/$schoolId/index";
+import { Route as SchoolsSchoolIdTripsIndexRouteImport } from "./routes/schools/$schoolId/trips/index";
+import { Route as SchoolsIndexRouteImport } from "./routes/schools/index";
+import { Route as TripsTripIdIndexRouteImport } from "./routes/trips/$tripId/index";
+import { Route as TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport } from "./routes/trips/$tripId/passengers/$passengerId/payments/index";
+import { Route as TripsTripIdPassengersPassengerIdPaymentsNewRouteImport } from "./routes/trips/$tripId/passengers/$passengerId/payments/new";
 
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
+const SchoolsIndexRoute = SchoolsIndexRouteImport.update({
+  id: "/schools/",
+  path: "/schools/",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const TripsTripIdIndexRoute = TripsTripIdIndexRouteImport.update({
+  id: "/trips/$tripId/",
+  path: "/trips/$tripId/",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const SchoolsSchoolIdIndexRoute = SchoolsSchoolIdIndexRouteImport.update({
+  id: "/schools/$schoolId/",
+  path: "/schools/$schoolId/",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const SchoolsSchoolIdTripsIndexRoute =
+  SchoolsSchoolIdTripsIndexRouteImport.update({
+    id: "/schools/$schoolId/trips/",
+    path: "/schools/$schoolId/trips/",
+    getParentRoute: () => rootRouteImport,
+  } as any);
+const TripsTripIdPassengersPassengerIdPaymentsIndexRoute =
+  TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport.update({
+    id: "/trips/$tripId/passengers/$passengerId/payments/",
+    path: "/trips/$tripId/passengers/$passengerId/payments/",
+    getParentRoute: () => rootRouteImport,
+  } as any);
+const TripsTripIdPassengersPassengerIdPaymentsNewRoute =
+  TripsTripIdPassengersPassengerIdPaymentsNewRouteImport.update({
+    id: "/trips/$tripId/passengers/$passengerId/payments/new",
+    path: "/trips/$tripId/passengers/$passengerId/payments/new",
+    getParentRoute: () => rootRouteImport,
+  } as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  "/": typeof IndexRoute;
+  "/schools/": typeof SchoolsIndexRoute;
+  "/schools/$schoolId/": typeof SchoolsSchoolIdIndexRoute;
+  "/trips/$tripId/": typeof TripsTripIdIndexRoute;
+  "/schools/$schoolId/trips/": typeof SchoolsSchoolIdTripsIndexRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/new": typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/": typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  "/": typeof IndexRoute;
+  "/schools": typeof SchoolsIndexRoute;
+  "/schools/$schoolId": typeof SchoolsSchoolIdIndexRoute;
+  "/trips/$tripId": typeof TripsTripIdIndexRoute;
+  "/schools/$schoolId/trips": typeof SchoolsSchoolIdTripsIndexRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/new": typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  "/trips/$tripId/passengers/$passengerId/payments": typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/schools/": typeof SchoolsIndexRoute;
+  "/schools/$schoolId/": typeof SchoolsSchoolIdIndexRoute;
+  "/trips/$tripId/": typeof TripsTripIdIndexRoute;
+  "/schools/$schoolId/trips/": typeof SchoolsSchoolIdTripsIndexRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/new": typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/": typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | "/"
+    | "/schools/"
+    | "/schools/$schoolId/"
+    | "/trips/$tripId/"
+    | "/schools/$schoolId/trips/"
+    | "/trips/$tripId/passengers/$passengerId/payments/new"
+    | "/trips/$tripId/passengers/$passengerId/payments/";
+  fileRoutesByTo: FileRoutesByTo;
+  to:
+    | "/"
+    | "/schools"
+    | "/schools/$schoolId"
+    | "/trips/$tripId"
+    | "/schools/$schoolId/trips"
+    | "/trips/$tripId/passengers/$passengerId/payments/new"
+    | "/trips/$tripId/passengers/$passengerId/payments";
+  id:
+    | "__root__"
+    | "/"
+    | "/schools/"
+    | "/schools/$schoolId/"
+    | "/trips/$tripId/"
+    | "/schools/$schoolId/trips/"
+    | "/trips/$tripId/passengers/$passengerId/payments/new"
+    | "/trips/$tripId/passengers/$passengerId/payments/";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  IndexRoute: typeof IndexRoute;
+  SchoolsIndexRoute: typeof SchoolsIndexRoute;
+  SchoolsSchoolIdIndexRoute: typeof SchoolsSchoolIdIndexRoute;
+  TripsTripIdIndexRoute: typeof TripsTripIdIndexRoute;
+  SchoolsSchoolIdTripsIndexRoute: typeof SchoolsSchoolIdTripsIndexRoute;
+  TripsTripIdPassengersPassengerIdPaymentsNewRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  TripsTripIdPassengersPassengerIdPaymentsIndexRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/schools/": {
+      id: "/schools/";
+      path: "/schools";
+      fullPath: "/schools/";
+      preLoaderRoute: typeof SchoolsIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/trips/$tripId/": {
+      id: "/trips/$tripId/";
+      path: "/trips/$tripId";
+      fullPath: "/trips/$tripId/";
+      preLoaderRoute: typeof TripsTripIdIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/schools/$schoolId/": {
+      id: "/schools/$schoolId/";
+      path: "/schools/$schoolId";
+      fullPath: "/schools/$schoolId/";
+      preLoaderRoute: typeof SchoolsSchoolIdIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/schools/$schoolId/trips/": {
+      id: "/schools/$schoolId/trips/";
+      path: "/schools/$schoolId/trips";
+      fullPath: "/schools/$schoolId/trips/";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/trips/$tripId/passengers/$passengerId/payments/": {
+      id: "/trips/$tripId/passengers/$passengerId/payments/";
+      path: "/trips/$tripId/passengers/$passengerId/payments";
+      fullPath: "/trips/$tripId/passengers/$passengerId/payments/";
+      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/trips/$tripId/passengers/$passengerId/payments/new": {
+      id: "/trips/$tripId/passengers/$passengerId/payments/new";
+      path: "/trips/$tripId/passengers/$passengerId/payments/new";
+      fullPath: "/trips/$tripId/passengers/$passengerId/payments/new";
+      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-}
+  SchoolsIndexRoute: SchoolsIndexRoute,
+  SchoolsSchoolIdIndexRoute: SchoolsSchoolIdIndexRoute,
+  TripsTripIdIndexRoute: TripsTripIdIndexRoute,
+  SchoolsSchoolIdTripsIndexRoute: SchoolsSchoolIdTripsIndexRoute,
+  TripsTripIdPassengersPassengerIdPaymentsNewRoute:
+    TripsTripIdPassengersPassengerIdPaymentsNewRoute,
+  TripsTripIdPassengersPassengerIdPaymentsIndexRoute:
+    TripsTripIdPassengersPassengerIdPaymentsIndexRoute,
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
+import type { createStart } from "@tanstack/react-start";
+import type { getRouter } from "./router.tsx";
+
+declare module "@tanstack/react-start" {
   interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
+    ssr: true;
+    router: Awaited<ReturnType<typeof getRouter>>;
   }
 }
