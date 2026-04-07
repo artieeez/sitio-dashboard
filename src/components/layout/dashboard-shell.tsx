@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Home, Moon, Sun, Users } from "lucide-react";
 import type { ReactNode } from "react";
@@ -30,6 +30,7 @@ import { useSchoolsForScope } from "@/hooks/use-schools-for-scope";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { schoolSchema } from "@/lib/schemas/school";
+import { getRecentSchools, touchRecentSchool } from "@/lib/scope-persistence";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 import { useThemeStore } from "@/stores/theme-store";
@@ -40,6 +41,7 @@ import { useThemeStore } from "@/stores/theme-store";
 export function DashboardShell({ children }: { children: ReactNode }) {
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const activeSchoolId = pathname.match(/^\/schools\/([^/]+)/)?.[1] ?? "";
@@ -75,7 +77,12 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                 menuTrigger={
                   <SchoolScopeMenu
                     schools={schoolsQuery.data ?? []}
+                    recents={getRecentSchools()}
                     onSelectSchool={(schoolId) => {
+                      touchRecentSchool(schoolId);
+                      queryClient.invalidateQueries({
+                        queryKey: queryKeys.school(schoolId),
+                      });
                       navigate({
                         to: "/schools/$schoolId",
                         params: { schoolId },
@@ -106,7 +113,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     <SidebarMenuButton
                       render={
                         <Link
-                          to={activeSchoolId ? "/schools/$schoolId" : "/"}
+                          to={activeSchoolId ? "/schools/$schoolId/home" : "/"}
                           params={
                             activeSchoolId
                               ? { schoolId: activeSchoolId }

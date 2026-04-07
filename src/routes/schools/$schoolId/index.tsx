@@ -45,6 +45,8 @@ function SchoolDetailPage() {
   }, [schoolQuery.data]);
 
   if (!schoolIdValid) {
+    // FR-020: invalid school id in URL must NOT silently fallback to FR-001
+    // resolution. Keep recovery explicit in-page and let user choose scope.
     return (
       <RouteInvalidRecovery
         backTo="/schools"

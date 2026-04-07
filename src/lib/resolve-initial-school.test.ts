@@ -38,4 +38,13 @@ describe("resolveInitialSchoolId", () => {
   it("falls back to last created with deterministic tie-break", () => {
     expect(findLastCreatedSchool([...schools])?.id).toBe(schools[1].id);
   });
+
+  it("ignores stale last accessed id and falls back", () => {
+    expect(
+      resolveInitialSchoolId({
+        schools: [...schools],
+        lastAccessedSchoolId: "550e8400-e29b-41d4-a716-446655449999",
+      }),
+    ).toBe(schools[1].id);
+  });
 });

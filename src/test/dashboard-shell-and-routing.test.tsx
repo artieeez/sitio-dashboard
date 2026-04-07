@@ -15,6 +15,10 @@ vi.mock("@/components/layout/dashboard-breadcrumbs", () => ({
   DashboardBreadcrumbs: () => <div data-testid="breadcrumbs-stub" />,
 }));
 
+vi.mock("@/components/layout/school-scope-menu", () => ({
+  SchoolScopeMenu: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
+
 vi.mock("@/components/ui/sidebar", () => {
   return {
     SidebarProvider: ({
@@ -122,5 +126,7 @@ describe("Dashboard shell (US5)", () => {
     expect(
       screen.getByRole("complementary", { name: /navegação principal/i }),
     ).toBeInTheDocument();
+    expect(screen.getByText(/pagamentos/i)).toBeInTheDocument();
+    expect(screen.getByText(/passageiros/i)).toBeInTheDocument();
   });
 });

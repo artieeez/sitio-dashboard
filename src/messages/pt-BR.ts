@@ -90,6 +90,13 @@ export const ptBR = {
     editSchool: "Editar escola ativa",
     placeholderUser: "Usuário da escola",
     noSchoolSelected: "Selecione uma escola",
+    searchPlaceholder: "Buscar escola",
+    recents: "Recentes",
+    noRecents: "Nenhuma escola recente.",
+    noResults: "Nenhuma escola encontrada.",
+    /** Label for the filtered list section in the scope menu (Base UI requires group + label). */
+    searchResults: "Resultados",
+    homePlaceholder: "Visão geral da escola em breve.",
   },
   aggregates: {
     title: "Resumo por situação de pagamento",

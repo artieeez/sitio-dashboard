@@ -14,6 +14,7 @@ import { Route as SchoolsIndexRouteImport } from './routes/schools/index'
 import { Route as SchoolsNewRouteImport } from './routes/schools/new'
 import { Route as TripsTripIdIndexRouteImport } from './routes/trips/$tripId/index'
 import { Route as SchoolsSchoolIdIndexRouteImport } from './routes/schools/$schoolId/index'
+import { Route as SchoolsSchoolIdHomeRouteImport } from './routes/schools/$schoolId/home'
 import { Route as TripsTripIdPassengersIndexRouteImport } from './routes/trips/$tripId/passengers/index'
 import { Route as SchoolsSchoolIdTripsIndexRouteImport } from './routes/schools/$schoolId/trips/index'
 import { Route as TripsTripIdPassengersNewRouteImport } from './routes/trips/$tripId/passengers/new'
@@ -45,6 +46,11 @@ const TripsTripIdIndexRoute = TripsTripIdIndexRouteImport.update({
 const SchoolsSchoolIdIndexRoute = SchoolsSchoolIdIndexRouteImport.update({
   id: '/schools/$schoolId/',
   path: '/schools/$schoolId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchoolsSchoolIdHomeRoute = SchoolsSchoolIdHomeRouteImport.update({
+  id: '/schools/$schoolId/home',
+  path: '/schools/$schoolId/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TripsTripIdPassengersIndexRoute =
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/schools/new': typeof SchoolsNewRoute
   '/schools/': typeof SchoolsIndexRoute
+  '/schools/$schoolId/home': typeof SchoolsSchoolIdHomeRoute
   '/schools/$schoolId/': typeof SchoolsSchoolIdIndexRoute
   '/trips/$tripId/': typeof TripsTripIdIndexRoute
   '/schools/$schoolId/trips/new': typeof SchoolsSchoolIdTripsNewRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/schools/new': typeof SchoolsNewRoute
   '/schools': typeof SchoolsIndexRoute
+  '/schools/$schoolId/home': typeof SchoolsSchoolIdHomeRoute
   '/schools/$schoolId': typeof SchoolsSchoolIdIndexRoute
   '/trips/$tripId': typeof TripsTripIdIndexRoute
   '/schools/$schoolId/trips/new': typeof SchoolsSchoolIdTripsNewRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/schools/new': typeof SchoolsNewRoute
   '/schools/': typeof SchoolsIndexRoute
+  '/schools/$schoolId/home': typeof SchoolsSchoolIdHomeRoute
   '/schools/$schoolId/': typeof SchoolsSchoolIdIndexRoute
   '/trips/$tripId/': typeof TripsTripIdIndexRoute
   '/schools/$schoolId/trips/new': typeof SchoolsSchoolIdTripsNewRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/'
     | '/schools/new'
     | '/schools/'
+    | '/schools/$schoolId/home'
     | '/schools/$schoolId/'
     | '/trips/$tripId/'
     | '/schools/$schoolId/trips/new'
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/'
     | '/schools/new'
     | '/schools'
+    | '/schools/$schoolId/home'
     | '/schools/$schoolId'
     | '/trips/$tripId'
     | '/schools/$schoolId/trips/new'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/'
     | '/schools/new'
     | '/schools/'
+    | '/schools/$schoolId/home'
     | '/schools/$schoolId/'
     | '/trips/$tripId/'
     | '/schools/$schoolId/trips/new'
@@ -181,6 +193,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SchoolsNewRoute: typeof SchoolsNewRoute
   SchoolsIndexRoute: typeof SchoolsIndexRoute
+  SchoolsSchoolIdHomeRoute: typeof SchoolsSchoolIdHomeRoute
   SchoolsSchoolIdIndexRoute: typeof SchoolsSchoolIdIndexRoute
   TripsTripIdIndexRoute: typeof TripsTripIdIndexRoute
   SchoolsSchoolIdTripsNewRoute: typeof SchoolsSchoolIdTripsNewRoute
@@ -227,6 +240,13 @@ declare module '@tanstack/react-router' {
       path: '/schools/$schoolId'
       fullPath: '/schools/$schoolId/'
       preLoaderRoute: typeof SchoolsSchoolIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schools/$schoolId/home': {
+      id: '/schools/$schoolId/home'
+      path: '/schools/$schoolId/home'
+      fullPath: '/schools/$schoolId/home'
+      preLoaderRoute: typeof SchoolsSchoolIdHomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trips/$tripId/passengers/': {
@@ -285,6 +305,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SchoolsNewRoute: SchoolsNewRoute,
   SchoolsIndexRoute: SchoolsIndexRoute,
+  SchoolsSchoolIdHomeRoute: SchoolsSchoolIdHomeRoute,
   SchoolsSchoolIdIndexRoute: SchoolsSchoolIdIndexRoute,
   TripsTripIdIndexRoute: TripsTripIdIndexRoute,
   SchoolsSchoolIdTripsNewRoute: SchoolsSchoolIdTripsNewRoute,
