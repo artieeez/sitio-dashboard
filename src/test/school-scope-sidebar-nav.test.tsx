@@ -128,5 +128,9 @@ describe("school scoped sidebar links", () => {
       "href",
       "/schools/550e8400-e29b-41d4-a716-446655440000/home",
     );
+    expect(screen.getByRole("link", { name: /viagens/i })).toHaveAttribute(
+      "href",
+      "/schools/550e8400-e29b-41d4-a716-446655440000/trips",
+    );
   });
 });

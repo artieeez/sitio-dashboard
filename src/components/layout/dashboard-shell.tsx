@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, Moon, Sun, Users } from "lucide-react";
+import { Home, Moon, Route, Sun } from "lucide-react";
 import type { ReactNode } from "react";
 import { DashboardBreadcrumbs } from "@/components/layout/dashboard-breadcrumbs";
 import {
@@ -37,6 +37,7 @@ import { useThemeStore } from "@/stores/theme-store";
 
 /**
  * US5 shell: shadcn sidebar + scrollable main (UI-FR-001), route-aware breadcrumbs.
+ * School-scoped nav per specs/002-sidebar-school-scope: Home + Trips (trip list hub per 001).
  */
 export function DashboardShell({ children }: { children: ReactNode }) {
   const theme = useThemeStore((s) => s.theme);
@@ -141,36 +142,12 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                               ? { schoolId: activeSchoolId }
                               : undefined
                           }
-                          aria-label={ptBR.entities.passengers}
+                          aria-label={ptBR.entities.trips}
                         />
                       }
                     >
-                      <Users className="size-4" />
-                      <span>{ptBR.entities.passengers}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      render={
-                        <Link
-                          to={
-                            activeSchoolId
-                              ? "/schools/$schoolId/trips"
-                              : "/schools"
-                          }
-                          params={
-                            activeSchoolId
-                              ? { schoolId: activeSchoolId }
-                              : undefined
-                          }
-                          aria-label={ptBR.entities.payments}
-                        />
-                      }
-                    >
-                      <span className="size-4 text-center font-semibold">
-                        $
-                      </span>
-                      <span>{ptBR.entities.payments}</span>
+                      <Route className="size-4" />
+                      <span>{ptBR.entities.trips}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>

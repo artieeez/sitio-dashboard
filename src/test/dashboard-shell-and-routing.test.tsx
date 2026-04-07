@@ -126,7 +126,6 @@ describe("Dashboard shell (US5)", () => {
     expect(
       screen.getByRole("complementary", { name: /navegação principal/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/pagamentos/i)).toBeInTheDocument();
-    expect(screen.getByText(/passageiros/i)).toBeInTheDocument();
+    expect(screen.getByText(/viagens/i)).toBeInTheDocument();
   });
 });
