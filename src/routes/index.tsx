@@ -1,17 +1,46 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { ScopeBlockingError } from "@/components/layout/scope-blocking-error";
+import { useSchoolsForScope } from "@/hooks/use-schools-for-scope";
+import { resolveInitialSchoolId } from "@/lib/resolve-initial-school";
+import {
+  getLastAccessedSchoolId,
+  setLastAccessedSchoolId,
+  touchRecentSchool,
+} from "@/lib/scope-persistence";
 import { ptBR } from "@/messages/pt-BR";
 
 export const Route = createFileRoute("/")({ component: HomePage });
 
 function HomePage() {
+  const navigate = useNavigate();
+  const schoolsQuery = useSchoolsForScope();
+
+  useEffect(() => {
+    if (!schoolsQuery.data) return;
+    const nextSchoolId = resolveInitialSchoolId({
+      schools: schoolsQuery.data,
+      lastAccessedSchoolId: getLastAccessedSchoolId(),
+    });
+    if (nextSchoolId) {
+      setLastAccessedSchoolId(nextSchoolId);
+      touchRecentSchool(nextSchoolId);
+      navigate({
+        to: "/schools/$schoolId",
+        params: { schoolId: nextSchoolId },
+      });
+      return;
+    }
+    navigate({ to: "/schools/new" });
+  }, [schoolsQuery.data, navigate]);
+
+  if (schoolsQuery.isError) {
+    return <ScopeBlockingError onRetry={() => schoolsQuery.refetch()} />;
+  }
+
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
-      <h1 className="text-lg font-medium">Sítio — Viagens escolares</h1>
-      <Link to="/schools" className={cn(buttonVariants({ size: "lg" }))}>
-        {ptBR.entities.schools}
-      </Link>
+    <div className="p-6">
+      <p className="text-sm text-muted-foreground">{ptBR.shell.loading}</p>
     </div>
   );
 }

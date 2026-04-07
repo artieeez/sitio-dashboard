@@ -3,4 +3,5 @@ export * from "./metadata";
 export * from "./passenger";
 export * from "./payment";
 export * from "./school";
+export * from "./scope";
 export * from "./trip";

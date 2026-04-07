@@ -15,6 +15,10 @@ vi.mock("@/components/layout/dashboard-breadcrumbs", () => ({
   DashboardBreadcrumbs: () => <div data-testid="breadcrumbs-stub" />,
 }));
 
+vi.mock("@/components/layout/school-scope-menu", () => ({
+  SchoolScopeMenu: () => null,
+}));
+
 vi.mock("@/components/ui/sidebar", () => {
   return {
     SidebarProvider: ({
@@ -79,6 +83,7 @@ vi.mock("@/components/ui/sidebar", () => {
       <li>{children}</li>
     ),
     SidebarRail: () => null,
+    SidebarSeparator: () => <hr />,
     SidebarTrigger: () => (
       <button type="button" aria-label="Toggle sidebar">
         menu
@@ -122,5 +127,6 @@ describe("Dashboard shell (US5)", () => {
     expect(
       screen.getByRole("complementary", { name: /navegação principal/i }),
     ).toBeInTheDocument();
+    expect(screen.getByText(/viagens/i)).toBeInTheDocument();
   });
 });

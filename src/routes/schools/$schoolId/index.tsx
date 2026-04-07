@@ -1,11 +1,16 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { SchoolForm } from "@/components/schools/SchoolForm";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { schoolSchema } from "@/lib/schemas/school";
+import {
+  setLastAccessedSchoolId,
+  touchRecentSchool,
+} from "@/lib/scope-persistence";
 import { cn } from "@/lib/utils";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
@@ -33,7 +38,15 @@ function SchoolDetailPage() {
     enabled: schoolIdValid,
   });
 
+  useEffect(() => {
+    if (!schoolQuery.data) return;
+    setLastAccessedSchoolId(schoolQuery.data.id);
+    touchRecentSchool(schoolQuery.data.id);
+  }, [schoolQuery.data]);
+
   if (!schoolIdValid) {
+    // FR-020: invalid school id in URL must NOT silently fallback to FR-001
+    // resolution. Keep recovery explicit in-page and let user choose scope.
     return (
       <RouteInvalidRecovery
         backTo="/schools"

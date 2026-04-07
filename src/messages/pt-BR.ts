@@ -64,8 +64,7 @@ export const ptBR = {
     viewPassengers: "Passageiros",
   },
   theme: {
-    light: "Claro",
-    dark: "Escuro",
+    label: "Tema",
     toggle: "Alternar tema",
   },
   nav: {
@@ -76,11 +75,29 @@ export const ptBR = {
   },
   shell: {
     mainNavGroup: "Menu",
+    /** Sidebar group label for edit current school + add school. */
+    schoolGroup: "Escola",
     sidebarNav: "Navegação principal",
     loading: "Carregando resumo…",
     aggregatesError: "Não foi possível carregar o resumo da viagem.",
     invalidRoute:
       "Endereço inválido ou recurso não encontrado. Volte para uma lista válida.",
+  },
+  scope: {
+    initError: "Não foi possível carregar os dados iniciais do escopo.",
+    retry: "Tentar novamente",
+    addSchool: "Adicionar escola",
+    openMenu: "Abrir menu de escopo",
+    editSchool: "Editar escola ativa",
+    placeholderUser: "Artur",
+    noSchoolSelected: "Selecione uma escola",
+    searchPlaceholder: "Buscar escola",
+    recents: "Recentes",
+    noRecents: "Nenhuma escola recente.",
+    noResults: "Nenhuma escola encontrada.",
+    /** Label for the filtered list section in the scope menu (Base UI requires group + label). */
+    searchResults: "Resultados",
+    homePlaceholder: "Visão geral da escola em breve.",
   },
   aggregates: {
     title: "Resumo por situação de pagamento",

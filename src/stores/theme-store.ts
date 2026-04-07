@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type ThemeMode = "light" | "dark";
+export type ThemeMode = "light" | "dark" | "system";
 
 type ThemeState = {
   theme: ThemeMode;
@@ -9,24 +9,38 @@ type ThemeState = {
   toggleTheme: () => void;
 };
 
-function applyThemeClass(theme: ThemeMode): void {
+export function resolveTheme(mode: ThemeMode): "light" | "dark" {
+  if (mode === "system") {
+    if (typeof window === "undefined") {
+      return "light";
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+  return mode;
+}
+
+export function applyThemeClass(mode: ThemeMode): void {
   if (typeof document === "undefined") {
     return;
   }
-  document.documentElement.classList.toggle("dark", theme === "dark");
+  const resolved = resolveTheme(mode);
+  document.documentElement.classList.toggle("dark", resolved === "dark");
 }
 
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      theme: "light",
+      theme: "system",
       setTheme: (theme) => {
         set({ theme });
         applyThemeClass(theme);
       },
       toggleTheme: () => {
-        const next = get().theme === "dark" ? "light" : "dark";
-        get().setTheme(next);
+        const { theme } = get();
+        const resolved = resolveTheme(theme);
+        get().setTheme(resolved === "dark" ? "light" : "dark");
       },
     }),
     {
