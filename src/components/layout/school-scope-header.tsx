@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { School } from "@/lib/schemas/school";
 import { ptBR } from "@/messages/pt-BR";
 
-function initialsFromTitle(title?: string) {
+function initialsFromTitle(title?: string | null) {
   const value = title?.trim();
   if (!value) return "ES";
   return value
@@ -39,7 +39,7 @@ export function SchoolScopeSummary({ school }: { school: School | null }) {
   const title = school?.title?.trim() || ptBR.scope.noSchoolSelected;
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <Avatar size="sm">
+      <Avatar size="sm" variant="rounded">
         {school?.faviconUrl ? (
           <AvatarImage src={school.faviconUrl} alt={title} />
         ) : null}
