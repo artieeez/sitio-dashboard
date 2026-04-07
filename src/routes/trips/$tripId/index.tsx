@@ -69,24 +69,7 @@ function TripDetailPage() {
 
   return (
     <div className="mx-auto max-w-5xl p-6">
-      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-foreground">
-          {ptBR.nav.home}
-        </Link>
-        <span className="mx-1.5">/</span>
-        <Link to="/schools" className="hover:text-foreground">
-          {ptBR.entities.schools}
-        </Link>
-        <span className="mx-1.5">/</span>
-        <Link
-          to="/schools/$schoolId/trips"
-          params={{ schoolId }}
-          className="hover:text-foreground"
-        >
-          {ptBR.entities.trips}
-        </Link>
-      </nav>
-      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
         <div className="flex flex-col gap-6 lg:col-span-2">
           <div>
             <Link
