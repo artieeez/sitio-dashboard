@@ -57,7 +57,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   });
 
   return (
-    <SidebarProvider className="flex h-[100dvh] flex-col overflow-hidden">
+    <SidebarProvider className="flex h-[100dvh] min-h-0 w-full flex-row overflow-hidden">
       <Sidebar
         role="complementary"
         aria-label={ptBR.shell.sidebarNav}
