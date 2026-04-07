@@ -27,7 +27,7 @@ export function SchoolScopeAvatar({ school }: { school: School | null }) {
 export function SchoolScopeSummary({ school }: { school: School | null }) {
   const title = school?.title?.trim() || ptBR.scope.noSchoolSelected;
   return (
-    <div className="flex min-w-0 items-center gap-2 group-data-[collapsible=icon]:justify-center">
+    <div className="flex min-w-0 w-full items-center gap-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
       <SchoolScopeAvatar school={school} />
       <div className="min-w-0 group-data-[collapsible=icon]:hidden">
         <p className="truncate font-medium text-sm" title={title}>

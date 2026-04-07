@@ -77,7 +77,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       >
         <SidebarHeader>
           <SidebarMenu>
-            <SidebarMenuItem>
+            <SidebarMenuItem className="min-w-0">
               <SchoolScopeMenu
                 schools={schoolsQuery.data ?? []}
                 recents={getRecentSchools()}

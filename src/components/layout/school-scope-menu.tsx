@@ -36,7 +36,10 @@ export function SchoolScopeMenu(props: {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={props.children} />
-      <DropdownMenuContent sideOffset={6}>
+      <DropdownMenuContent
+        sideOffset={6}
+        className="w-auto min-w-72 max-w-[min(24rem,calc(100vw-1.5rem))]"
+      >
         {/* Menu popup uses Floating UI typeahead on keydown; stop bubbling so typing reaches the input. */}
         <div className="p-1" onPointerDown={(e) => e.stopPropagation()}>
           <Input
