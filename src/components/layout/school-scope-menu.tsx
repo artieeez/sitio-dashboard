@@ -43,32 +43,38 @@ export function SchoolScopeMenu(props: {
             aria-label={ptBR.scope.searchPlaceholder}
           />
         </div>
-        <DropdownMenuLabel>{ptBR.scope.recents}</DropdownMenuLabel>
-        {recentSchools.length === 0 ? (
-          <DropdownMenuItem disabled>{ptBR.scope.noRecents}</DropdownMenuItem>
-        ) : null}
-        {recentSchools.map((school) => (
-          <DropdownMenuItem
-            key={school.id}
-            onClick={() => props.onSelectSchool(school.id)}
-          >
-            {school.title?.trim() ||
-              `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
-          </DropdownMenuItem>
-        ))}
+        {/* Base UI: GroupLabel must be inside Menu.Group */}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>{ptBR.scope.recents}</DropdownMenuLabel>
+          {recentSchools.length === 0 ? (
+            <DropdownMenuItem disabled>{ptBR.scope.noRecents}</DropdownMenuItem>
+          ) : null}
+          {recentSchools.map((school) => (
+            <DropdownMenuItem
+              key={school.id}
+              onClick={() => props.onSelectSchool(school.id)}
+            >
+              {school.title?.trim() ||
+                `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        {filtered.length === 0 ? (
-          <DropdownMenuItem disabled>{ptBR.scope.noResults}</DropdownMenuItem>
-        ) : null}
-        {filtered.map((school) => (
-          <DropdownMenuItem
-            key={`search-${school.id}`}
-            onClick={() => props.onSelectSchool(school.id)}
-          >
-            {school.title?.trim() ||
-              `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
-          </DropdownMenuItem>
-        ))}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>{ptBR.scope.searchResults}</DropdownMenuLabel>
+          {filtered.length === 0 ? (
+            <DropdownMenuItem disabled>{ptBR.scope.noResults}</DropdownMenuItem>
+          ) : null}
+          {filtered.map((school) => (
+            <DropdownMenuItem
+              key={`search-${school.id}`}
+              onClick={() => props.onSelectSchool(school.id)}
+            >
+              {school.title?.trim() ||
+                `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           render={<Link to="/schools/new" aria-label={ptBR.scope.addSchool} />}
