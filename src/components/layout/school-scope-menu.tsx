@@ -19,6 +19,8 @@ export function SchoolScopeMenu(props: {
   schools: School[];
   recents: RecentSchoolEntry[];
   onSelectSchool: (schoolId: string) => void;
+  /** When set, shows “Edit school” in the menu (sidebar header no longer shows a separate edit control). */
+  onEditSchool?: () => void;
   children: React.ReactNode;
 }) {
   const [query, setQuery] = useState("");
@@ -78,6 +80,14 @@ export function SchoolScopeMenu(props: {
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
+        {props.onEditSchool ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={props.onEditSchool}>
+              {ptBR.scope.editSchool}
+            </DropdownMenuItem>
+          </>
+        ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           render={<Link to="/schools/new" aria-label={ptBR.scope.addSchool} />}

@@ -1,6 +1,4 @@
-import { Pencil } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import type { School } from "@/lib/schemas/school";
 import { ptBR } from "@/messages/pt-BR";
 
@@ -14,38 +12,24 @@ function initialsFromTitle(title?: string | null) {
     .join("");
 }
 
-export function SchoolScopeHeader(props: {
-  school: School | null;
-  menuTrigger: React.ReactNode;
-  onEditSchool: () => void;
-}) {
+export function SchoolScopeAvatar({ school }: { school: School | null }) {
+  const title = school?.title?.trim() || ptBR.scope.noSchoolSelected;
   return (
-    <div className="flex items-center gap-2">
-      {props.menuTrigger}
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        type="button"
-        aria-label={ptBR.scope.editSchool}
-        onClick={props.onEditSchool}
-      >
-        <Pencil className="size-4" />
-      </Button>
-    </div>
+    <Avatar size="sm" variant="rounded">
+      {school?.faviconUrl ? (
+        <AvatarImage src={school.faviconUrl} alt={title} />
+      ) : null}
+      <AvatarFallback>{initialsFromTitle(school?.title)}</AvatarFallback>
+    </Avatar>
   );
 }
 
 export function SchoolScopeSummary({ school }: { school: School | null }) {
   const title = school?.title?.trim() || ptBR.scope.noSchoolSelected;
   return (
-    <div className="flex min-w-0 items-center gap-2">
-      <Avatar size="sm" variant="rounded">
-        {school?.faviconUrl ? (
-          <AvatarImage src={school.faviconUrl} alt={title} />
-        ) : null}
-        <AvatarFallback>{initialsFromTitle(school?.title)}</AvatarFallback>
-      </Avatar>
-      <div className="min-w-0">
+    <div className="flex min-w-0 items-center gap-2 group-data-[collapsible=icon]:justify-center">
+      <SchoolScopeAvatar school={school} />
+      <div className="min-w-0 group-data-[collapsible=icon]:hidden">
         <p className="truncate font-medium text-sm" title={title}>
           {title}
         </p>

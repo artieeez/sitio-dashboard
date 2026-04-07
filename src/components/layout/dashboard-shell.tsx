@@ -4,7 +4,7 @@ import { Home, Route } from "lucide-react";
 import type { ReactNode } from "react";
 import { DashboardBreadcrumbs } from "@/components/layout/dashboard-breadcrumbs";
 import {
-  SchoolScopeHeader,
+  SchoolScopeAvatar,
   SchoolScopeSummary,
 } from "@/components/layout/school-scope-header";
 import { SchoolScopeMenu } from "@/components/layout/school-scope-menu";
@@ -28,6 +28,7 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSchoolsForScope } from "@/hooks/use-schools-for-scope";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -35,6 +36,10 @@ import { schoolSchema } from "@/lib/schemas/school";
 import { getRecentSchools, touchRecentSchool } from "@/lib/scope-persistence";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
+
+const schoolTooltip = (title: string | undefined) =>
+  title?.trim() || ptBR.scope.noSchoolSelected;
+
 /**
  * US5 shell: shadcn sidebar + scrollable main (UI-FR-001), route-aware breadcrumbs.
  * School-scoped nav per specs/002-sidebar-school-scope: Home + Trips (trip list hub per 001).
@@ -54,6 +59,15 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     },
   });
 
+  const activeSchool = activeSchoolQuery.data ?? null;
+  const editCurrentSchool = () => {
+    if (!activeSchoolId) return;
+    navigate({
+      to: "/schools/$schoolId",
+      params: { schoolId: activeSchoolId },
+    });
+  };
+
   return (
     <SidebarProvider className="flex h-[100dvh] min-h-0 w-full flex-row overflow-hidden">
       <Sidebar
@@ -64,41 +78,29 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SchoolScopeHeader
-                school={activeSchoolQuery.data ?? null}
-                onEditSchool={() => {
-                  if (!activeSchoolId) return;
+              <SchoolScopeMenu
+                schools={schoolsQuery.data ?? []}
+                recents={getRecentSchools()}
+                onSelectSchool={(schoolId) => {
+                  touchRecentSchool(schoolId);
+                  queryClient.invalidateQueries({
+                    queryKey: queryKeys.school(schoolId),
+                  });
                   navigate({
                     to: "/schools/$schoolId",
-                    params: { schoolId: activeSchoolId },
+                    params: { schoolId },
                   });
                 }}
-                menuTrigger={
-                  <SchoolScopeMenu
-                    schools={schoolsQuery.data ?? []}
-                    recents={getRecentSchools()}
-                    onSelectSchool={(schoolId) => {
-                      touchRecentSchool(schoolId);
-                      queryClient.invalidateQueries({
-                        queryKey: queryKeys.school(schoolId),
-                      });
-                      navigate({
-                        to: "/schools/$schoolId",
-                        params: { schoolId },
-                      });
-                    }}
-                  >
-                    <SidebarMenuButton
-                      size="lg"
-                      aria-label={ptBR.scope.openMenu}
-                    >
-                      <SchoolScopeSummary
-                        school={activeSchoolQuery.data ?? null}
-                      />
-                    </SidebarMenuButton>
-                  </SchoolScopeMenu>
-                }
-              />
+                onEditSchool={activeSchoolId ? editCurrentSchool : undefined}
+              >
+                <SidebarMenuButton
+                  size="lg"
+                  tooltip={schoolTooltip(activeSchool?.title)}
+                  aria-label={ptBR.scope.openMenu}
+                >
+                  <SchoolScopeSummary school={activeSchool} />
+                </SidebarMenuButton>
+              </SchoolScopeMenu>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -172,18 +174,44 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             orientation="vertical"
             className="mr-1 hidden h-4 md:block"
           />
-          <Link
-            to="/"
-            className="flex shrink-0 items-center gap-2 md:hidden"
-            aria-label="Sítio"
-          >
-            <div className="flex aspect-square size-8 items-center justify-center rounded-sm bg-primary font-semibold text-primary-foreground text-sm">
-              S
-            </div>
-            <span className="font-semibold">Sítio</span>
-          </Link>
-          <DashboardBreadcrumbs />
+          <div className="flex min-w-0 flex-1 items-center gap-2 md:hidden">
+            {activeSchoolId ? (
+              activeSchoolQuery.isLoading ? (
+                <>
+                  <Skeleton className="size-8 shrink-0 rounded-[4px]" />
+                  <Skeleton className="h-4 max-w-[12rem] flex-1" />
+                </>
+              ) : (
+                <>
+                  <SchoolScopeAvatar school={activeSchool} />
+                  <span
+                    className="min-w-0 truncate font-medium text-sm"
+                    title={schoolTooltip(activeSchool?.title)}
+                  >
+                    {schoolTooltip(activeSchool?.title)}
+                  </span>
+                </>
+              )
+            ) : (
+              <Link
+                to="/"
+                className="flex min-w-0 items-center gap-2"
+                aria-label="Sítio"
+              >
+                <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-sm bg-primary font-semibold text-primary-foreground text-sm">
+                  S
+                </div>
+                <span className="font-semibold">Sítio</span>
+              </Link>
+            )}
+          </div>
+          <div className="hidden min-w-0 flex-1 md:block">
+            <DashboardBreadcrumbs />
+          </div>
         </header>
+        <div className="shrink-0 border-b px-3 py-2 md:hidden">
+          <DashboardBreadcrumbs />
+        </div>
         <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
       </SidebarInset>
     </SidebarProvider>
