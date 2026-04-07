@@ -22,7 +22,7 @@ describe("buildBreadcrumbTrail", () => {
     expect(trail.map((s) => s.label)).not.toContain(ptBR.entities.schools);
   });
 
-  it("school-scoped trips list: Início then Viagens; no Escolas in trail", () => {
+  it("school-scoped trips list: Viagens is the root segment (sidebar Trips); no Escolas", () => {
     const trail = buildBreadcrumbTrail({
       pathname: `/schools/${SCHOOL}/trips`,
       schoolIdFromPath: SCHOOL,
@@ -32,11 +32,9 @@ describe("buildBreadcrumbTrail", () => {
       tripLabel: PLACEHOLDER,
       passengerLabel: PLACEHOLDER,
     });
-    expect(trail.map((s) => s.label)).toEqual([
-      ptBR.nav.home,
-      ptBR.entities.trips,
-    ]);
+    expect(trail.map((s) => s.label)).toEqual([ptBR.entities.trips]);
     expect(trail.map((s) => s.label)).not.toContain(ptBR.entities.schools);
+    expect(trail.map((s) => s.label)).not.toContain(ptBR.nav.home);
   });
 
   it("never emits school title as a segment (school name not in builder)", () => {
@@ -53,7 +51,7 @@ describe("buildBreadcrumbTrail", () => {
     expect(trail.every((s) => s.label !== fakeSchoolTitle)).toBe(true);
   });
 
-  it("deep trip route: Início → Viagens → trip title; no Escolas", () => {
+  it("deep trip route: Viagens is root, then trip title; no Escolas", () => {
     const tripTitle = "Excursão Museu";
     const trail = buildBreadcrumbTrail({
       pathname: `/trips/${TRIP}/`,
@@ -64,12 +62,9 @@ describe("buildBreadcrumbTrail", () => {
       tripLabel: tripTitle,
       passengerLabel: PLACEHOLDER,
     });
-    expect(trail.map((s) => s.label)).toEqual([
-      ptBR.nav.home,
-      ptBR.entities.trips,
-      tripTitle,
-    ]);
+    expect(trail.map((s) => s.label)).toEqual([ptBR.entities.trips, tripTitle]);
     expect(trail.map((s) => s.label)).not.toContain(ptBR.entities.schools);
+    expect(trail.map((s) => s.label)).not.toContain(ptBR.nav.home);
   });
 
   it("trip passengers: nested labels include Passageiros", () => {
@@ -84,7 +79,6 @@ describe("buildBreadcrumbTrail", () => {
       passengerLabel: PLACEHOLDER,
     });
     expect(trail.map((s) => s.label)).toEqual([
-      ptBR.nav.home,
       ptBR.entities.trips,
       tripTitle,
       ptBR.entities.passengers,
@@ -120,7 +114,7 @@ describe("buildBreadcrumbTrail", () => {
 });
 
 describe("buildBreadcrumbTrail navigation (US2)", () => {
-  it("parent segments include to/params; last segment has no link", () => {
+  it("parent segments with links include to/params; last segment has no link", () => {
     const trail = buildBreadcrumbTrail({
       pathname: `/trips/${TRIP}/passengers`,
       schoolIdFromPath: "",
@@ -132,10 +126,17 @@ describe("buildBreadcrumbTrail navigation (US2)", () => {
     });
     const last = trail[trail.length - 1];
     expect(last && !("to" in last && last.to)).toBe(true);
-    const parents = trail.slice(0, -1);
-    for (const p of parents) {
-      expect("to" in p && p.to).toBeTruthy();
-    }
+    expect(trail[0]).toMatchObject({
+      label: ptBR.entities.trips,
+      to: "/schools/$schoolId/trips",
+      params: { schoolId: SCHOOL },
+    });
+    const tripSeg = trail[1];
+    expect(tripSeg).toMatchObject({
+      label: "Viagem X",
+      to: "/trips/$tripId",
+      params: { tripId: TRIP },
+    });
   });
 
   it("school trips: last segment is current (no to)", () => {

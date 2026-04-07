@@ -109,9 +109,9 @@ export function DashboardBreadcrumbs() {
               <span key={crumb.key} className="contents">
                 {i > 0 ? <BreadcrumbSeparator /> : null}
                 <BreadcrumbItem className="shrink-0">
-                  {isLast || !hasLink ? (
+                  {isLast ? (
                     <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                  ) : (
+                  ) : hasLink ? (
                     <BreadcrumbLink
                       render={
                         <Link
@@ -122,6 +122,8 @@ export function DashboardBreadcrumbs() {
                     >
                       {crumb.label}
                     </BreadcrumbLink>
+                  ) : (
+                    <span className="text-muted-foreground">{crumb.label}</span>
                   )}
                 </BreadcrumbItem>
               </span>

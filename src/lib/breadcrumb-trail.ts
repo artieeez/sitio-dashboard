@@ -53,6 +53,20 @@ function scopedHomeLink(schoolId: string): BreadcrumbSegment {
   };
 }
 
+/** Sidebar “Viagens” is the breadcrumb root for trip flows (not “Início → Viagens”). */
+function scopedTripsLink(schoolId: string): BreadcrumbSegment {
+  return {
+    key: "trips",
+    label: ptBR.entities.trips,
+    to: "/schools/$schoolId/trips",
+    params: { schoolId },
+  };
+}
+
+function scopedTripsRootCurrent(): BreadcrumbSegment {
+  return { key: "trips", label: ptBR.entities.trips };
+}
+
 function appendTripUnderPassengers(
   items: BreadcrumbSegment[],
   pathname: string,
@@ -184,21 +198,12 @@ export function buildBreadcrumbTrail(
       pathname === `/schools/${sidPath}/trips` ||
       pathname === `/schools/${sidPath}/trips/`
     ) {
-      return [
-        scopedHomeLink(sidPath),
-        { key: "trips", label: ptBR.entities.trips },
-      ];
+      return [scopedTripsRootCurrent()];
     }
 
     if (pathname === `/schools/${sidPath}/trips/new`) {
       return [
-        scopedHomeLink(sidPath),
-        {
-          key: "trips",
-          label: ptBR.entities.trips,
-          to: "/schools/$schoolId/trips",
-          params: { schoolId: sidPath },
-        },
+        scopedTripsLink(sidPath),
         {
           key: "new-trip",
           label: `${ptBR.actions.create} ${ptBR.entities.trip}`,
@@ -217,9 +222,8 @@ export function buildBreadcrumbTrail(
     if (!sid) {
       const items: BreadcrumbSegment[] = [
         {
-          key: "home",
-          label: ptBR.nav.home,
-          to: "/",
+          key: "trips",
+          label: ptBR.entities.trips,
         },
       ];
 
@@ -243,15 +247,7 @@ export function buildBreadcrumbTrail(
       );
     }
 
-    const items: BreadcrumbSegment[] = [
-      scopedHomeLink(sid),
-      {
-        key: "trips",
-        label: ptBR.entities.trips,
-        to: "/schools/$schoolId/trips",
-        params: { schoolId: sid },
-      },
-    ];
+    const items: BreadcrumbSegment[] = [scopedTripsLink(sid)];
 
     if (tripOnly) {
       items.push({ key: "trip", label: tripLabel });
