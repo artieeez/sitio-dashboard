@@ -158,7 +158,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <SidebarFooter>
           <SidebarSeparator className="mx-0" />
           <SidebarMenu>
-            <SidebarMenuItem className="flex justify-center py-1.5">
+            <SidebarMenuItem>
               <ModeToggle />
             </SidebarMenuItem>
           </SidebarMenu>

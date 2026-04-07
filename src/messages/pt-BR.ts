@@ -64,6 +64,7 @@ export const ptBR = {
     viewPassengers: "Passageiros",
   },
   theme: {
+    label: "Tema",
     toggle: "Alternar tema",
   },
   nav: {
