@@ -35,12 +35,15 @@ export function SchoolScopeMenu(props: {
     <DropdownMenu>
       <DropdownMenuTrigger render={props.children} />
       <DropdownMenuContent sideOffset={6}>
-        <div className="p-1">
+        {/* Menu popup uses Floating UI typeahead on keydown; stop bubbling so typing reaches the input. */}
+        <div className="p-1" onPointerDown={(e) => e.stopPropagation()}>
           <Input
             value={query}
             onChange={(ev) => setQuery(ev.target.value)}
+            onKeyDown={(e) => e.stopPropagation()}
             placeholder={ptBR.scope.searchPlaceholder}
             aria-label={ptBR.scope.searchPlaceholder}
+            autoComplete="off"
           />
         </div>
         {/* Base UI: GroupLabel must be inside Menu.Group */}
