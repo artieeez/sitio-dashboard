@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, Route } from "lucide-react";
+import { Home, Pencil, Plus, Route } from "lucide-react";
 import type { ReactNode } from "react";
 import { DashboardBreadcrumbs } from "@/components/layout/dashboard-breadcrumbs";
 import { SchoolScopeAvatar } from "@/components/layout/school-scope-header";
@@ -90,7 +90,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     params: { schoolId },
                   });
                 }}
-                onEditSchool={activeSchoolId ? editCurrentSchool : undefined}
               />
             </SidebarMenuItem>
           </SidebarMenu>
@@ -139,6 +138,39 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     >
                       <Route className="size-4" />
                       <span>{ptBR.entities.trips}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarSeparator className="mx-0" />
+            <SidebarGroup>
+              <SidebarGroupLabel>{ptBR.shell.schoolGroup}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {activeSchoolId ? (
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        type="button"
+                        onClick={editCurrentSchool}
+                        aria-label={ptBR.scope.editSchool}
+                      >
+                        <Pencil className="size-4" />
+                        <span>{ptBR.scope.editSchool}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ) : null}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      render={
+                        <Link
+                          to="/schools/new"
+                          aria-label={ptBR.scope.addSchool}
+                        />
+                      }
+                    >
+                      <Plus className="size-4" />
+                      <span>{ptBR.scope.addSchool}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>

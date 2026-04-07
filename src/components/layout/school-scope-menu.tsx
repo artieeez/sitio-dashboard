@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { SchoolScopeSummary } from "@/components/layout/school-scope-header";
@@ -23,7 +22,6 @@ export function SchoolScopeMenu(props: {
   schools: School[];
   recents: RecentSchoolEntry[];
   onSelectSchool: (schoolId: string) => void;
-  onEditSchool?: () => void;
 }) {
   const { state, isMobile, setOpen, setOpenMobile } = useSidebar();
   const [scopeOpen, setScopeOpen] = useState(false);
@@ -149,34 +147,6 @@ export function SchoolScopeMenu(props: {
                 ))}
               </ul>
             </section>
-          </div>
-          <div className="flex flex-col gap-1 border-sidebar-border border-t pt-2">
-            {props.onEditSchool ? (
-              <SidebarMenuButton
-                type="button"
-                size="sm"
-                className="h-8"
-                onClick={() => {
-                  props.onEditSchool?.();
-                  setScopeOpen(false);
-                }}
-              >
-                {ptBR.scope.editSchool}
-              </SidebarMenuButton>
-            ) : null}
-            <SidebarMenuButton
-              size="sm"
-              className="h-8"
-              render={
-                <Link
-                  to="/schools/new"
-                  onClick={() => setScopeOpen(false)}
-                  aria-label={ptBR.scope.addSchool}
-                />
-              }
-            >
-              {ptBR.scope.addSchool}
-            </SidebarMenuButton>
           </div>
         </div>
       </CollapsibleContent>

@@ -75,6 +75,8 @@ export const ptBR = {
   },
   shell: {
     mainNavGroup: "Menu",
+    /** Sidebar group label for edit current school + add school. */
+    schoolGroup: "Escola",
     sidebarNav: "Navegação principal",
     loading: "Carregando resumo…",
     aggregatesError: "Não foi possível carregar o resumo da viagem.",
