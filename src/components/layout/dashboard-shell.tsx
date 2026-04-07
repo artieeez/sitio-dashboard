@@ -1,7 +1,13 @@
-import { Link } from "@tanstack/react-router";
-import { Home, Moon, School, Sun } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Home, Moon, Sun, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { DashboardBreadcrumbs } from "@/components/layout/dashboard-breadcrumbs";
+import {
+  SchoolScopeHeader,
+  SchoolScopeSummary,
+} from "@/components/layout/school-scope-header";
+import { SchoolScopeMenu } from "@/components/layout/school-scope-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -20,6 +26,10 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useSchoolsForScope } from "@/hooks/use-schools-for-scope";
+import { apiJson } from "@/lib/api-client";
+import { queryKeys } from "@/lib/query-keys";
+import { schoolSchema } from "@/lib/schemas/school";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 import { useThemeStore } from "@/stores/theme-store";
@@ -30,6 +40,18 @@ import { useThemeStore } from "@/stores/theme-store";
 export function DashboardShell({ children }: { children: ReactNode }) {
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const activeSchoolId = pathname.match(/^\/schools\/([^/]+)/)?.[1] ?? "";
+  const schoolsQuery = useSchoolsForScope();
+  const activeSchoolQuery = useQuery({
+    queryKey: queryKeys.school(activeSchoolId || "skip"),
+    enabled: !!activeSchoolId,
+    queryFn: async () => {
+      const raw = await apiJson<unknown>(`/schools/${activeSchoolId}`);
+      return schoolSchema.parse(raw);
+    },
+  });
 
   return (
     <SidebarProvider className="flex h-[100dvh] flex-col overflow-hidden">
@@ -41,20 +63,36 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                size="lg"
-                render={<Link to="/" aria-label={ptBR.nav.home} />}
-              >
-                <div className="flex aspect-square size-8 items-center justify-center rounded-sm bg-primary font-semibold text-primary-foreground text-sm">
-                  S
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">Sítio</span>
-                  <span className="text-xs text-muted-foreground">
-                    Viagens escolares
-                  </span>
-                </div>
-              </SidebarMenuButton>
+              <SchoolScopeHeader
+                school={activeSchoolQuery.data ?? null}
+                onEditSchool={() => {
+                  if (!activeSchoolId) return;
+                  navigate({
+                    to: "/schools/$schoolId",
+                    params: { schoolId: activeSchoolId },
+                  });
+                }}
+                menuTrigger={
+                  <SchoolScopeMenu
+                    schools={schoolsQuery.data ?? []}
+                    onSelectSchool={(schoolId) => {
+                      navigate({
+                        to: "/schools/$schoolId",
+                        params: { schoolId },
+                      });
+                    }}
+                  >
+                    <SidebarMenuButton
+                      size="lg"
+                      aria-label={ptBR.scope.openMenu}
+                    >
+                      <SchoolScopeSummary
+                        school={activeSchoolQuery.data ?? null}
+                      />
+                    </SidebarMenuButton>
+                  </SchoolScopeMenu>
+                }
+              />
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -66,7 +104,17 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      render={<Link to="/" aria-label={ptBR.nav.home} />}
+                      render={
+                        <Link
+                          to={activeSchoolId ? "/schools/$schoolId" : "/"}
+                          params={
+                            activeSchoolId
+                              ? { schoolId: activeSchoolId }
+                              : undefined
+                          }
+                          aria-label={ptBR.nav.home}
+                        />
+                      }
                     >
                       <Home className="size-4" />
                       <span>{ptBR.nav.home}</span>
@@ -76,13 +124,46 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     <SidebarMenuButton
                       render={
                         <Link
-                          to="/schools"
-                          aria-label={ptBR.entities.schools}
+                          to={
+                            activeSchoolId
+                              ? "/schools/$schoolId/trips"
+                              : "/schools"
+                          }
+                          params={
+                            activeSchoolId
+                              ? { schoolId: activeSchoolId }
+                              : undefined
+                          }
+                          aria-label={ptBR.entities.passengers}
                         />
                       }
                     >
-                      <School className="size-4" />
-                      <span>{ptBR.entities.schools}</span>
+                      <Users className="size-4" />
+                      <span>{ptBR.entities.passengers}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      render={
+                        <Link
+                          to={
+                            activeSchoolId
+                              ? "/schools/$schoolId/trips"
+                              : "/schools"
+                          }
+                          params={
+                            activeSchoolId
+                              ? { schoolId: activeSchoolId }
+                              : undefined
+                          }
+                          aria-label={ptBR.entities.payments}
+                        />
+                      }
+                    >
+                      <span className="size-4 text-center font-semibold">
+                        $
+                      </span>
+                      <span>{ptBR.entities.payments}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>

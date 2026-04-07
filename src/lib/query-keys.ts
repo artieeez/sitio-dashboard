@@ -1,4 +1,5 @@
 export const queryKeys = {
+  scopeSchools: () => ["scope-schools"] as const,
   schools: (includeInactive: boolean) =>
     ["schools", { includeInactive }] as const,
   school: (id: string) => ["school", id] as const,

@@ -82,6 +82,15 @@ export const ptBR = {
     invalidRoute:
       "Endereço inválido ou recurso não encontrado. Volte para uma lista válida.",
   },
+  scope: {
+    initError: "Não foi possível carregar os dados iniciais do escopo.",
+    retry: "Tentar novamente",
+    addSchool: "Adicionar escola",
+    openMenu: "Abrir menu de escopo",
+    editSchool: "Editar escola ativa",
+    placeholderUser: "Usuário da escola",
+    noSchoolSelected: "Selecione uma escola",
+  },
   aggregates: {
     title: "Resumo por situação de pagamento",
   },
