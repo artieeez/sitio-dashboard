@@ -3,10 +3,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Home, Route } from "lucide-react";
 import type { ReactNode } from "react";
 import { DashboardBreadcrumbs } from "@/components/layout/dashboard-breadcrumbs";
-import {
-  SchoolScopeAvatar,
-  SchoolScopeSummary,
-} from "@/components/layout/school-scope-header";
+import { SchoolScopeAvatar } from "@/components/layout/school-scope-header";
 import { SchoolScopeMenu } from "@/components/layout/school-scope-menu";
 import { ModeToggle } from "@/components/mode-toggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -37,8 +34,9 @@ import { getRecentSchools, touchRecentSchool } from "@/lib/scope-persistence";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
-const schoolTooltip = (title: string | undefined) =>
-  title?.trim() || ptBR.scope.noSchoolSelected;
+function mobileSchoolTitle(title: string | null | undefined) {
+  return title?.trim() || ptBR.scope.noSchoolSelected;
+}
 
 /**
  * US5 shell: shadcn sidebar + scrollable main (UI-FR-001), route-aware breadcrumbs.
@@ -79,6 +77,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           <SidebarMenu>
             <SidebarMenuItem className="min-w-0">
               <SchoolScopeMenu
+                school={activeSchool}
                 schools={schoolsQuery.data ?? []}
                 recents={getRecentSchools()}
                 onSelectSchool={(schoolId) => {
@@ -92,15 +91,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   });
                 }}
                 onEditSchool={activeSchoolId ? editCurrentSchool : undefined}
-              >
-                <SidebarMenuButton
-                  size="lg"
-                  tooltip={schoolTooltip(activeSchool?.title)}
-                  aria-label={ptBR.scope.openMenu}
-                >
-                  <SchoolScopeSummary school={activeSchool} />
-                </SidebarMenuButton>
-              </SchoolScopeMenu>
+              />
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -186,9 +177,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   <SchoolScopeAvatar school={activeSchool} />
                   <span
                     className="min-w-0 truncate font-medium text-sm"
-                    title={schoolTooltip(activeSchool?.title)}
+                    title={mobileSchoolTitle(activeSchool?.title)}
                   >
-                    {schoolTooltip(activeSchool?.title)}
+                    {mobileSchoolTitle(activeSchool?.title)}
                   </span>
                 </>
               )

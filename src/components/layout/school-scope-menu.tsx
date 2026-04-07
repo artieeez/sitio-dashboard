@@ -1,29 +1,34 @@
 import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { SchoolScopeSummary } from "@/components/layout/school-scope-header";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
+import { SidebarMenuButton, useSidebar } from "@/components/ui/sidebar";
 import type { School } from "@/lib/schemas/school";
 import type { RecentSchoolEntry } from "@/lib/schemas/scope";
 import { filterSchoolsByTitle, orderRecentSchools } from "@/lib/scope-search";
+import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
+function schoolTooltip(title: string | null | undefined) {
+  return title?.trim() || ptBR.scope.noSchoolSelected;
+}
+
+const listButtonClass =
+  "w-full rounded-md px-2 py-1.5 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2";
+
 export function SchoolScopeMenu(props: {
+  school: School | null;
   schools: School[];
   recents: RecentSchoolEntry[];
   onSelectSchool: (schoolId: string) => void;
-  /** When set, shows “Edit school” in the menu (sidebar header no longer shows a separate edit control). */
   onEditSchool?: () => void;
-  children: React.ReactNode;
 }) {
+  const { state, isMobile, setOpen, setOpenMobile } = useSidebar();
+  const [scopeOpen, setScopeOpen] = useState(false);
   const [query, setQuery] = useState("");
+
   const recentSchools = useMemo(
     () => orderRecentSchools(props.schools, props.recents),
     [props.schools, props.recents],
@@ -33,71 +38,148 @@ export function SchoolScopeMenu(props: {
     [props.schools, query],
   );
 
+  useEffect(() => {
+    if (state === "collapsed") {
+      setScopeOpen(false);
+    }
+  }, [state]);
+
+  const handleHeaderClick = () => {
+    if (isMobile) {
+      setOpenMobile(true);
+      setScopeOpen((v) => !v);
+      return;
+    }
+    if (state === "collapsed") {
+      setOpen(true);
+      setScopeOpen(true);
+      return;
+    }
+    setScopeOpen((v) => !v);
+  };
+
+  const handleSelectSchool = (schoolId: string) => {
+    setScopeOpen(false);
+    props.onSelectSchool(schoolId);
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger render={props.children} />
-      <DropdownMenuContent
-        sideOffset={6}
-        className="w-auto min-w-72 max-w-[min(24rem,calc(100vw-1.5rem))]"
+    <Collapsible
+      open={scopeOpen}
+      onOpenChange={setScopeOpen}
+      className="w-full min-w-0"
+    >
+      <SidebarMenuButton
+        type="button"
+        size="lg"
+        tooltip={schoolTooltip(props.school?.title)}
+        aria-label={ptBR.scope.openMenu}
+        aria-expanded={scopeOpen}
+        onClick={handleHeaderClick}
       >
-        {/* Menu popup uses Floating UI typeahead on keydown; stop bubbling so typing reaches the input. */}
-        <div className="p-1" onPointerDown={(e) => e.stopPropagation()}>
+        <SchoolScopeSummary school={props.school} />
+        <ChevronDown
+          aria-hidden
+          className={cn(
+            "size-4 shrink-0 text-sidebar-foreground/70 transition-transform duration-200 group-data-[collapsible=icon]:hidden",
+            scopeOpen && "rotate-180",
+          )}
+        />
+      </SidebarMenuButton>
+      <CollapsibleContent className="min-w-0 overflow-hidden border-sidebar-border border-t pt-2 pb-1">
+        <div className="flex flex-col gap-3 px-0.5">
           <Input
             value={query}
             onChange={(ev) => setQuery(ev.target.value)}
-            onKeyDown={(e) => e.stopPropagation()}
             placeholder={ptBR.scope.searchPlaceholder}
             aria-label={ptBR.scope.searchPlaceholder}
             autoComplete="off"
+            className="h-8 bg-background"
           />
+          <div
+            className={cn(
+              "max-h-[min(40vh,16rem)] space-y-3 overflow-y-auto pr-0.5",
+            )}
+          >
+            <section>
+              <p className="mb-1 px-1 font-medium text-sidebar-foreground/70 text-xs">
+                {ptBR.scope.recents}
+              </p>
+              <ul className="flex flex-col gap-0.5">
+                {recentSchools.length === 0 ? (
+                  <li className="px-1 text-muted-foreground text-xs">
+                    {ptBR.scope.noRecents}
+                  </li>
+                ) : null}
+                {recentSchools.map((school) => (
+                  <li key={school.id}>
+                    <button
+                      type="button"
+                      className={listButtonClass}
+                      onClick={() => handleSelectSchool(school.id)}
+                    >
+                      {school.title?.trim() ||
+                        `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section>
+              <p className="mb-1 px-1 font-medium text-sidebar-foreground/70 text-xs">
+                {ptBR.scope.searchResults}
+              </p>
+              <ul className="flex flex-col gap-0.5">
+                {filtered.length === 0 ? (
+                  <li className="px-1 text-muted-foreground text-xs">
+                    {ptBR.scope.noResults}
+                  </li>
+                ) : null}
+                {filtered.map((school) => (
+                  <li key={`search-${school.id}`}>
+                    <button
+                      type="button"
+                      className={listButtonClass}
+                      onClick={() => handleSelectSchool(school.id)}
+                    >
+                      {school.title?.trim() ||
+                        `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+          <div className="flex flex-col gap-1 border-sidebar-border border-t pt-2">
+            {props.onEditSchool ? (
+              <SidebarMenuButton
+                type="button"
+                size="sm"
+                className="h-8"
+                onClick={() => {
+                  props.onEditSchool?.();
+                  setScopeOpen(false);
+                }}
+              >
+                {ptBR.scope.editSchool}
+              </SidebarMenuButton>
+            ) : null}
+            <SidebarMenuButton
+              size="sm"
+              className="h-8"
+              render={
+                <Link
+                  to="/schools/new"
+                  onClick={() => setScopeOpen(false)}
+                  aria-label={ptBR.scope.addSchool}
+                />
+              }
+            >
+              {ptBR.scope.addSchool}
+            </SidebarMenuButton>
+          </div>
         </div>
-        {/* Base UI: GroupLabel must be inside Menu.Group */}
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>{ptBR.scope.recents}</DropdownMenuLabel>
-          {recentSchools.length === 0 ? (
-            <DropdownMenuItem disabled>{ptBR.scope.noRecents}</DropdownMenuItem>
-          ) : null}
-          {recentSchools.map((school) => (
-            <DropdownMenuItem
-              key={school.id}
-              onClick={() => props.onSelectSchool(school.id)}
-            >
-              {school.title?.trim() ||
-                `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>{ptBR.scope.searchResults}</DropdownMenuLabel>
-          {filtered.length === 0 ? (
-            <DropdownMenuItem disabled>{ptBR.scope.noResults}</DropdownMenuItem>
-          ) : null}
-          {filtered.map((school) => (
-            <DropdownMenuItem
-              key={`search-${school.id}`}
-              onClick={() => props.onSelectSchool(school.id)}
-            >
-              {school.title?.trim() ||
-                `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
-        {props.onEditSchool ? (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={props.onEditSchool}>
-              {ptBR.scope.editSchool}
-            </DropdownMenuItem>
-          </>
-        ) : null}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          render={<Link to="/schools/new" aria-label={ptBR.scope.addSchool} />}
-        >
-          {ptBR.scope.addSchool}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

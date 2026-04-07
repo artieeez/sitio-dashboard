@@ -16,7 +16,7 @@ vi.mock("@/components/layout/dashboard-breadcrumbs", () => ({
 }));
 
 vi.mock("@/components/layout/school-scope-menu", () => ({
-  SchoolScopeMenu: ({ children }: { children: ReactNode }) => <>{children}</>,
+  SchoolScopeMenu: () => null,
 }));
 
 vi.mock("@/components/ui/sidebar", () => {

@@ -1,12 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SchoolScopeSummary } from "@/components/layout/school-scope-header";
+import { ptBR } from "@/messages/pt-BR";
 
 describe("school scope header", () => {
   it("renders fallback initials and placeholder user", () => {
     render(<SchoolScopeSummary school={null} />);
     expect(screen.getByText(/selecione uma escola/i)).toBeInTheDocument();
-    expect(screen.getByText(/usuário da escola/i)).toBeInTheDocument();
+    expect(screen.getByText(ptBR.scope.placeholderUser)).toBeInTheDocument();
   });
 
   it("renders school title when available", () => {
