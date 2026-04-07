@@ -87,7 +87,7 @@ export const ptBR = {
     addSchool: "Adicionar escola",
     openMenu: "Abrir menu de escopo",
     editSchool: "Editar escola ativa",
-    placeholderUser: "Usuário da escola",
+    placeholderUser: "Artur",
     noSchoolSelected: "Selecione uma escola",
     searchPlaceholder: "Buscar escola",
     recents: "Recentes",
