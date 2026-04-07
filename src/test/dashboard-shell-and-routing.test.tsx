@@ -83,6 +83,7 @@ vi.mock("@/components/ui/sidebar", () => {
       <li>{children}</li>
     ),
     SidebarRail: () => null,
+    SidebarSeparator: () => <hr />,
     SidebarTrigger: () => (
       <button type="button" aria-label="Toggle sidebar">
         menu

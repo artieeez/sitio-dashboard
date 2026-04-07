@@ -57,6 +57,7 @@ vi.mock("@/components/ui/sidebar", () => {
       <li>{children}</li>
     ),
     SidebarRail: () => null,
+    SidebarSeparator: () => <hr />,
     SidebarTrigger: () => null,
   };
 });

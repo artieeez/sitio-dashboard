@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, Moon, Route, Sun } from "lucide-react";
+import { Home, Route } from "lucide-react";
 import type { ReactNode } from "react";
 import { DashboardBreadcrumbs } from "@/components/layout/dashboard-breadcrumbs";
 import {
@@ -8,6 +8,7 @@ import {
   SchoolScopeSummary,
 } from "@/components/layout/school-scope-header";
 import { SchoolScopeMenu } from "@/components/layout/school-scope-menu";
+import { ModeToggle } from "@/components/mode-toggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -24,6 +25,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
+  SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useSchoolsForScope } from "@/hooks/use-schools-for-scope";
@@ -33,15 +35,11 @@ import { schoolSchema } from "@/lib/schemas/school";
 import { getRecentSchools, touchRecentSchool } from "@/lib/scope-persistence";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
-import { useThemeStore } from "@/stores/theme-store";
-
 /**
  * US5 shell: shadcn sidebar + scrollable main (UI-FR-001), route-aware breadcrumbs.
  * School-scoped nav per specs/002-sidebar-school-scope: Home + Trips (trip list hub per 001).
  */
 export function DashboardShell({ children }: { children: ReactNode }) {
-  const theme = useThemeStore((s) => s.theme);
-  const toggleTheme = useThemeStore((s) => s.toggleTheme);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -156,22 +154,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           </ScrollArea>
         </SidebarContent>
         <SidebarFooter>
+          <SidebarSeparator className="mx-0" />
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                type="button"
-                onClick={() => toggleTheme()}
-                aria-label={ptBR.theme.toggle}
-              >
-                {theme === "dark" ? (
-                  <Sun className="size-4" />
-                ) : (
-                  <Moon className="size-4" />
-                )}
-                <span>
-                  {theme === "dark" ? ptBR.theme.light : ptBR.theme.dark}
-                </span>
-              </SidebarMenuButton>
+            <SidebarMenuItem className="flex justify-center py-1.5">
+              <ModeToggle />
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
