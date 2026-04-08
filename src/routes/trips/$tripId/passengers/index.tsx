@@ -77,39 +77,8 @@ function TripPassengersPage() {
     );
   }
 
-  const trip = tripQuery.data;
-  const schoolId = trip.schoolId;
-
   return (
     <div className="mx-auto max-w-5xl p-6">
-      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-foreground">
-          {ptBR.nav.home}
-        </Link>
-        <span className="mx-1.5">/</span>
-        <Link to="/schools" className="hover:text-foreground">
-          {ptBR.entities.schools}
-        </Link>
-        <span className="mx-1.5">/</span>
-        <Link
-          to="/schools/$schoolId/trips"
-          params={{ schoolId }}
-          className="hover:text-foreground"
-        >
-          {ptBR.entities.trips}
-        </Link>
-        <span className="mx-1.5">/</span>
-        <Link
-          to="/trips/$tripId"
-          params={{ tripId }}
-          className="hover:text-foreground"
-        >
-          {trip.title?.trim() || `${ptBR.entities.trip} ${tripId.slice(0, 8)}…`}
-        </Link>
-        <span className="mx-1.5">/</span>
-        <span className="text-foreground">{ptBR.entities.passengers}</span>
-      </nav>
-
       <div className="mt-4">
         <Link
           to="/trips/$tripId"
