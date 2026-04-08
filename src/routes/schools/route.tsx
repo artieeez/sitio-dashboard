@@ -7,12 +7,17 @@ import {
 
 import { ListDetailLayout } from "@/components/layout/list-detail-layout";
 import { SchoolsListPane } from "@/components/schools/schools-list-pane";
-import { isUuid } from "@/lib/uuid";
 
 export const Route = createFileRoute("/schools")({
   component: SchoolsShell,
 });
 
+/**
+ * M3 shell: **two-pane list–detail only** at `/schools` (pick a school). Active school
+ * lives in the sidebar scope control, so `/schools/$schoolId/*` is a **single** main
+ * column; nested routes (e.g. trips) supply their **own** list+detail pair—replacing
+ * the previous list, never stacking a school directory list beside them.
+ */
 function SchoolsShell() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -25,25 +30,30 @@ function SchoolsShell() {
     );
   }
 
-  const segment = pathname.match(/^\/schools\/([^/]+)/)?.[1];
-  const selectedKey =
-    segment && segment !== "new" && isUuid(segment) ? segment : null;
+  const isSchoolsDirectory =
+    pathname === "/schools" || pathname === "/schools/";
+
+  if (isSchoolsDirectory) {
+    return (
+      <ListDetailLayout
+        selectedKey={null}
+        onSelectedKeyChange={(key) => {
+          if (key) {
+            void navigate({
+              to: "/schools/$schoolId",
+              params: { schoolId: key },
+            });
+          }
+        }}
+        list={<SchoolsListPane />}
+        detail={<Outlet />}
+      />
+    );
+  }
 
   return (
-    <ListDetailLayout
-      selectedKey={selectedKey}
-      onSelectedKeyChange={(key) => {
-        if (key) {
-          void navigate({
-            to: "/schools/$schoolId",
-            params: { schoolId: key },
-          });
-        } else {
-          void navigate({ to: "/schools" });
-        }
-      }}
-      list={<SchoolsListPane />}
-      detail={<Outlet />}
-    />
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <Outlet />
+    </div>
   );
 }
