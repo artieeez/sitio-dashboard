@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
+
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { SchoolForm } from "@/components/schools/SchoolForm";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -45,13 +46,13 @@ function SchoolDetailPage() {
   }, [schoolQuery.data]);
 
   if (!schoolIdValid) {
-    // FR-020: invalid school id in URL must NOT silently fallback to FR-001
-    // resolution. Keep recovery explicit in-page and let user choose scope.
     return (
-      <RouteInvalidRecovery
-        backTo="/schools"
-        linkLabel={ptBR.entities.schools}
-      />
+      <div className="p-6">
+        <RouteInvalidRecovery
+          backTo="/schools"
+          linkLabel={ptBR.entities.schools}
+        />
+      </div>
     );
   }
 
@@ -88,13 +89,7 @@ function SchoolDetailPage() {
     <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <Link
-            to="/schools"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            ← {ptBR.entities.schools}
-          </Link>
-          <h1 className="mt-1 text-lg font-medium">
+          <h1 className="text-lg font-medium">
             {s.title?.trim() ||
               `${ptBR.entities.school} ${schoolId.slice(0, 8)}…`}
           </h1>
