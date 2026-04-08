@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { TripForm } from "@/components/trips/TripForm";
 import { queryKeys } from "@/lib/query-keys";
@@ -20,23 +21,18 @@ function NewTripPage() {
 
   if (!schoolIdValid) {
     return (
-      <RouteInvalidRecovery
-        backTo="/schools"
-        linkLabel={ptBR.entities.schools}
-      />
+      <div className="p-6">
+        <RouteInvalidRecovery
+          backTo="/schools"
+          linkLabel={ptBR.entities.schools}
+        />
+      </div>
     );
   }
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header className="flex flex-col gap-2">
-        <Link
-          to="/schools/$schoolId/trips"
-          params={{ schoolId }}
-          className="text-sm text-muted-foreground hover:text-foreground"
-        >
-          ← {ptBR.entities.trips}
-        </Link>
         <h1 className="text-lg font-medium">
           {ptBR.actions.create} {ptBR.entities.trip}
         </h1>

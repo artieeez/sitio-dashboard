@@ -35,10 +35,12 @@ function NewPassengerPaymentPage() {
 
   if (!idsValid) {
     return (
-      <RouteInvalidRecovery
-        backTo="/schools"
-        linkLabel={ptBR.entities.schools}
-      />
+      <div className="p-6">
+        <RouteInvalidRecovery
+          backTo="/schools"
+          linkLabel={ptBR.entities.schools}
+        />
+      </div>
     );
   }
 

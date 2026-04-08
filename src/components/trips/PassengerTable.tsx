@@ -10,6 +10,7 @@ import {
   type PaymentStatus,
   passengerWithStatusSchema,
 } from "@/lib/schemas/passenger";
+import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
 function statusLabel(s: PaymentStatus): string {
@@ -45,8 +46,16 @@ export function PassengerTable(props: {
   rows: PassengerWithStatus[];
   includeRemoved: boolean;
   onIncludeRemovedChange: (value: boolean) => void;
+  /** When set, highlights the row for the passenger payments context (M3 list pane). */
+  selectedPassengerId?: string | null;
 }) {
-  const { tripId, rows, includeRemoved, onIncludeRemovedChange } = props;
+  const {
+    tripId,
+    rows,
+    includeRemoved,
+    onIncludeRemovedChange,
+    selectedPassengerId = null,
+  } = props;
   const qc = useQueryClient();
 
   const patchPassenger = useMutation({
@@ -111,7 +120,16 @@ export function PassengerTable(props: {
               </tr>
             ) : (
               rows.map((p) => (
-                <tr key={p.id} className="border-b border-border/80">
+                <tr
+                  key={p.id}
+                  className={cn(
+                    "border-b border-border/80",
+                    selectedPassengerId === p.id && "bg-muted/50",
+                  )}
+                  aria-selected={
+                    selectedPassengerId === p.id ? true : undefined
+                  }
+                >
                   <td className="p-2">
                     {p.fullName}
                     {p.removedAt ? (

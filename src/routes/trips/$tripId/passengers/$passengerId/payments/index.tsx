@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { PassengerPaymentHistory } from "@/components/trips/PassengerPaymentHistory";
 import { apiJson } from "@/lib/api-client";
@@ -32,10 +33,12 @@ function PassengerPaymentsIndexPage() {
 
   if (!idsValid) {
     return (
-      <RouteInvalidRecovery
-        backTo="/schools"
-        linkLabel={ptBR.entities.schools}
-      />
+      <div className="p-6">
+        <RouteInvalidRecovery
+          backTo="/schools"
+          linkLabel={ptBR.entities.schools}
+        />
+      </div>
     );
   }
 

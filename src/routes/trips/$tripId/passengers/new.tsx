@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { PassengerCreateForm } from "@/components/trips/PassengerCreateForm";
 import { isUuid } from "@/lib/uuid";
@@ -15,23 +16,18 @@ function NewPassengerPage() {
 
   if (!tripIdValid) {
     return (
-      <RouteInvalidRecovery
-        backTo="/schools"
-        linkLabel={ptBR.entities.schools}
-      />
+      <div className="p-6">
+        <RouteInvalidRecovery
+          backTo="/schools"
+          linkLabel={ptBR.entities.schools}
+        />
+      </div>
     );
   }
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header className="flex flex-col gap-2">
-        <Link
-          to="/trips/$tripId/passengers"
-          params={{ tripId }}
-          className="text-sm text-muted-foreground hover:text-foreground"
-        >
-          ← {ptBR.entities.passengers}
-        </Link>
         <h1 className="text-lg font-medium">
           {ptBR.actions.create} {ptBR.entities.passenger}
         </h1>

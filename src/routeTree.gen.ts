@@ -14,6 +14,7 @@ import { Route as SchoolsSchoolIdHomeRouteImport } from "./routes/schools/$schoo
 import { Route as SchoolsSchoolIdIndexRouteImport } from "./routes/schools/$schoolId/index";
 import { Route as SchoolsSchoolIdTripsIndexRouteImport } from "./routes/schools/$schoolId/trips/index";
 import { Route as SchoolsSchoolIdTripsNewRouteImport } from "./routes/schools/$schoolId/trips/new";
+import { Route as SchoolsSchoolIdTripsRouteRouteImport } from "./routes/schools/$schoolId/trips/route";
 import { Route as SchoolsIndexRouteImport } from "./routes/schools/index";
 import { Route as SchoolsNewRouteImport } from "./routes/schools/new";
 import { Route as SchoolsRouteRouteImport } from "./routes/schools/route";
@@ -23,6 +24,7 @@ import { Route as TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport } fro
 import { Route as TripsTripIdPassengersPassengerIdPaymentsNewRouteImport } from "./routes/trips/$tripId/passengers/$passengerId/payments/new";
 import { Route as TripsTripIdPassengersIndexRouteImport } from "./routes/trips/$tripId/passengers/index";
 import { Route as TripsTripIdPassengersNewRouteImport } from "./routes/trips/$tripId/passengers/new";
+import { Route as TripsTripIdRouteRouteImport } from "./routes/trips/$tripId/route";
 
 const SchoolsRouteRoute = SchoolsRouteRouteImport.update({
   id: "/schools",
@@ -44,10 +46,15 @@ const SchoolsNewRoute = SchoolsNewRouteImport.update({
   path: "/new",
   getParentRoute: () => SchoolsRouteRoute,
 } as any);
-const TripsTripIdIndexRoute = TripsTripIdIndexRouteImport.update({
-  id: "/trips/$tripId/",
-  path: "/trips/$tripId/",
+const TripsTripIdRouteRoute = TripsTripIdRouteRouteImport.update({
+  id: "/trips/$tripId",
+  path: "/trips/$tripId",
   getParentRoute: () => rootRouteImport,
+} as any);
+const TripsTripIdIndexRoute = TripsTripIdIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => TripsTripIdRouteRoute,
 } as any);
 const SchoolsSchoolIdIndexRoute = SchoolsSchoolIdIndexRouteImport.update({
   id: "/$schoolId/",
@@ -59,53 +66,61 @@ const SchoolsSchoolIdHomeRoute = SchoolsSchoolIdHomeRouteImport.update({
   path: "/$schoolId/home",
   getParentRoute: () => SchoolsRouteRoute,
 } as any);
+const SchoolsSchoolIdTripsRouteRoute =
+  SchoolsSchoolIdTripsRouteRouteImport.update({
+    id: "/$schoolId/trips",
+    path: "/$schoolId/trips",
+    getParentRoute: () => SchoolsRouteRoute,
+  } as any);
 const TripsTripIdPassengersIndexRoute =
   TripsTripIdPassengersIndexRouteImport.update({
-    id: "/trips/$tripId/passengers/",
-    path: "/trips/$tripId/passengers/",
-    getParentRoute: () => rootRouteImport,
+    id: "/passengers/",
+    path: "/passengers/",
+    getParentRoute: () => TripsTripIdRouteRoute,
   } as any);
 const SchoolsSchoolIdTripsIndexRoute =
   SchoolsSchoolIdTripsIndexRouteImport.update({
-    id: "/$schoolId/trips/",
-    path: "/$schoolId/trips/",
-    getParentRoute: () => SchoolsRouteRoute,
+    id: "/",
+    path: "/",
+    getParentRoute: () => SchoolsSchoolIdTripsRouteRoute,
   } as any);
 const TripsTripIdPassengersNewRoute =
   TripsTripIdPassengersNewRouteImport.update({
-    id: "/trips/$tripId/passengers/new",
-    path: "/trips/$tripId/passengers/new",
-    getParentRoute: () => rootRouteImport,
+    id: "/passengers/new",
+    path: "/passengers/new",
+    getParentRoute: () => TripsTripIdRouteRoute,
   } as any);
 const SchoolsSchoolIdTripsNewRoute = SchoolsSchoolIdTripsNewRouteImport.update({
-  id: "/$schoolId/trips/new",
-  path: "/$schoolId/trips/new",
-  getParentRoute: () => SchoolsRouteRoute,
+  id: "/new",
+  path: "/new",
+  getParentRoute: () => SchoolsSchoolIdTripsRouteRoute,
 } as any);
 const TripsTripIdPassengersPassengerIdPaymentsIndexRoute =
   TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport.update({
-    id: "/trips/$tripId/passengers/$passengerId/payments/",
-    path: "/trips/$tripId/passengers/$passengerId/payments/",
-    getParentRoute: () => rootRouteImport,
+    id: "/passengers/$passengerId/payments/",
+    path: "/passengers/$passengerId/payments/",
+    getParentRoute: () => TripsTripIdRouteRoute,
   } as any);
 const TripsTripIdPassengersPassengerIdPaymentsNewRoute =
   TripsTripIdPassengersPassengerIdPaymentsNewRouteImport.update({
-    id: "/trips/$tripId/passengers/$passengerId/payments/new",
-    path: "/trips/$tripId/passengers/$passengerId/payments/new",
-    getParentRoute: () => rootRouteImport,
+    id: "/passengers/$passengerId/payments/new",
+    path: "/passengers/$passengerId/payments/new",
+    getParentRoute: () => TripsTripIdRouteRoute,
   } as any);
 const TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute =
   TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport.update({
-    id: "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit",
-    path: "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit",
-    getParentRoute: () => rootRouteImport,
+    id: "/passengers/$passengerId/payments/$paymentId/edit",
+    path: "/passengers/$passengerId/payments/$paymentId/edit",
+    getParentRoute: () => TripsTripIdRouteRoute,
   } as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/schools": typeof SchoolsRouteRouteWithChildren;
+  "/trips/$tripId": typeof TripsTripIdRouteRouteWithChildren;
   "/schools/new": typeof SchoolsNewRoute;
   "/schools/": typeof SchoolsIndexRoute;
+  "/schools/$schoolId/trips": typeof SchoolsSchoolIdTripsRouteRouteWithChildren;
   "/schools/$schoolId/home": typeof SchoolsSchoolIdHomeRoute;
   "/schools/$schoolId/": typeof SchoolsSchoolIdIndexRoute;
   "/trips/$tripId/": typeof TripsTripIdIndexRoute;
@@ -136,8 +151,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
   "/schools": typeof SchoolsRouteRouteWithChildren;
+  "/trips/$tripId": typeof TripsTripIdRouteRouteWithChildren;
   "/schools/new": typeof SchoolsNewRoute;
   "/schools/": typeof SchoolsIndexRoute;
+  "/schools/$schoolId/trips": typeof SchoolsSchoolIdTripsRouteRouteWithChildren;
   "/schools/$schoolId/home": typeof SchoolsSchoolIdHomeRoute;
   "/schools/$schoolId/": typeof SchoolsSchoolIdIndexRoute;
   "/trips/$tripId/": typeof TripsTripIdIndexRoute;
@@ -154,8 +171,10 @@ export interface FileRouteTypes {
   fullPaths:
     | "/"
     | "/schools"
+    | "/trips/$tripId"
     | "/schools/new"
     | "/schools/"
+    | "/schools/$schoolId/trips"
     | "/schools/$schoolId/home"
     | "/schools/$schoolId/"
     | "/trips/$tripId/"
@@ -185,8 +204,10 @@ export interface FileRouteTypes {
     | "__root__"
     | "/"
     | "/schools"
+    | "/trips/$tripId"
     | "/schools/new"
     | "/schools/"
+    | "/schools/$schoolId/trips"
     | "/schools/$schoolId/home"
     | "/schools/$schoolId/"
     | "/trips/$tripId/"
@@ -202,12 +223,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
   SchoolsRouteRoute: typeof SchoolsRouteRouteWithChildren;
-  TripsTripIdIndexRoute: typeof TripsTripIdIndexRoute;
-  TripsTripIdPassengersNewRoute: typeof TripsTripIdPassengersNewRoute;
-  TripsTripIdPassengersIndexRoute: typeof TripsTripIdPassengersIndexRoute;
-  TripsTripIdPassengersPassengerIdPaymentsNewRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
-  TripsTripIdPassengersPassengerIdPaymentsIndexRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
-  TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute: typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
+  TripsTripIdRouteRoute: typeof TripsTripIdRouteRouteWithChildren;
 }
 
 declare module "@tanstack/react-router" {
@@ -240,12 +256,19 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof SchoolsNewRouteImport;
       parentRoute: typeof SchoolsRouteRoute;
     };
+    "/trips/$tripId": {
+      id: "/trips/$tripId";
+      path: "/trips/$tripId";
+      fullPath: "/trips/$tripId";
+      preLoaderRoute: typeof TripsTripIdRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/trips/$tripId/": {
       id: "/trips/$tripId/";
-      path: "/trips/$tripId";
+      path: "/";
       fullPath: "/trips/$tripId/";
       preLoaderRoute: typeof TripsTripIdIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
     };
     "/schools/$schoolId/": {
       id: "/schools/$schoolId/";
@@ -261,83 +284,111 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof SchoolsSchoolIdHomeRouteImport;
       parentRoute: typeof SchoolsRouteRoute;
     };
+    "/schools/$schoolId/trips": {
+      id: "/schools/$schoolId/trips";
+      path: "/$schoolId/trips";
+      fullPath: "/schools/$schoolId/trips";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsRouteRouteImport;
+      parentRoute: typeof SchoolsRouteRoute;
+    };
     "/trips/$tripId/passengers/": {
       id: "/trips/$tripId/passengers/";
-      path: "/trips/$tripId/passengers";
+      path: "/passengers";
       fullPath: "/trips/$tripId/passengers/";
       preLoaderRoute: typeof TripsTripIdPassengersIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
     };
     "/schools/$schoolId/trips/": {
       id: "/schools/$schoolId/trips/";
-      path: "/$schoolId/trips";
+      path: "/";
       fullPath: "/schools/$schoolId/trips/";
       preLoaderRoute: typeof SchoolsSchoolIdTripsIndexRouteImport;
-      parentRoute: typeof SchoolsRouteRoute;
+      parentRoute: typeof SchoolsSchoolIdTripsRouteRoute;
     };
     "/trips/$tripId/passengers/new": {
       id: "/trips/$tripId/passengers/new";
-      path: "/trips/$tripId/passengers/new";
+      path: "/passengers/new";
       fullPath: "/trips/$tripId/passengers/new";
       preLoaderRoute: typeof TripsTripIdPassengersNewRouteImport;
-      parentRoute: typeof rootRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
     };
     "/schools/$schoolId/trips/new": {
       id: "/schools/$schoolId/trips/new";
-      path: "/$schoolId/trips/new";
+      path: "/new";
       fullPath: "/schools/$schoolId/trips/new";
       preLoaderRoute: typeof SchoolsSchoolIdTripsNewRouteImport;
-      parentRoute: typeof SchoolsRouteRoute;
+      parentRoute: typeof SchoolsSchoolIdTripsRouteRoute;
     };
     "/trips/$tripId/passengers/$passengerId/payments/": {
       id: "/trips/$tripId/passengers/$passengerId/payments/";
-      path: "/trips/$tripId/passengers/$passengerId/payments";
+      path: "/passengers/$passengerId/payments";
       fullPath: "/trips/$tripId/passengers/$passengerId/payments/";
       preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
     };
     "/trips/$tripId/passengers/$passengerId/payments/new": {
       id: "/trips/$tripId/passengers/$passengerId/payments/new";
-      path: "/trips/$tripId/passengers/$passengerId/payments/new";
+      path: "/passengers/$passengerId/payments/new";
       fullPath: "/trips/$tripId/passengers/$passengerId/payments/new";
       preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRouteImport;
-      parentRoute: typeof rootRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
     };
     "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit": {
       id: "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
-      path: "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
+      path: "/passengers/$passengerId/payments/$paymentId/edit";
       fullPath: "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
       preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport;
-      parentRoute: typeof rootRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
     };
   }
 }
 
+interface SchoolsSchoolIdTripsRouteRouteChildren {
+  SchoolsSchoolIdTripsNewRoute: typeof SchoolsSchoolIdTripsNewRoute;
+  SchoolsSchoolIdTripsIndexRoute: typeof SchoolsSchoolIdTripsIndexRoute;
+}
+
+const SchoolsSchoolIdTripsRouteRouteChildren: SchoolsSchoolIdTripsRouteRouteChildren =
+  {
+    SchoolsSchoolIdTripsNewRoute: SchoolsSchoolIdTripsNewRoute,
+    SchoolsSchoolIdTripsIndexRoute: SchoolsSchoolIdTripsIndexRoute,
+  };
+
+const SchoolsSchoolIdTripsRouteRouteWithChildren =
+  SchoolsSchoolIdTripsRouteRoute._addFileChildren(
+    SchoolsSchoolIdTripsRouteRouteChildren,
+  );
+
 interface SchoolsRouteRouteChildren {
   SchoolsNewRoute: typeof SchoolsNewRoute;
   SchoolsIndexRoute: typeof SchoolsIndexRoute;
+  SchoolsSchoolIdTripsRouteRoute: typeof SchoolsSchoolIdTripsRouteRouteWithChildren;
   SchoolsSchoolIdHomeRoute: typeof SchoolsSchoolIdHomeRoute;
   SchoolsSchoolIdIndexRoute: typeof SchoolsSchoolIdIndexRoute;
-  SchoolsSchoolIdTripsNewRoute: typeof SchoolsSchoolIdTripsNewRoute;
-  SchoolsSchoolIdTripsIndexRoute: typeof SchoolsSchoolIdTripsIndexRoute;
 }
 
 const SchoolsRouteRouteChildren: SchoolsRouteRouteChildren = {
   SchoolsNewRoute: SchoolsNewRoute,
   SchoolsIndexRoute: SchoolsIndexRoute,
+  SchoolsSchoolIdTripsRouteRoute: SchoolsSchoolIdTripsRouteRouteWithChildren,
   SchoolsSchoolIdHomeRoute: SchoolsSchoolIdHomeRoute,
   SchoolsSchoolIdIndexRoute: SchoolsSchoolIdIndexRoute,
-  SchoolsSchoolIdTripsNewRoute: SchoolsSchoolIdTripsNewRoute,
-  SchoolsSchoolIdTripsIndexRoute: SchoolsSchoolIdTripsIndexRoute,
 };
 
 const SchoolsRouteRouteWithChildren = SchoolsRouteRoute._addFileChildren(
   SchoolsRouteRouteChildren,
 );
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  SchoolsRouteRoute: SchoolsRouteRouteWithChildren,
+interface TripsTripIdRouteRouteChildren {
+  TripsTripIdIndexRoute: typeof TripsTripIdIndexRoute;
+  TripsTripIdPassengersNewRoute: typeof TripsTripIdPassengersNewRoute;
+  TripsTripIdPassengersIndexRoute: typeof TripsTripIdPassengersIndexRoute;
+  TripsTripIdPassengersPassengerIdPaymentsNewRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  TripsTripIdPassengersPassengerIdPaymentsIndexRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
+  TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute: typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
+}
+
+const TripsTripIdRouteRouteChildren: TripsTripIdRouteRouteChildren = {
   TripsTripIdIndexRoute: TripsTripIdIndexRoute,
   TripsTripIdPassengersNewRoute: TripsTripIdPassengersNewRoute,
   TripsTripIdPassengersIndexRoute: TripsTripIdPassengersIndexRoute,
@@ -347,6 +398,15 @@ const rootRouteChildren: RootRouteChildren = {
     TripsTripIdPassengersPassengerIdPaymentsIndexRoute,
   TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute:
     TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute,
+};
+
+const TripsTripIdRouteRouteWithChildren =
+  TripsTripIdRouteRoute._addFileChildren(TripsTripIdRouteRouteChildren);
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  SchoolsRouteRoute: SchoolsRouteRouteWithChildren,
+  TripsTripIdRouteRoute: TripsTripIdRouteRouteWithChildren,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

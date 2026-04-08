@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { TripForm } from "@/components/trips/TripForm";
 import { TripStatusSummary } from "@/components/trips/TripStatusSummary";
@@ -21,7 +22,7 @@ function TripDetailPage() {
   const qc = useQueryClient();
   const tripIdValid = isUuid(tripId);
 
-  const schoolIdForBack = useQuery({
+  const tripQuery = useQuery({
     queryKey: queryKeys.trip(tripId),
     queryFn: async () => {
       const raw = await apiJson<unknown>(`/trips/${tripId}`);
@@ -36,14 +37,16 @@ function TripDetailPage() {
 
   if (!tripIdValid) {
     return (
-      <RouteInvalidRecovery
-        backTo="/schools"
-        linkLabel={ptBR.entities.schools}
-      />
+      <div className="p-6">
+        <RouteInvalidRecovery
+          backTo="/schools"
+          linkLabel={ptBR.entities.schools}
+        />
+      </div>
     );
   }
 
-  if (schoolIdForBack.isLoading) {
+  if (tripQuery.isLoading) {
     return (
       <div className="p-6">
         <p className="text-sm text-muted-foreground">Carregando…</p>
@@ -51,7 +54,7 @@ function TripDetailPage() {
     );
   }
 
-  if (schoolIdForBack.isError || !schoolIdForBack.data) {
+  if (tripQuery.isError || !tripQuery.data) {
     return (
       <div className="p-6">
         <p className="text-sm text-red-600" role="alert">
@@ -64,37 +67,28 @@ function TripDetailPage() {
     );
   }
 
-  const trip = schoolIdForBack.data;
+  const trip = tripQuery.data;
   const schoolId = trip.schoolId;
 
   return (
     <div className="mx-auto max-w-5xl p-6">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
         <div className="flex flex-col gap-6 lg:col-span-2">
-          <div>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h1 className="text-lg font-medium">
+              {trip.title?.trim() ||
+                `${ptBR.entities.trip} ${tripId.slice(0, 8)}…`}
+            </h1>
             <Link
-              to="/schools/$schoolId/trips"
-              params={{ schoolId }}
-              className="text-sm text-muted-foreground hover:text-foreground"
+              to="/trips/$tripId/passengers"
+              params={{ tripId }}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "no-underline",
+              )}
             >
-              ← {ptBR.entities.trips}
+              {ptBR.entities.passengers}
             </Link>
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-              <h1 className="text-lg font-medium">
-                {trip.title?.trim() ||
-                  `${ptBR.entities.trip} ${tripId.slice(0, 8)}…`}
-              </h1>
-              <Link
-                to="/trips/$tripId/passengers"
-                params={{ tripId }}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "no-underline",
-                )}
-              >
-                {ptBR.entities.passengers}
-              </Link>
-            </div>
           </div>
 
           <section className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 shadow-sm">

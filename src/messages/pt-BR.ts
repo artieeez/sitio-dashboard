@@ -114,6 +114,21 @@ export const ptBR = {
     /** Detail pane on `/schools/` when no school is selected. */
     selectSchoolPrompt:
       "Selecione uma escola na lista para ver os detalhes aqui.",
+    /** Detail pane on `/schools/$schoolId/trips` when no trip is open in this shell. */
+    selectTripPrompt:
+      "Selecione uma viagem na lista para ver os detalhes aqui.",
+    /** Trip workspace list pane: invalid `tripId` in URL. */
+    invalidTripContext: "Identificador de viagem inválido.",
+    /** School trips list pane: invalid `schoolId` in URL. */
+    invalidSchoolContext: "Identificador de escola inválido.",
+    /** Group label for trip vs passengers primary nav in list pane. */
+    tripWorkspaceNavLabel: "Nesta viagem",
+    tripWorkspaceNavTrip: "Dados da viagem",
+    tripWorkspaceNavPassengers: "Passageiros",
+    passengersLoadError: "Não foi possível carregar os passageiros.",
+    /** Detail pane on `/trips/$tripId/passengers` when no passenger payments row is primary. */
+    selectPassengerPrompt:
+      "Escolha um passageiro na lista ao lado ou use o menu da linha para pagamentos.",
   },
   /** FR-012 unsaved changes Alert Dialog (004). */
   unsavedChanges: {
