@@ -8,6 +8,8 @@ const schools = [
   {
     id: "00000000-0000-0000-0000-000000000001",
     title: "A",
+    description: null,
+    imageUrl: null,
     faviconUrl: null,
     url: null,
     active: true,
@@ -17,6 +19,8 @@ const schools = [
   {
     id: "00000000-0000-0000-0000-000000000002",
     title: "B",
+    description: null,
+    imageUrl: null,
     faviconUrl: null,
     url: null,
     active: true,

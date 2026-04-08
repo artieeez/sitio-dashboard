@@ -106,4 +106,19 @@ export const ptBR = {
     schools: "Nenhuma escola na lista (com os filtros atuais).",
     trips: "Nenhuma viagem para esta escola (com os filtros atuais).",
   },
+  /** M3 list–detail regions (004); shell `aria-label`s. */
+  listDetail: {
+    listRegion: "Lista",
+    detailRegion: "Detalhes",
+    compactBack: "Voltar à lista",
+  },
+  /** FR-012 unsaved changes Alert Dialog (004). */
+  unsavedChanges: {
+    title: "Descartar alterações?",
+    description:
+      "Há alterações não salvas. Se continuar, elas serão perdidas. Deseja descartar?",
+    continueEditing: "Continuar editando",
+    discard: "Descartar alterações",
+    save: "Salvar",
+  },
 } as const;

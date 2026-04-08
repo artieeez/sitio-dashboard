@@ -1,0 +1,179 @@
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+
+import {
+  ListDetailLayoutPane,
+  useListDetailLayout,
+} from "@/components/layout/list-detail-layout-pane";
+import { ptBR } from "@/messages/pt-BR";
+
+function RowButton({ id, label }: { id: string; label: string }) {
+  const { selectedKey, requestSelect } = useListDetailLayout();
+  return (
+    <button
+      type="button"
+      aria-current={selectedKey === id ? true : undefined}
+      onClick={() => requestSelect(id)}
+    >
+      {label}
+    </button>
+  );
+}
+
+describe("list-detail-layout shell (M3)", () => {
+  it("exposes stable test ids and named list/detail regions when expanded", () => {
+    render(
+      <ListDetailLayoutPane
+        isCompact={false}
+        list={<span>lista</span>}
+        detail={<span>detalhe</span>}
+      />,
+    );
+
+    expect(screen.getByTestId("list-detail-layout")).toBeInTheDocument();
+    expect(screen.getByTestId("list-detail-list-pane")).toBeInTheDocument();
+    expect(screen.getByTestId("list-detail-detail-pane")).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("region", { name: ptBR.listDetail.listRegion }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: ptBR.listDetail.detailRegion }),
+    ).toBeInTheDocument();
+  });
+
+  it("marks the selected row with aria-current in expanded mode", () => {
+    render(
+      <ListDetailLayoutPane
+        isCompact={false}
+        selectedKey="b"
+        list={
+          <div>
+            <RowButton id="a" label="Row A" />
+            <RowButton id="b" label="Row B" />
+          </div>
+        }
+        detail={<span>detalhe</span>}
+      />,
+    );
+
+    const rowB = screen.getByRole("button", { name: "Row B" });
+    expect(rowB).toHaveAttribute("aria-current", "true");
+    expect(screen.getByRole("button", { name: "Row A" })).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
+
+  it("shows one primary pane at a time in compact mode with a back control on detail", () => {
+    render(
+      <ListDetailLayoutPane
+        isCompact
+        selectedKey="x"
+        list={<span data-testid="compact-list">lista-compacta</span>}
+        detail={<span data-testid="compact-detail">detalhe-compacto</span>}
+      />,
+    );
+
+    expect(screen.queryByTestId("compact-list")).not.toBeInTheDocument();
+    expect(screen.getByTestId("compact-detail")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: ptBR.listDetail.compactBack }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: ptBR.listDetail.compactBack }),
+    );
+
+    expect(screen.getByTestId("compact-list")).toBeInTheDocument();
+    expect(screen.queryByTestId("compact-detail")).not.toBeInTheDocument();
+  });
+
+  it("when dirty, blocks row change until the user continues editing", () => {
+    const onSelectedKeyChange = vi.fn();
+    const onDiscardDirty = vi.fn();
+
+    render(
+      <ListDetailLayoutPane
+        isCompact={false}
+        selectedKey="a"
+        onSelectedKeyChange={onSelectedKeyChange}
+        isDirty
+        onDiscardDirty={onDiscardDirty}
+        list={
+          <div>
+            <RowButton id="a" label="Row A" />
+            <RowButton id="b" label="Row B" />
+          </div>
+        }
+        detail={<span>detalhe</span>}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Row B" }));
+
+    expect(screen.getByTestId("unsaved-changes-dialog")).toBeInTheDocument();
+    expect(onSelectedKeyChange).not.toHaveBeenCalled();
+    expect(onDiscardDirty).not.toHaveBeenCalled();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: ptBR.unsavedChanges.continueEditing }),
+    );
+
+    expect(onSelectedKeyChange).not.toHaveBeenCalled();
+    expect(onDiscardDirty).not.toHaveBeenCalled();
+  });
+
+  it("when dirty, discard applies pending selection change and calls onDiscardDirty", () => {
+    const onSelectedKeyChange = vi.fn();
+    const onDiscardDirty = vi.fn();
+
+    render(
+      <ListDetailLayoutPane
+        isCompact={false}
+        selectedKey="a"
+        onSelectedKeyChange={onSelectedKeyChange}
+        isDirty
+        onDiscardDirty={onDiscardDirty}
+        list={
+          <div>
+            <RowButton id="a" label="Row A" />
+            <RowButton id="b" label="Row B" />
+          </div>
+        }
+        detail={<span>detalhe</span>}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Row B" }));
+
+    fireEvent.click(
+      screen.getByRole("button", { name: ptBR.unsavedChanges.discard }),
+    );
+
+    expect(onDiscardDirty).toHaveBeenCalledTimes(1);
+    expect(onSelectedKeyChange).toHaveBeenCalledWith("b");
+  });
+
+  it("when dirty, compact back opens the unsaved dialog before leaving detail", () => {
+    const onDiscardDirty = vi.fn();
+
+    render(
+      <ListDetailLayoutPane
+        isCompact
+        selectedKey="x"
+        isDirty
+        onDiscardDirty={onDiscardDirty}
+        list={<span data-testid="compact-list">lista-compacta</span>}
+        detail={<span data-testid="compact-detail">detalhe-compacto</span>}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: ptBR.listDetail.compactBack }),
+    );
+
+    expect(screen.getByTestId("unsaved-changes-dialog")).toBeInTheDocument();
+    expect(screen.queryByTestId("compact-list")).not.toBeInTheDocument();
+    expect(onDiscardDirty).not.toHaveBeenCalled();
+  });
+});

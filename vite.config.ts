@@ -6,6 +6,9 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 
+/** TanStack Start + Nitro transform the graph in ways that duplicate React under Vitest. */
+const isVitest = Boolean(process.env.VITEST);
+
 const config = defineConfig({
   resolve: {
     dedupe: ["react", "react-dom"],
@@ -22,14 +25,12 @@ const config = defineConfig({
     port: 5173,
   },
   plugins: [
-    devtools(),
-    nitro(),
+    ...(isVitest ? [] : [devtools(), nitro(), tanstackStart()]),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ["./tsconfig.json"],
     }),
     tailwindcss(),
-    tanstackStart(),
     viteReact(),
   ],
 });
