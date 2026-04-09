@@ -16,6 +16,7 @@ import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { tripSchema } from "@/lib/schemas/trip";
 import {
+  isPassengerEditDetailPath,
   isPassengerPaymentFormDetailPath,
   isPassengerPaymentsBranchPath,
   passengersListLink,
@@ -73,14 +74,21 @@ function TripWorkspaceShell() {
   );
 
   const onCloseDetail = useMemo(() => {
-    if (!isPassengerPaymentsBranchPath(pathname)) return undefined;
-    return () => {
-      void navigate(passengersListLink({ tripId }));
-    };
-  }, [pathname, tripId, navigate]);
+    if (!tripIdValid) return undefined;
+    if (
+      isPassengerEditDetailPath(pathname) ||
+      isPassengerPaymentsBranchPath(pathname)
+    ) {
+      return () => {
+        void navigate(passengersListLink({ tripId }));
+      };
+    }
+    return undefined;
+  }, [pathname, tripId, navigate, tripIdValid]);
 
   const hidePaneDetailClose = useMemo(
     () =>
+      isPassengerEditDetailPath(pathname) ||
       isPassengerPaymentFormDetailPath(pathname) ||
       isTripSummaryEditDetailPath(pathname, tripId),
     [pathname, tripId],

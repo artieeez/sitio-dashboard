@@ -30,6 +30,31 @@ export function isPassengerPaymentFormDetailPath(pathname: string): boolean {
   return /\/payments\/[0-9a-f-]{36}\/edit(?:\/|$)/i.test(pathname);
 }
 
+/** Passenger edit form (`.../passengers/:id/edit`): embed title + close like school form. */
+export function isPassengerEditDetailPath(pathname: string): boolean {
+  return /\/passengers\/[0-9a-f-]{36}\/edit(?:\/|$)/i.test(pathname);
+}
+
+export function passengerEditLink(opts: PaymentRouteIds): {
+  to: string;
+  params: Record<string, string>;
+} {
+  if (opts.schoolId) {
+    return {
+      to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit",
+      params: {
+        schoolId: opts.schoolId,
+        tripId: opts.tripId,
+        passengerId: opts.passengerId,
+      },
+    };
+  }
+  return {
+    to: "/trips/$tripId/passengers/$passengerId/edit",
+    params: { tripId: opts.tripId, passengerId: opts.passengerId },
+  };
+}
+
 export function passengersListLink(opts: {
   tripId: string;
   schoolId?: string;

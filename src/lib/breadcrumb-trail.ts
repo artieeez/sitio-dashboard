@@ -103,6 +103,29 @@ function appendTripUnderPassengers(
     return items;
   }
 
+  if (
+    passengerId &&
+    pathname === `/trips/${tripId}/passengers/${passengerId}/edit`
+  ) {
+    items.push({
+      key: "passengers",
+      label: ptBR.entities.passengers,
+      to: "/trips/$tripId/passengers",
+      params: { tripId },
+    });
+    items.push({
+      key: "passenger",
+      label: passengerLabel,
+      to: "/trips/$tripId/passengers/$passengerId/payments",
+      params: { tripId, passengerId },
+    });
+    items.push({
+      key: "edit-passenger",
+      label: `${ptBR.actions.edit} ${ptBR.entities.passenger}`,
+    });
+    return items;
+  }
+
   if (passengerId && pathname.includes("/payments")) {
     items.push({
       key: "passengers",
@@ -178,6 +201,30 @@ function appendSchoolTripUnderPassengers(
     items.push({
       key: "new-passenger",
       label: `${ptBR.actions.create} ${ptBR.entities.passenger}`,
+    });
+    return items;
+  }
+
+  if (
+    passengerId &&
+    pathname ===
+      `/schools/${schoolId}/trips/${tripId}/passengers/${passengerId}/edit`
+  ) {
+    items.push({
+      key: "passengers",
+      label: ptBR.entities.passengers,
+      to: "/schools/$schoolId/trips/$tripId/passengers",
+      params: { schoolId, tripId },
+    });
+    items.push({
+      key: "passenger",
+      label: passengerLabel,
+      to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
+      params: { schoolId, tripId, passengerId },
+    });
+    items.push({
+      key: "edit-passenger",
+      label: `${ptBR.actions.edit} ${ptBR.entities.passenger}`,
     });
     return items;
   }
@@ -338,6 +385,43 @@ export function buildBreadcrumbTrail(
         {
           key: "new-passenger",
           label: `${ptBR.actions.create} ${ptBR.entities.passenger}`,
+        },
+      ];
+    }
+
+    if (
+      tId &&
+      pId &&
+      pathname ===
+        `/schools/${sidPath}/trips/${tId}/passengers/${pId}/edit`
+    ) {
+      return [
+        scopedTripsLink(sidPath),
+        {
+          key: "trip",
+          label: tripLabel,
+          to: "/schools/$schoolId/trips/$tripId",
+          params: { schoolId: sidPath, tripId: tId },
+        },
+        {
+          key: "passengers",
+          label: ptBR.entities.passengers,
+          to: "/schools/$schoolId/trips/$tripId/passengers",
+          params: { schoolId: sidPath, tripId: tId },
+        },
+        {
+          key: "passenger",
+          label: passengerLabel,
+          to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
+          params: {
+            schoolId: sidPath,
+            tripId: tId,
+            passengerId: pId,
+          },
+        },
+        {
+          key: "edit-passenger",
+          label: `${ptBR.actions.edit} ${ptBR.entities.passenger}`,
         },
       ];
     }

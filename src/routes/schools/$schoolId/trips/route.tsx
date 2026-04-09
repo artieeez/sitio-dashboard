@@ -13,6 +13,7 @@ import { SchoolTripsListPane } from "@/components/schools/school-trips-list-pane
 import { TripWorkspaceListPane } from "@/components/trips/trip-workspace-list-pane";
 import { WorkspaceDirtyProvider } from "@/contexts/workspace-dirty-context";
 import {
+  isPassengerEditDetailPath,
   isPassengerPaymentFormDetailPath,
   isPassengerPaymentsBranchPath,
   passengersListLink,
@@ -87,17 +88,23 @@ function SchoolTripsShell() {
   );
 
   const onCloseDetail = useMemo(() => {
-    if (!isPassengerPaymentsBranchPath(pathname)) return undefined;
     if (!tripIdFromChild || !isUuid(tripIdFromChild) || !isUuid(schoolId)) {
       return undefined;
     }
-    return () => {
-      void navigate(passengersListLink({ tripId: tripIdFromChild, schoolId }));
-    };
+    if (
+      isPassengerEditDetailPath(pathname) ||
+      isPassengerPaymentsBranchPath(pathname)
+    ) {
+      return () => {
+        void navigate(passengersListLink({ tripId: tripIdFromChild, schoolId }));
+      };
+    }
+    return undefined;
   }, [pathname, tripIdFromChild, schoolId, navigate]);
 
   const hidePaneDetailClose = useMemo(() => {
     if (pathname.includes("/trips/new")) return true;
+    if (isPassengerEditDetailPath(pathname)) return true;
     if (isPassengerPaymentFormDetailPath(pathname)) return true;
     if (!tripIdFromChild || !isUuid(tripIdFromChild)) return false;
     return isTripSummaryEditDetailPath(pathname, tripIdFromChild);

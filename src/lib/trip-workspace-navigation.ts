@@ -10,6 +10,10 @@ function selectionKeyFromPassengersRest(rest: string): string {
     return "passengers-new";
   }
   if (rest.startsWith("/passengers")) {
+    const editMatch = rest.match(/^\/passengers\/([0-9a-f-]{36})\/edit(?:\/|$)/);
+    if (editMatch) {
+      return `passenger:${editMatch[1]}`;
+    }
     const match = rest.match(/^\/passengers\/([0-9a-f-]{36})\/payments/);
     if (match) {
       return `passenger:${match[1]}`;
@@ -42,6 +46,10 @@ export function tripWorkspaceSelectionKey(
       return "passengers";
     }
     const tripRest = pathname.slice(prefix.length);
+    const passengerEditMatch = tripRest.match(
+      /^\/passengers\/([0-9a-f-]{36})\/edit(?:\/|$)/,
+    );
+    if (passengerEditMatch) return `passenger:${passengerEditMatch[1]}`;
     const tripMatch = tripRest.match(
       /^\/passengers\/([0-9a-f-]{36})\/payments/,
     );

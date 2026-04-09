@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
 import { ApiError, apiPutJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import {
@@ -8,11 +7,15 @@ import {
 } from "@/lib/schemas/passenger";
 import { ptBR } from "@/messages/pt-BR";
 
-export function PassengerRowActions(props: {
+/**
+ * “Pago sem informações” toggle as kebab menu items (was a table column).
+ */
+export function PassengerManualPaidMenuItems(props: {
   tripId: string;
   passenger: PassengerWithStatus;
+  onManualPaidError?: (message: string | null) => void;
 }) {
-  const { tripId, passenger } = props;
+  const { tripId, passenger, onManualPaidError } = props;
   const qc = useQueryClient();
 
   const setManual = useMutation({
@@ -24,6 +27,7 @@ export function PassengerRowActions(props: {
       return passengerWithStatusSchema.parse(raw);
     },
     onSuccess: async () => {
+      onManualPaidError?.(null);
       await qc.invalidateQueries({
         queryKey: queryKeys.passengers(tripId, false),
       });
@@ -37,31 +41,30 @@ export function PassengerRowActions(props: {
         queryKey: ["passengerAggregates", tripId],
       });
     },
+    onError: (e: unknown) => {
+      const msg =
+        e instanceof ApiError
+          ? (e.body as { message?: string } | null)?.message
+          : null;
+      onManualPaidError?.(
+        typeof msg === "string" && msg.length > 0
+          ? msg
+          : "Não foi possível atualizar o pago manual.",
+      );
+    },
   });
 
-  const err =
-    setManual.error instanceof ApiError
-      ? (setManual.error.body as { message?: string } | null)?.message
-      : null;
-
   return (
-    <div className="flex flex-col items-start gap-1">
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={setManual.isPending || passenger.removedAt !== null}
-        onClick={() => setManual.mutate(!passenger.manualPaidWithoutInfo)}
-      >
-        {passenger.manualPaidWithoutInfo
-          ? ptBR.actions.clearManualPaid
-          : ptBR.actions.markManualPaid}
-      </Button>
-      {err ? (
-        <span className="text-xs text-red-600" role="alert">
-          {err}
-        </span>
-      ) : null}
-    </div>
+    <button
+      type="button"
+      role="menuitem"
+      className="w-full rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+      disabled={setManual.isPending || passenger.removedAt !== null}
+      onClick={() => setManual.mutate(!passenger.manualPaidWithoutInfo)}
+    >
+      {passenger.manualPaidWithoutInfo
+        ? ptBR.actions.clearManualPaid
+        : ptBR.actions.markManualPaid}
+    </button>
   );
 }
