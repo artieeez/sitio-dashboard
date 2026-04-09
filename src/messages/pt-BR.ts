@@ -90,6 +90,9 @@ export const ptBR = {
     editSchool: "Editar escola ativa",
     placeholderUser: "Artur",
     noSchoolSelected: "Selecione uma escola",
+    /** Native tooltip when main sidebar nav is disabled until a school is chosen. */
+    selectSchoolForSidebarNav:
+      "Selecione uma escola no menu acima para usar Início e Viagens.",
     searchPlaceholder: "Buscar escola",
     recents: "Escolas recentes",
     noRecents: "Nenhuma escola recente.",

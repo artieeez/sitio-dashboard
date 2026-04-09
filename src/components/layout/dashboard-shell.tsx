@@ -29,6 +29,7 @@ import { useSchoolsForScope } from "@/hooks/use-schools-for-scope";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { schoolSchema } from "@/lib/schemas/school";
+import { schoolIdFromPathname } from "@/lib/school-scope-path";
 import { getRecentSchools, touchRecentSchool } from "@/lib/scope-persistence";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
@@ -45,7 +46,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const activeSchoolId = pathname.match(/^\/schools\/([^/]+)/)?.[1] ?? "";
+  const activeSchoolId = schoolIdFromPathname(pathname);
   const schoolsQuery = useSchoolsForScope();
   const activeSchoolQuery = useQuery({
     queryKey: queryKeys.school(activeSchoolId || "skip"),
@@ -100,44 +101,56 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton
-                      render={
-                        <Link
-                          to={activeSchoolId ? "/schools/$schoolId" : "/"}
-                          params={
-                            activeSchoolId
-                              ? { schoolId: activeSchoolId }
-                              : undefined
-                          }
-                          aria-label={ptBR.nav.home}
-                        />
-                      }
-                    >
-                      <Home className="size-4" />
-                      <span>{ptBR.nav.home}</span>
-                    </SidebarMenuButton>
+                    {activeSchoolId ? (
+                      <SidebarMenuButton
+                        render={
+                          <Link
+                            to="/schools/$schoolId"
+                            params={{ schoolId: activeSchoolId }}
+                            aria-label={ptBR.nav.home}
+                          />
+                        }
+                      >
+                        <Home className="size-4" />
+                        <span>{ptBR.nav.home}</span>
+                      </SidebarMenuButton>
+                    ) : (
+                      <SidebarMenuButton
+                        type="button"
+                        disabled
+                        aria-label={ptBR.nav.home}
+                        title={ptBR.scope.selectSchoolForSidebarNav}
+                      >
+                        <Home className="size-4" />
+                        <span>{ptBR.nav.home}</span>
+                      </SidebarMenuButton>
+                    )}
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton
-                      render={
-                        <Link
-                          to={
-                            activeSchoolId
-                              ? "/schools/$schoolId/trips"
-                              : "/schools"
-                          }
-                          params={
-                            activeSchoolId
-                              ? { schoolId: activeSchoolId }
-                              : undefined
-                          }
-                          aria-label={ptBR.entities.trips}
-                        />
-                      }
-                    >
-                      <Route className="size-4" />
-                      <span>{ptBR.entities.trips}</span>
-                    </SidebarMenuButton>
+                    {activeSchoolId ? (
+                      <SidebarMenuButton
+                        render={
+                          <Link
+                            to="/schools/$schoolId/trips"
+                            params={{ schoolId: activeSchoolId }}
+                            aria-label={ptBR.entities.trips}
+                          />
+                        }
+                      >
+                        <Route className="size-4" />
+                        <span>{ptBR.entities.trips}</span>
+                      </SidebarMenuButton>
+                    ) : (
+                      <SidebarMenuButton
+                        type="button"
+                        disabled
+                        aria-label={ptBR.entities.trips}
+                        title={ptBR.scope.selectSchoolForSidebarNav}
+                      >
+                        <Route className="size-4" />
+                        <span>{ptBR.entities.trips}</span>
+                      </SidebarMenuButton>
+                    )}
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
