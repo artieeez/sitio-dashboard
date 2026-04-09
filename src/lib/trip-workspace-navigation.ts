@@ -48,7 +48,7 @@ export function navigateToTripWorkspacePassengerDetail(opts: {
  * Derives list–detail selection key from the current path under `/trips/$tripId/*`
  * or `/schools/$schoolId/trips/$tripId/*` (004 M3).
  */
-function selectionKeyFromPassengersRest(rest: string): string {
+function selectionKeyFromPassengersRest(rest: string): string | null {
   if (rest === "" || rest === "/") {
     return "trip";
   }
@@ -65,6 +65,10 @@ function selectionKeyFromPassengersRest(rest: string): string {
     const match = rest.match(/^\/passengers\/([0-9a-f-]{36})\/payments/);
     if (match) {
       return `passenger:${match[1]}`;
+    }
+    const hub = rest.replace(/\/$/, "") || rest;
+    if (hub === "/passengers") {
+      return null;
     }
     return "passengers";
   }
@@ -91,7 +95,7 @@ export function tripWorkspaceSelectionKey(
       pathname === `${prefix}/passengers` ||
       pathname === `${prefix}/passengers/`
     ) {
-      return "passengers";
+      return null;
     }
     const tripRest = pathname.slice(prefix.length);
     const passengerEditMatch = tripRest.match(

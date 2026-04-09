@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { navigateToTripWorkspacePassengerDetail } from "@/lib/trip-workspace-navigation";
+import {
+  navigateToTripWorkspacePassengerDetail,
+  tripWorkspaceSelectionKey,
+} from "@/lib/trip-workspace-navigation";
 
 describe("navigateToTripWorkspacePassengerDetail", () => {
   const trip = "660e8400-e29b-41d4-a716-446655440001";
@@ -77,5 +80,47 @@ describe("navigateToTripWorkspacePassengerDetail", () => {
       to: "/trips/$tripId/passengers/$passengerId/payments",
       params: { tripId: trip, passengerId: p2 },
     });
+  });
+});
+
+describe("tripWorkspaceSelectionKey", () => {
+  const trip = "660e8400-e29b-41d4-a716-446655440001";
+  const school = "550e8400-e29b-41d4-a716-446655440000";
+  const p = "770e8400-e29b-41d4-a716-446655440002";
+
+  it("returns null on passengers list hub so compact mode shows the list first", () => {
+    expect(
+      tripWorkspaceSelectionKey(`/trips/${trip}/passengers`, trip),
+    ).toBeNull();
+    expect(
+      tripWorkspaceSelectionKey(`/trips/${trip}/passengers/`, trip),
+    ).toBeNull();
+    expect(
+      tripWorkspaceSelectionKey(
+        `/schools/${school}/trips/${trip}/passengers`,
+        trip,
+      ),
+    ).toBeNull();
+    expect(
+      tripWorkspaceSelectionKey(
+        `/schools/${school}/trips/${trip}/passengers/`,
+        trip,
+      ),
+    ).toBeNull();
+  });
+
+  it("returns passenger key when a passenger detail is open", () => {
+    expect(
+      tripWorkspaceSelectionKey(
+        `/trips/${trip}/passengers/${p}/payments`,
+        trip,
+      ),
+    ).toBe(`passenger:${p}`);
+  });
+
+  it("still returns passengers-new on new form", () => {
+    expect(
+      tripWorkspaceSelectionKey(`/trips/${trip}/passengers/new`, trip),
+    ).toBe("passengers-new");
   });
 });

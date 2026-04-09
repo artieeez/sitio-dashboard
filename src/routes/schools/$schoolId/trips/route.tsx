@@ -39,7 +39,12 @@ function SchoolTripsShell() {
 
   const selectedKey = useMemo(() => {
     if (pathname.includes("/trips/new")) return "__new__";
-    if (tripIdFromChild && isUuid(tripIdFromChild)) return tripIdFromChild;
+    if (tripIdFromChild && isUuid(tripIdFromChild)) {
+      if (isTripPassengersListHubPath(pathname, tripIdFromChild)) {
+        return null;
+      }
+      return tripIdFromChild;
+    }
     return null;
   }, [pathname, tripIdFromChild]);
 
