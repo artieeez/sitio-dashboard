@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
+import { PassengersIndexDetailPlaceholder } from "@/components/trips/passengers-index-detail-placeholder";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { tripSchema } from "@/lib/schemas/trip";
@@ -59,12 +60,5 @@ function SchoolScopedTripPassengersIndexDetail() {
     );
   }
 
-  return (
-    <div className="p-6">
-      <h1 className="text-lg font-medium">{ptBR.entities.passengers}</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        {ptBR.listDetail.selectPassengerPrompt}
-      </p>
-    </div>
-  );
+  return <PassengersIndexDetailPlaceholder />;
 }

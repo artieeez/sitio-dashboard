@@ -36,6 +36,21 @@ export function isPassengerEditDetailPath(pathname: string): boolean {
 }
 
 /**
+ * Passengers list hub only: `.../trips/:tripId/passengers` (no `/new`, no passenger id).
+ * Used to hide the list–detail chrome close control when nothing is selected in the table.
+ */
+export function isTripPassengersListHubPath(
+  pathname: string,
+  tripId: string,
+): boolean {
+  const norm = pathname.replace(/\/$/, "") || pathname;
+  if (norm === `/trips/${tripId}/passengers`) return true;
+  const m = norm.match(/^\/schools\/[^/]+\/trips\/([^/]+)(\/.*)$/);
+  if (!m || m[1] !== tripId) return false;
+  return m[2] === "/passengers";
+}
+
+/**
  * Under `.../trips/:tripId/passengers/...`, returns the passenger id when the detail
  * route is that passenger’s payments branch or edit screen (global or school-prefixed URLs).
  */

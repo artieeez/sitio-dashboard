@@ -1,13 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-import { ptBR } from "@/messages/pt-BR";
 import { Lightbulb } from "lucide-react";
 
-export const Route = createFileRoute("/schools/$schoolId/trips/")({
-  component: SchoolTripsIndexDetailPlaceholder,
-});
+import { ptBR } from "@/messages/pt-BR";
 
-function SchoolTripsIndexDetailPlaceholder() {
+/** Detail pane when the trip workspace passengers list has no row selected (edit/payments). */
+export function PassengersIndexDetailPlaceholder() {
   return (
     <div
       className="flex min-h-[min(240px,45dvh)] flex-col items-center justify-center gap-4 px-6 py-12 text-center"
@@ -18,7 +14,7 @@ function SchoolTripsIndexDetailPlaceholder() {
         aria-hidden
       />
       <p className="max-w-sm text-muted-foreground text-sm">
-        {ptBR.listDetail.selectTripPrompt}
+        {ptBR.listDetail.selectPassengerPrompt}
       </p>
     </div>
   );

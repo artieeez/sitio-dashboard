@@ -16,6 +16,7 @@ import {
   isPassengerEditDetailPath,
   isPassengerPaymentFormDetailPath,
   isPassengerPaymentsBranchPath,
+  isTripPassengersListHubPath,
   passengersListLink,
 } from "@/lib/trip-payment-links";
 import {
@@ -96,7 +97,9 @@ function SchoolTripsShell() {
       isPassengerPaymentsBranchPath(pathname)
     ) {
       return () => {
-        void navigate(passengersListLink({ tripId: tripIdFromChild, schoolId }));
+        void navigate(
+          passengersListLink({ tripId: tripIdFromChild, schoolId }),
+        );
       };
     }
     return undefined;
@@ -107,6 +110,7 @@ function SchoolTripsShell() {
     if (isPassengerEditDetailPath(pathname)) return true;
     if (isPassengerPaymentFormDetailPath(pathname)) return true;
     if (!tripIdFromChild || !isUuid(tripIdFromChild)) return false;
+    if (isTripPassengersListHubPath(pathname, tripIdFromChild)) return true;
     return isTripSummaryEditDetailPath(pathname, tripIdFromChild);
   }, [pathname, tripIdFromChild]);
 

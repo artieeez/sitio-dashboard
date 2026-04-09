@@ -125,9 +125,9 @@ export const ptBR = {
     /** School trips list pane: invalid `schoolId` in URL. */
     invalidSchoolContext: "Identificador de escola inválido.",
     passengersLoadError: "Não foi possível carregar os passageiros.",
-    /** Detail pane on `/trips/$tripId/passengers` when no passenger payments row is primary. */
+    /** Detail pane on `/trips/$tripId/passengers` when no passenger row is selected. */
     selectPassengerPrompt:
-      "Escolha um passageiro na lista ao lado ou use o menu da linha para pagamentos.",
+      "Comece escolhendo um passageiro na lista ao lado.",
   },
   /** FR-012 unsaved changes Alert Dialog (004). */
   unsavedChanges: {
