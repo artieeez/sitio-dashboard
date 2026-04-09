@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildBreadcrumbTrail } from "@/lib/breadcrumb-trail";
+import { buildBreadcrumbTrail, extractPathIds } from "@/lib/breadcrumb-trail";
 import { ptBR } from "@/messages/pt-BR";
 
 const SCHOOL = "550e8400-e29b-41d4-a716-446655440000";
@@ -149,6 +149,57 @@ describe("buildBreadcrumbTrail navigation (US2)", () => {
       tripLabel: PLACEHOLDER,
       passengerLabel: PLACEHOLDER,
     });
+    const last = trail[trail.length - 1];
+    expect(last && !("to" in last && last.to)).toBe(true);
+  });
+
+  it("school trips detail pane: Viagens (link) → trip title (current)", () => {
+    const trail = buildBreadcrumbTrail({
+      pathname: `/schools/${SCHOOL}/trips/${TRIP}`,
+      schoolIdFromPath: SCHOOL,
+      schoolIdForLinks: SCHOOL,
+      tripId: TRIP,
+      passengerId: "",
+      tripLabel: "Viagem escola",
+      passengerLabel: PLACEHOLDER,
+    });
+    expect(trail.map((s) => s.label)).toEqual([
+      ptBR.entities.trips,
+      "Viagem escola",
+    ]);
+    expect(trail[0]).toMatchObject({
+      to: "/schools/$schoolId/trips",
+      params: { schoolId: SCHOOL },
+    });
+    const last = trail[trail.length - 1];
+    expect(last && !("to" in last && last.to)).toBe(true);
+  });
+
+  it("extractPathIds reads tripId from school-scoped trips URL, not from .../new", () => {
+    expect(extractPathIds(`/schools/${SCHOOL}/trips/${TRIP}`)).toMatchObject({
+      schoolId: SCHOOL,
+      tripId: TRIP,
+    });
+    expect(
+      extractPathIds(`/schools/${SCHOOL}/trips/new`).tripId,
+    ).toBeUndefined();
+  });
+
+  it("school-scoped passengers list: Viagens → trip (link) → Passageiros (current)", () => {
+    const trail = buildBreadcrumbTrail({
+      pathname: `/schools/${SCHOOL}/trips/${TRIP}/passengers`,
+      schoolIdFromPath: SCHOOL,
+      schoolIdForLinks: SCHOOL,
+      tripId: TRIP,
+      passengerId: "",
+      tripLabel: "Viagem P",
+      passengerLabel: PLACEHOLDER,
+    });
+    expect(trail.map((s) => s.label)).toEqual([
+      ptBR.entities.trips,
+      "Viagem P",
+      ptBR.entities.passengers,
+    ]);
     const last = trail[trail.length - 1];
     expect(last && !("to" in last && last.to)).toBe(true);
   });

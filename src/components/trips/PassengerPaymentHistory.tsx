@@ -5,6 +5,11 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { paymentSchema } from "@/lib/schemas/payment";
+import {
+  passengersListLink,
+  paymentEditLink,
+  paymentsNewLink,
+} from "@/lib/trip-payment-links";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
@@ -20,8 +25,11 @@ export function PassengerPaymentHistory(props: {
   passengerId: string;
   /** When set, new payments are blocked server-side; show context copy. */
   removedAt?: string | null;
+  /** When under the school trips shell, links stay on `/schools/.../trips/...`. */
+  schoolId?: string;
 }) {
-  const { tripId, passengerId, removedAt } = props;
+  const { tripId, passengerId, removedAt, schoolId } = props;
+  const pay = { tripId, passengerId, schoolId };
   const qc = useQueryClient();
 
   const list = useQuery({
@@ -61,8 +69,7 @@ export function PassengerPaymentHistory(props: {
         <div className="flex flex-wrap items-center gap-2">
           {!removedAt ? (
             <Link
-              to="/trips/$tripId/passengers/$passengerId/payments/new"
-              params={{ tripId, passengerId }}
+              {...paymentsNewLink(pay)}
               className={cn(
                 buttonVariants({ variant: "default", size: "sm" }),
                 "no-underline",
@@ -72,8 +79,7 @@ export function PassengerPaymentHistory(props: {
             </Link>
           ) : null}
           <Link
-            to="/trips/$tripId/passengers"
-            params={{ tripId }}
+            {...passengersListLink({ tripId, schoolId })}
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
               "no-underline",
@@ -126,12 +132,10 @@ export function PassengerPaymentHistory(props: {
                     <td className="p-2">
                       <div className="flex flex-wrap gap-1">
                         <Link
-                          to="/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit"
-                          params={{
-                            tripId,
-                            passengerId,
+                          {...paymentEditLink({
+                            ...pay,
                             paymentId: p.id,
-                          }}
+                          })}
                           className={cn(
                             buttonVariants({ variant: "outline", size: "sm" }),
                             "inline-flex no-underline",

@@ -1,0 +1,96 @@
+import { isUuid } from "@/lib/uuid";
+
+/** Link/navigate targets for passenger payment flows (trip workspace vs school list–detail shell). */
+
+/** When pathname is under `/schools/:id/trips/...`, return that school id for scoped payment links. */
+export function scopedSchoolIdFromPathname(
+  pathname: string,
+): string | undefined {
+  const m = pathname.match(/^\/schools\/([^/]+)\/trips\//);
+  if (!m?.[1] || !isUuid(m[1])) return undefined;
+  return m[1];
+}
+
+export type PaymentRouteIds = {
+  tripId: string;
+  passengerId: string;
+  /** When set, URLs stay under `/schools/$schoolId/trips/...` so the school shell list pane stays mounted. */
+  schoolId?: string;
+};
+
+export function passengersListLink(opts: {
+  tripId: string;
+  schoolId?: string;
+}): { to: string; params: Record<string, string> } {
+  if (opts.schoolId) {
+    return {
+      to: "/schools/$schoolId/trips/$tripId/passengers",
+      params: { schoolId: opts.schoolId, tripId: opts.tripId },
+    };
+  }
+  return { to: "/trips/$tripId/passengers", params: { tripId: opts.tripId } };
+}
+
+export function paymentsIndexLink(opts: PaymentRouteIds): {
+  to: string;
+  params: Record<string, string>;
+} {
+  if (opts.schoolId) {
+    return {
+      to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
+      params: {
+        schoolId: opts.schoolId,
+        tripId: opts.tripId,
+        passengerId: opts.passengerId,
+      },
+    };
+  }
+  return {
+    to: "/trips/$tripId/passengers/$passengerId/payments",
+    params: { tripId: opts.tripId, passengerId: opts.passengerId },
+  };
+}
+
+export function paymentsNewLink(opts: PaymentRouteIds): {
+  to: string;
+  params: Record<string, string>;
+} {
+  if (opts.schoolId) {
+    return {
+      to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new",
+      params: {
+        schoolId: opts.schoolId,
+        tripId: opts.tripId,
+        passengerId: opts.passengerId,
+      },
+    };
+  }
+  return {
+    to: "/trips/$tripId/passengers/$passengerId/payments/new",
+    params: { tripId: opts.tripId, passengerId: opts.passengerId },
+  };
+}
+
+export function paymentEditLink(
+  opts: PaymentRouteIds & { paymentId: string },
+): { to: string; params: Record<string, string> } {
+  if (opts.schoolId) {
+    return {
+      to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit",
+      params: {
+        schoolId: opts.schoolId,
+        tripId: opts.tripId,
+        passengerId: opts.passengerId,
+        paymentId: opts.paymentId,
+      },
+    };
+  }
+  return {
+    to: "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit",
+    params: {
+      tripId: opts.tripId,
+      passengerId: opts.passengerId,
+      paymentId: opts.paymentId,
+    },
+  };
+}

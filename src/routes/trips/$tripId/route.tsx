@@ -49,7 +49,6 @@ function TripWorkspaceShell() {
     },
     enabled: tripIdValid,
   });
-  const schoolId = tripQuery.data?.schoolId ?? null;
 
   const selectedKey = useMemo(
     () => tripWorkspaceSelectionKey(pathname, tripId),
@@ -57,9 +56,14 @@ function TripWorkspaceShell() {
   );
   const onSelectedKeyChange = useCallback(
     (key: string | null) => {
-      navigateFromTripWorkspaceKey({ navigate, tripId, key, schoolId });
+      navigateFromTripWorkspaceKey({
+        navigate,
+        tripId,
+        key,
+        tripSchoolIdForClose: tripQuery.data?.schoolId ?? null,
+      });
     },
-    [navigate, tripId, schoolId],
+    [navigate, tripId, tripQuery.data?.schoolId],
   );
 
   const [workspaceDirty, setWorkspaceDirty] = useState(false);

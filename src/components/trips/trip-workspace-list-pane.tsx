@@ -9,6 +9,8 @@ import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { passengerWithStatusSchema } from "@/lib/schemas/passenger";
 import { tripSchema } from "@/lib/schemas/trip";
+import { scopedSchoolIdFromPathname } from "@/lib/trip-payment-links";
+import { tripWorkspaceSelectionKey } from "@/lib/trip-workspace-navigation";
 import { cn } from "@/lib/utils";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
@@ -20,8 +22,9 @@ type TripWorkspaceListPaneProps = {
 
 export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { selectedKey, requestSelect } = useListDetailLayout();
+  const { requestSelect } = useListDetailLayout();
   const tripIdValid = isUuid(tripId);
+  const navKey = tripWorkspaceSelectionKey(pathname, tripId) ?? "trip";
 
   const tripQuery = useQuery({
     queryKey: queryKeys.trip(tripId),
@@ -52,10 +55,14 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
     enabled: tripIdValid && showPassengerTable,
   });
 
-  const prefix = `/trips/${tripId}`;
-  const rest = pathname.startsWith(prefix) ? pathname.slice(prefix.length) : "";
-  const passengerMatch = rest.match(/^\/passengers\/([0-9a-f-]{36})\/payments/);
-  const selectedPassengerId = passengerMatch?.[1] ?? null;
+  const passengerSegment = `/trips/${tripId}/passengers/`;
+  const pIdx = pathname.indexOf(passengerSegment);
+  const selectedPassengerId =
+    pIdx >= 0
+      ? (pathname
+          .slice(pIdx + passengerSegment.length)
+          .match(/^([0-9a-f-]{36})\/payments/)?.[1] ?? null)
+      : null;
 
   if (!tripIdValid) {
     return (
@@ -66,6 +73,7 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
   }
 
   const schoolId = tripQuery.data?.schoolId;
+  const paymentsSchoolId = scopedSchoolIdFromPathname(pathname);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
@@ -97,9 +105,9 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
           type="button"
           className={cn(
             "rounded-md px-2 py-2 text-left text-sm hover:bg-muted",
-            selectedKey === "trip" && "bg-muted/60",
+            navKey === "trip" && "bg-muted/60",
           )}
-          aria-current={selectedKey === "trip" ? true : undefined}
+          aria-current={navKey === "trip" ? true : undefined}
           onClick={() => requestSelect("trip")}
         >
           {ptBR.listDetail.tripWorkspaceNavTrip}
@@ -108,15 +116,15 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
           type="button"
           className={cn(
             "rounded-md px-2 py-2 text-left text-sm hover:bg-muted",
-            (selectedKey === "passengers" ||
-              selectedKey === "passengers-new" ||
-              selectedKey?.startsWith("passenger:")) &&
+            (navKey === "passengers" ||
+              navKey === "passengers-new" ||
+              navKey.startsWith("passenger:")) &&
               "bg-muted/60",
           )}
           aria-current={
-            selectedKey === "passengers" ||
-            selectedKey === "passengers-new" ||
-            selectedKey?.startsWith("passenger:")
+            navKey === "passengers" ||
+            navKey === "passengers-new" ||
+            navKey.startsWith("passenger:")
               ? true
               : undefined
           }
@@ -150,6 +158,7 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
               includeRemoved={includeRemoved}
               onIncludeRemovedChange={(v) => setIncludeRemoved(v)}
               selectedPassengerId={selectedPassengerId}
+              schoolId={paymentsSchoolId}
             />
           )}
         </div>

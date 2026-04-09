@@ -10,6 +10,7 @@ import {
   type PaymentStatus,
   passengerWithStatusSchema,
 } from "@/lib/schemas/passenger";
+import { paymentsIndexLink, paymentsNewLink } from "@/lib/trip-payment-links";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
@@ -48,6 +49,8 @@ export function PassengerTable(props: {
   onIncludeRemovedChange: (value: boolean) => void;
   /** When set, highlights the row for the passenger payments context (M3 list pane). */
   selectedPassengerId?: string | null;
+  /** Under `/schools/.../trips/...`, payment links keep the school list–detail shell. */
+  schoolId?: string;
 }) {
   const {
     tripId,
@@ -55,6 +58,7 @@ export function PassengerTable(props: {
     includeRemoved,
     onIncludeRemovedChange,
     selectedPassengerId = null,
+    schoolId,
   } = props;
   const qc = useQueryClient();
 
@@ -149,8 +153,11 @@ export function PassengerTable(props: {
                     <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
                       <Link
                         role="menuitem"
-                        to="/trips/$tripId/passengers/$passengerId/payments"
-                        params={{ tripId, passengerId: p.id }}
+                        {...paymentsIndexLink({
+                          tripId,
+                          passengerId: p.id,
+                          schoolId,
+                        })}
                         className="rounded px-2 py-1.5 text-sm hover:bg-muted"
                       >
                         {ptBR.actions.paymentHistory}
@@ -158,8 +165,11 @@ export function PassengerTable(props: {
                       {!p.removedAt ? (
                         <Link
                           role="menuitem"
-                          to="/trips/$tripId/passengers/$passengerId/payments/new"
-                          params={{ tripId, passengerId: p.id }}
+                          {...paymentsNewLink({
+                            tripId,
+                            passengerId: p.id,
+                            schoolId,
+                          })}
                           className="rounded px-2 py-1.5 text-sm hover:bg-muted"
                         >
                           {ptBR.actions.newPayment}

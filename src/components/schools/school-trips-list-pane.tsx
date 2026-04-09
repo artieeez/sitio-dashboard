@@ -118,8 +118,8 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                     className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
                     onClick={() => {
                       void navigate({
-                        to: "/trips/$tripId/passengers",
-                        params: { tripId: t.id },
+                        to: "/schools/$schoolId/trips/$tripId/passengers",
+                        params: { schoolId, tripId: t.id },
                       });
                     }}
                   >

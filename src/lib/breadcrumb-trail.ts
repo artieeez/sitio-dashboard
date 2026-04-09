@@ -17,11 +17,17 @@ export function extractPathIds(pathname: string): {
 } {
   const schoolMatch = pathname.match(/^\/schools\/([^/]+)/);
   const tripMatch = pathname.match(/^\/trips\/([^/]+)/);
+  const schoolScopedTripMatch = pathname.match(
+    /^\/schools\/[^/]+\/trips\/([^/]+)/,
+  );
   const passengerMatch = pathname.match(/\/passengers\/([^/]+)/);
   const paymentMatch = pathname.match(/\/payments\/([^/]+)/);
+  const tail = schoolScopedTripMatch?.[1];
+  const tripFromSchoolTrips =
+    tail && tail !== "new" && /^[0-9a-f-]{36}$/i.test(tail) ? tail : undefined;
   return {
     schoolId: schoolMatch?.[1],
-    tripId: tripMatch?.[1],
+    tripId: tripMatch?.[1] ?? tripFromSchoolTrips,
     passengerId: passengerMatch?.[1],
     paymentId: paymentMatch?.[1],
   };
@@ -145,6 +151,85 @@ function appendTripUnderPassengers(
   return items;
 }
 
+function appendSchoolTripUnderPassengers(
+  items: BreadcrumbSegment[],
+  pathname: string,
+  schoolId: string,
+  tripId: string,
+  passengerId: string,
+  passengerLabel: string,
+): BreadcrumbSegment[] {
+  const passengersList =
+    pathname === `/schools/${schoolId}/trips/${tripId}/passengers` ||
+    pathname === `/schools/${schoolId}/trips/${tripId}/passengers/`;
+
+  if (passengersList) {
+    items.push({ key: "passengers", label: ptBR.entities.passengers });
+    return items;
+  }
+
+  if (pathname === `/schools/${schoolId}/trips/${tripId}/passengers/new`) {
+    items.push({
+      key: "passengers",
+      label: ptBR.entities.passengers,
+      to: "/schools/$schoolId/trips/$tripId/passengers",
+      params: { schoolId, tripId },
+    });
+    items.push({
+      key: "new-passenger",
+      label: `${ptBR.actions.create} ${ptBR.entities.passenger}`,
+    });
+    return items;
+  }
+
+  if (passengerId && pathname.includes("/payments")) {
+    items.push({
+      key: "passengers",
+      label: ptBR.entities.passengers,
+      to: "/schools/$schoolId/trips/$tripId/passengers",
+      params: { schoolId, tripId },
+    });
+    items.push({
+      key: "passenger",
+      label: passengerLabel,
+      to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
+      params: { schoolId, tripId, passengerId },
+    });
+
+    if (pathname.endsWith("/payments/new")) {
+      items.push({
+        key: "payments",
+        label: ptBR.entities.payments,
+        to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
+        params: { schoolId, tripId, passengerId },
+      });
+      items.push({
+        key: "new-payment",
+        label: ptBR.actions.newPayment,
+      });
+      return items;
+    }
+
+    if (/\/payments\/[^/]+\/edit\/?$/.test(pathname)) {
+      items.push({
+        key: "payments",
+        label: ptBR.entities.payments,
+        to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
+        params: { schoolId, tripId, passengerId },
+      });
+      items.push({
+        key: "edit-payment",
+        label: ptBR.actions.editPayment,
+      });
+      return items;
+    }
+
+    items.push({ key: "payments", label: ptBR.entities.payments });
+  }
+
+  return items;
+}
+
 export function buildBreadcrumbTrail(
   input: BuildBreadcrumbTrailInput,
 ): BreadcrumbSegment[] {
@@ -209,6 +294,78 @@ export function buildBreadcrumbTrail(
           label: `${ptBR.actions.create} ${ptBR.entities.trip}`,
         },
       ];
+    }
+
+    const schoolTripDetail = pathname.match(
+      new RegExp(`^/schools/${sidPath}/trips/([0-9a-f-]{36})/?$`, "i"),
+    );
+    if (schoolTripDetail) {
+      return [scopedTripsLink(sidPath), { key: "trip", label: tripLabel }];
+    }
+
+    if (
+      tId &&
+      (pathname === `/schools/${sidPath}/trips/${tId}/passengers` ||
+        pathname === `/schools/${sidPath}/trips/${tId}/passengers/`)
+    ) {
+      return [
+        scopedTripsLink(sidPath),
+        {
+          key: "trip",
+          label: tripLabel,
+          to: "/schools/$schoolId/trips/$tripId",
+          params: { schoolId: sidPath, tripId: tId },
+        },
+        { key: "passengers", label: ptBR.entities.passengers },
+      ];
+    }
+
+    if (tId && pathname === `/schools/${sidPath}/trips/${tId}/passengers/new`) {
+      return [
+        scopedTripsLink(sidPath),
+        {
+          key: "trip",
+          label: tripLabel,
+          to: "/schools/$schoolId/trips/$tripId",
+          params: { schoolId: sidPath, tripId: tId },
+        },
+        {
+          key: "passengers",
+          label: ptBR.entities.passengers,
+          to: "/schools/$schoolId/trips/$tripId/passengers",
+          params: { schoolId: sidPath, tripId: tId },
+        },
+        {
+          key: "new-passenger",
+          label: `${ptBR.actions.create} ${ptBR.entities.passenger}`,
+        },
+      ];
+    }
+
+    if (
+      tId &&
+      pId &&
+      pathname.startsWith(
+        `/schools/${sidPath}/trips/${tId}/passengers/${pId}/payments`,
+      )
+    ) {
+      const items: BreadcrumbSegment[] = [
+        scopedTripsLink(sidPath),
+        {
+          key: "trip",
+          label: tripLabel,
+          to: "/schools/$schoolId/trips/$tripId",
+          params: { schoolId: sidPath, tripId: tId },
+        },
+      ];
+      return appendSchoolTripUnderPassengers(
+        items,
+        pathname,
+        sidPath,
+        tId,
+        pId,
+        passengerLabel,
+      );
     }
 
     return [scopedHomeLink(sidPath), { key: "fallback", label: "\u2026" }];
