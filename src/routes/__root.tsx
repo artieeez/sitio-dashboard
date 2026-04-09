@@ -47,12 +47,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <ThemeSync />
             <DashboardShell>{children}</DashboardShell>
           </TooltipProvider>
-          {import.meta.env.DEV ? (
+          {/* {import.meta.env.DEV ? (
             <ReactQueryDevtools
               buttonPosition="bottom-left"
               initialIsOpen={false}
             />
-          ) : null}
+          ) : null} */}
         </QueryClientProvider>
         <TanStackDevtools
           config={{
