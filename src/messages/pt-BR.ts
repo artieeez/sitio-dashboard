@@ -121,10 +121,6 @@ export const ptBR = {
     invalidTripContext: "Identificador de viagem inválido.",
     /** School trips list pane: invalid `schoolId` in URL. */
     invalidSchoolContext: "Identificador de escola inválido.",
-    /** Group label for trip vs passengers primary nav in list pane. */
-    tripWorkspaceNavLabel: "Nesta viagem",
-    tripWorkspaceNavTrip: "Dados da viagem",
-    tripWorkspaceNavPassengers: "Passageiros",
     passengersLoadError: "Não foi possível carregar os passageiros.",
     /** Detail pane on `/trips/$tripId/passengers` when no passenger payments row is primary. */
     selectPassengerPrompt:
