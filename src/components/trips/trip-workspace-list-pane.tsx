@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { passengerWithStatusSchema } from "@/lib/schemas/passenger";
-import { scopedSchoolIdFromPathname } from "@/lib/trip-payment-links";
+import {
+  highlightedPassengerIdFromTripWorkspacePathname,
+  scopedSchoolIdFromPathname,
+} from "@/lib/trip-payment-links";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 import { useUiPreferencesStore } from "@/stores/ui-preferences-store";
@@ -42,14 +45,10 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
     enabled: tripIdValid,
   });
 
-  const passengerSegment = `/trips/${tripId}/passengers/`;
-  const pIdx = pathname.indexOf(passengerSegment);
-  const selectedPassengerId =
-    pIdx >= 0
-      ? (pathname
-          .slice(pIdx + passengerSegment.length)
-          .match(/^([0-9a-f-]{36})\/payments/)?.[1] ?? null)
-      : null;
+  const selectedPassengerId = highlightedPassengerIdFromTripWorkspacePathname(
+    pathname,
+    tripId,
+  );
 
   if (!tripIdValid) {
     return (

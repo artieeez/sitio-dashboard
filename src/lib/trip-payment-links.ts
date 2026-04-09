@@ -35,6 +35,22 @@ export function isPassengerEditDetailPath(pathname: string): boolean {
   return /\/passengers\/[0-9a-f-]{36}\/edit(?:\/|$)/i.test(pathname);
 }
 
+/**
+ * Under `.../trips/:tripId/passengers/...`, returns the passenger id when the detail
+ * route is that passenger’s payments branch or edit screen (global or school-prefixed URLs).
+ */
+export function highlightedPassengerIdFromTripWorkspacePathname(
+  pathname: string,
+  tripId: string,
+): string | null {
+  const passengerSegment = `/trips/${tripId}/passengers/`;
+  const pIdx = pathname.indexOf(passengerSegment);
+  if (pIdx < 0) return null;
+  const rest = pathname.slice(pIdx + passengerSegment.length);
+  const m = rest.match(/^([0-9a-f-]{36})\/(?:payments|edit)(?:\/|$)/i);
+  return m?.[1] ?? null;
+}
+
 export function passengerEditLink(opts: PaymentRouteIds): {
   to: string;
   params: Record<string, string>;
