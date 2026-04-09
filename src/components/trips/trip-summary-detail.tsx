@@ -126,10 +126,7 @@ function TripSummaryEditFormView(props: {
     <div className="min-w-0 p-6">
       <div className="flex flex-col gap-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h1 className="text-lg font-medium">
-            {trip.title?.trim() ||
-              `${ptBR.entities.trip} ${tripId.slice(0, 8)}…`}
-          </h1>
+          <h1 className="text-lg font-medium">{ptBR.actions.edit}</h1>
           <Button
             type="button"
             variant="ghost"

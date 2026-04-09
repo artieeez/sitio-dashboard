@@ -4,6 +4,7 @@ import { ptBR } from "@/messages/pt-BR";
 
 const SCHOOL = "550e8400-e29b-41d4-a716-446655440000";
 const TRIP = "660e8400-e29b-41d4-a716-446655440000";
+const PASS = "770e8400-e29b-41d4-a716-446655440000";
 
 const PLACEHOLDER = "\u2026";
 
@@ -221,5 +222,46 @@ describe("buildBreadcrumbTrail navigation (US2)", () => {
       to: "/schools/$schoolId/trips/$tripId/passengers",
       params: { schoolId: SCHOOL, tripId: TRIP },
     });
+  });
+
+  it("after passenger name: no Pagamentos / edit labels (panel title)", () => {
+    const name = "Maria Silva";
+    const payments = buildBreadcrumbTrail({
+      pathname: `/trips/${TRIP}/passengers/${PASS}/payments`,
+      schoolIdFromPath: "",
+      schoolIdForLinks: SCHOOL,
+      tripId: TRIP,
+      passengerId: PASS,
+      tripLabel: "Viagem",
+      passengerLabel: name,
+    });
+    expect(payments.map((s) => s.label)).toEqual(["Viagem", name]);
+    expect(payments.map((s) => s.label)).not.toContain(ptBR.entities.payments);
+
+    const payNew = buildBreadcrumbTrail({
+      pathname: `/trips/${TRIP}/passengers/${PASS}/payments/new`,
+      schoolIdFromPath: "",
+      schoolIdForLinks: SCHOOL,
+      tripId: TRIP,
+      passengerId: PASS,
+      tripLabel: "Viagem",
+      passengerLabel: name,
+    });
+    expect(payNew.map((s) => s.label)).toEqual(["Viagem", name]);
+    expect(payNew.map((s) => s.label)).not.toContain(ptBR.actions.newPayment);
+
+    const editPassenger = buildBreadcrumbTrail({
+      pathname: `/schools/${SCHOOL}/trips/${TRIP}/passengers/${PASS}/edit`,
+      schoolIdFromPath: SCHOOL,
+      schoolIdForLinks: SCHOOL,
+      tripId: TRIP,
+      passengerId: PASS,
+      tripLabel: "Viagem",
+      passengerLabel: name,
+    });
+    expect(editPassenger.map((s) => s.label)).toEqual(["Viagem", name]);
+    expect(editPassenger.map((s) => s.label)).not.toContain(
+      `${ptBR.actions.edit} ${ptBR.entities.passenger}`,
+    );
   });
 });

@@ -93,12 +93,6 @@ function appendTripUnderPassengers(
     items.push({
       key: "passenger",
       label: passengerLabel,
-      to: "/trips/$tripId/passengers/$passengerId/payments",
-      params: { tripId, passengerId },
-    });
-    items.push({
-      key: "edit-passenger",
-      label: `${ptBR.actions.edit} ${ptBR.entities.passenger}`,
     });
     return items;
   }
@@ -107,39 +101,8 @@ function appendTripUnderPassengers(
     items.push({
       key: "passenger",
       label: passengerLabel,
-      to: "/trips/$tripId/passengers/$passengerId/payments",
-      params: { tripId, passengerId },
     });
-
-    if (pathname.endsWith("/payments/new")) {
-      items.push({
-        key: "payments",
-        label: ptBR.entities.payments,
-        to: "/trips/$tripId/passengers/$passengerId/payments",
-        params: { tripId, passengerId },
-      });
-      items.push({
-        key: "new-payment",
-        label: ptBR.actions.newPayment,
-      });
-      return items;
-    }
-
-    if (/\/payments\/[^/]+\/edit\/?$/.test(pathname)) {
-      items.push({
-        key: "payments",
-        label: ptBR.entities.payments,
-        to: "/trips/$tripId/passengers/$passengerId/payments",
-        params: { tripId, passengerId },
-      });
-      items.push({
-        key: "edit-payment",
-        label: ptBR.actions.editPayment,
-      });
-      return items;
-    }
-
-    items.push({ key: "payments", label: ptBR.entities.payments });
+    return items;
   }
 
   return items;
@@ -181,12 +144,6 @@ function appendSchoolTripUnderPassengers(
     items.push({
       key: "passenger",
       label: passengerLabel,
-      to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
-      params: { schoolId, tripId, passengerId },
-    });
-    items.push({
-      key: "edit-passenger",
-      label: `${ptBR.actions.edit} ${ptBR.entities.passenger}`,
     });
     return items;
   }
@@ -195,39 +152,8 @@ function appendSchoolTripUnderPassengers(
     items.push({
       key: "passenger",
       label: passengerLabel,
-      to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
-      params: { schoolId, tripId, passengerId },
     });
-
-    if (pathname.endsWith("/payments/new")) {
-      items.push({
-        key: "payments",
-        label: ptBR.entities.payments,
-        to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
-        params: { schoolId, tripId, passengerId },
-      });
-      items.push({
-        key: "new-payment",
-        label: ptBR.actions.newPayment,
-      });
-      return items;
-    }
-
-    if (/\/payments\/[^/]+\/edit\/?$/.test(pathname)) {
-      items.push({
-        key: "payments",
-        label: ptBR.entities.payments,
-        to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
-        params: { schoolId, tripId, passengerId },
-      });
-      items.push({
-        key: "edit-payment",
-        label: ptBR.actions.editPayment,
-      });
-      return items;
-    }
-
-    items.push({ key: "payments", label: ptBR.entities.payments });
+    return items;
   }
 
   return items;
@@ -343,16 +269,6 @@ export function buildBreadcrumbTrail(
         {
           key: "passenger",
           label: passengerLabel,
-          to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
-          params: {
-            schoolId: sidPath,
-            tripId: tId,
-            passengerId: pId,
-          },
-        },
-        {
-          key: "edit-passenger",
-          label: `${ptBR.actions.edit} ${ptBR.entities.passenger}`,
         },
       ];
     }
