@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useLayoutEffect, useRef } from "react";
+import { z } from "zod";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -48,21 +49,28 @@ export function DashboardBreadcrumbs() {
       ? schoolIdFromTrip
       : "";
 
-  const passengerQuery = useQuery({
-    queryKey: queryKeys.passenger(passengerIdVal || "skip"),
+  /** No `GET /passengers/:id` on API — resolve label from trip passenger list. */
+  const passengersForLabelQuery = useQuery({
+    queryKey: queryKeys.passengers(tripIdVal, true),
     queryFn: async () => {
-      const raw = await apiJson<unknown>(`/passengers/${passengerIdVal}`);
-      return passengerWithStatusSchema.parse(raw);
+      const raw = await apiJson<unknown>(
+        `/trips/${tripIdVal}/passengers?includeRemoved=true`,
+      );
+      return z.array(passengerWithStatusSchema).parse(raw);
     },
-    enabled: !!passengerIdVal,
+    enabled: !!tripIdVal && !!passengerIdVal,
   });
+
+  const passengerFromTripList = passengersForLabelQuery.data?.find(
+    (p) => p.id === passengerIdVal,
+  );
 
   const tripLabel =
     tripQuery.data?.title?.trim() ||
     (tripIdVal ? PLACEHOLDER : ptBR.entities.trip);
 
   const passengerLabel =
-    passengerQuery.data?.fullName?.trim() ||
+    passengerFromTripList?.fullName?.trim() ||
     (passengerIdVal ? PLACEHOLDER : ptBR.entities.passenger);
 
   const items = buildBreadcrumbTrail({
