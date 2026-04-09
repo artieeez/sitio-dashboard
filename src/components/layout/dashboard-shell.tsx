@@ -127,6 +127,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   <SidebarMenuItem>
                     {activeSchoolId ? (
                       <SidebarMenuButton
+                        tooltip={ptBR.nav.home}
                         render={
                           <Link
                             to="/schools/$schoolId"
@@ -142,6 +143,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                       <SidebarMenuButton
                         type="button"
                         disabled
+                        tooltip={ptBR.scope.selectSchoolForSidebarNav}
                         aria-label={ptBR.nav.home}
                         title={ptBR.scope.selectSchoolForSidebarNav}
                       >
@@ -153,6 +155,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   <SidebarMenuItem>
                     {activeSchoolId ? (
                       <SidebarMenuButton
+                        tooltip={ptBR.entities.trips}
                         render={
                           <Link
                             to="/schools/$schoolId/trips"
@@ -168,6 +171,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                       <SidebarMenuButton
                         type="button"
                         disabled
+                        tooltip={ptBR.scope.selectSchoolForSidebarNav}
                         aria-label={ptBR.entities.trips}
                         title={ptBR.scope.selectSchoolForSidebarNav}
                       >
@@ -188,6 +192,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                       <SidebarMenuButton
                         type="button"
                         closeMobileOnClick
+                        tooltip={ptBR.scope.editSchool}
                         onClick={editCurrentSchool}
                         aria-label={ptBR.scope.editSchool}
                       >
@@ -198,6 +203,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   ) : null}
                   <SidebarMenuItem>
                     <SidebarMenuButton
+                      tooltip={ptBR.scope.addSchool}
                       render={
                         <Link
                           to="/schools/new"

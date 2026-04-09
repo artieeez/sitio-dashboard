@@ -523,7 +523,11 @@ function SidebarMenuButton({
     defaultTagName: "button",
     props: mergeProps<"button">(
       {
-        className: cn(sidebarMenuButtonVariants({ variant, size }), className),
+        className: cn(
+          sidebarMenuButtonVariants({ variant, size }),
+          tooltip && props.disabled && "disabled:!pointer-events-auto",
+          className,
+        ),
         onClick: handleClick,
       },
       props,
