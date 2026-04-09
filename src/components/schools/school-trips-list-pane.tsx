@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
-import { tripSchema } from "@/lib/schemas/trip";
+import { type Trip, tripSchema } from "@/lib/schemas/trip";
 import { cn } from "@/lib/utils";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
@@ -18,13 +18,24 @@ type SchoolTripsListPaneProps = {
   schoolId: string;
 };
 
+function formatTripCreatedAt(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(d);
+}
+
+function tripTitle(t: Trip): string {
+  return t.title?.trim() || `${ptBR.entities.trip} ${t.id.slice(0, 8)}…`;
+}
+
 /**
  * Trips collection for the M3 list pane under `/schools/$schoolId/trips` (004).
+ * Table layout aligned with `PassengerTable` (image, title, created date).
  */
 export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
   const navigate = useNavigate();
   const { requestSelect, selectedKey } = useListDetailLayout();
-  const rowButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const rowRefs = useRef<Array<HTMLTableRowElement | null>>([]);
   const includeInactive = useUiPreferencesStore((s) => s.includeInactiveTrips);
   const setIncludeInactive = useUiPreferencesStore(
     (s) => s.setIncludeInactiveTrips,
@@ -40,6 +51,8 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
     },
     enabled: schoolIdValid,
   });
+
+  const rows = tripsQuery.data ?? [];
 
   if (!schoolIdValid) {
     return (
@@ -82,113 +95,145 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
           Não foi possível carregar as viagens.
         </p>
       ) : (
-        <ul className="flex flex-col gap-2" role="listbox" aria-label={ptBR.entities.trips}>
-          {tripsQuery.data?.length === 0 ? (
-            <li className="p-4 text-sm text-muted-foreground">
-              {ptBR.emptyStates.trips}
-            </li>
-          ) : null}
-          {(tripsQuery.data ?? []).map((t, rowIndex) => (
-            <li key={t.id}>
-              <div
-                className={cn(
-                  "flex items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2",
-                  selectedKey === t.id &&
-                    "bg-muted/40 ring-2 ring-ring ring-offset-2",
-                )}
-              >
-                <button
-                  ref={(el) => {
-                    rowButtonRefs.current[rowIndex] = el;
-                  }}
-                  type="button"
-                  role="option"
-                  aria-selected={selectedKey === t.id}
-                  className="min-w-0 flex-1 rounded-md text-left outline-none focus-visible:ring-0"
-                  onClick={() => requestSelect(t.id)}
-                  onKeyDown={(ev) => {
-                    const rows = tripsQuery.data ?? [];
-                    const idx = rows.findIndex((trip) => trip.id === t.id);
-                    if (idx < 0) return;
-                    if (ev.key === "ArrowDown") {
-                      ev.preventDefault();
-                      const next = Math.min(idx + 1, rows.length - 1);
-                      rowButtonRefs.current[next]?.focus();
-                      requestSelect(rows[next].id);
-                    } else if (ev.key === "ArrowUp") {
-                      ev.preventDefault();
-                      const prev = Math.max(idx - 1, 0);
-                      rowButtonRefs.current[prev]?.focus();
-                      requestSelect(rows[prev].id);
-                    } else if (ev.key === "Home") {
-                      ev.preventDefault();
-                      rowButtonRefs.current[0]?.focus();
-                      requestSelect(rows[0].id);
-                    } else if (ev.key === "End") {
-                      ev.preventDefault();
-                      const last = rows.length - 1;
-                      rowButtonRefs.current[last]?.focus();
-                      requestSelect(rows[last].id);
-                    } else if (ev.key === "Enter" || ev.key === " ") {
-                      ev.preventDefault();
-                      requestSelect(t.id);
-                    }
-                  }}
-                >
-                  <span className="flex items-center gap-3">
-                    {t.imageUrl?.trim() ? (
-                      <img
-                        src={t.imageUrl}
-                        alt=""
-                        className="h-10 w-10 shrink-0 rounded-md object-cover"
-                      />
-                    ) : (
-                      <span className="h-10 w-10 shrink-0 rounded-md border border-dashed border-border bg-muted/40" />
+        <div className="overflow-x-auto rounded-md border border-border">
+          <table className="w-full min-w-[480px] border-separate border-spacing-0 text-left text-sm">
+            <thead className="border-b border-border bg-muted/40">
+              <tr>
+                <th
+                  className="w-14 min-w-14 border-b border-border p-2"
+                  aria-hidden
+                />
+                <th className="border-b border-border p-2 font-medium whitespace-normal">
+                  {ptBR.fields.title}
+                </th>
+                <th className="border-b border-border p-2 font-medium whitespace-normal">
+                  {ptBR.fields.createdAt}
+                </th>
+                <th className="sticky right-0 z-[3] w-12 min-w-12 border-border border-b border-l bg-muted/40 p-2 text-right font-medium whitespace-normal">
+                  <span className="sr-only">{ptBR.aria.rowMenu}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="border-b border-border p-4 text-muted-foreground whitespace-nowrap"
+                  >
+                    {ptBR.emptyStates.trips}
+                  </td>
+                </tr>
+              ) : (
+                rows.map((t, rowIndex) => (
+                  <tr
+                    key={t.id}
+                    ref={(el) => {
+                      rowRefs.current[rowIndex] = el;
+                    }}
+                    tabIndex={0}
+                    className={cn(
+                      "border-b border-border/80 cursor-pointer outline-none",
+                      selectedKey === t.id && "bg-muted/50",
                     )}
-                    <span className="min-w-0">
-                      <span className="block truncate font-medium text-foreground">
-                        {t.title?.trim() || `Viagem ${t.id.slice(0, 8)}…`}
+                    aria-selected={selectedKey === t.id ? true : undefined}
+                    aria-label={tripTitle(t)}
+                    onClick={() => requestSelect(t.id)}
+                    onKeyDown={(ev) => {
+                      const idx = rows.findIndex((trip) => trip.id === t.id);
+                      if (idx < 0) return;
+                      if (ev.key === "ArrowDown") {
+                        ev.preventDefault();
+                        const next = Math.min(idx + 1, rows.length - 1);
+                        rowRefs.current[next]?.focus();
+                        requestSelect(rows[next].id);
+                      } else if (ev.key === "ArrowUp") {
+                        ev.preventDefault();
+                        const prev = Math.max(idx - 1, 0);
+                        rowRefs.current[prev]?.focus();
+                        requestSelect(rows[prev].id);
+                      } else if (ev.key === "Home") {
+                        ev.preventDefault();
+                        rowRefs.current[0]?.focus();
+                        requestSelect(rows[0].id);
+                      } else if (ev.key === "End") {
+                        ev.preventDefault();
+                        const last = rows.length - 1;
+                        rowRefs.current[last]?.focus();
+                        requestSelect(rows[last].id);
+                      } else if (ev.key === "Enter" || ev.key === " ") {
+                        ev.preventDefault();
+                        requestSelect(t.id);
+                      }
+                    }}
+                  >
+                    <td className="border-b border-border p-2 align-middle whitespace-nowrap">
+                      {t.imageUrl?.trim() ? (
+                        <img
+                          src={t.imageUrl}
+                          alt=""
+                          className="size-10 shrink-0 rounded-md object-cover"
+                        />
+                      ) : (
+                        <span
+                          className="inline-block size-10 shrink-0 rounded-md border border-dashed border-border bg-muted/40"
+                          aria-hidden
+                        />
+                      )}
+                    </td>
+                    <td className="border-b border-border p-2 align-middle">
+                      <span className="font-medium text-foreground">
+                        {tripTitle(t)}
                       </span>
-                      {t.description?.trim() ? (
-                        <span className="block truncate text-muted-foreground text-sm">
-                          {t.description.trim()}
-                        </span>
-                      ) : null}
                       {!t.active ? (
-                        <span className="text-xs font-normal text-muted-foreground">
+                        <span className="ml-2 text-xs font-normal text-muted-foreground">
                           ({ptBR.fields.inactive})
                         </span>
                       ) : null}
-                    </span>
-                  </span>
-                </button>
-                <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                    onClick={() => requestSelect(t.id)}
-                  >
-                    {ptBR.actions.edit} {ptBR.entities.trip}
-                  </button>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                    onClick={() => {
-                      void navigate({
-                        to: "/schools/$schoolId/trips/$tripId/passengers",
-                        params: { schoolId, tripId: t.id },
-                      });
-                    }}
-                  >
-                    {ptBR.actions.viewPassengers}
-                  </button>
-                </RowKebabMenu>
-              </div>
-            </li>
-          ))}
-        </ul>
+                    </td>
+                    <td className="border-b border-border p-2 align-middle tabular-nums whitespace-nowrap">
+                      {formatTripCreatedAt(t.createdAt)}
+                    </td>
+                    {/* biome-ignore lint/a11y/useKeyWithClickEvents: stopPropagation only; menu items handle their own keyboard activation */}
+                    <td
+                      className={cn(
+                        "sticky right-0 z-[2] w-12 min-w-12 border-border border-b border-l p-2 align-middle whitespace-nowrap",
+                        selectedKey === t.id ? "bg-muted/50" : "bg-background",
+                      )}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex justify-end">
+                        <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                            onClick={() => requestSelect(t.id)}
+                          >
+                            {ptBR.actions.edit} {ptBR.entities.trip}
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                            onClick={() => {
+                              void navigate({
+                                to: "/schools/$schoolId/trips/$tripId/passengers",
+                                params: { schoolId, tripId: t.id },
+                              });
+                            }}
+                          >
+                            {ptBR.actions.viewPassengers}
+                          </button>
+                        </RowKebabMenu>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

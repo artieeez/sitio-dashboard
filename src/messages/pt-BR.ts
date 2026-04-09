@@ -15,6 +15,10 @@ export const ptBR = {
   },
   fields: {
     name: "Nome",
+    /** Trip list / forms: main heading text. */
+    title: "Título",
+    /** ISO `createdAt` column in trip lists. */
+    createdAt: "Data de criação",
     fullName: "Nome completo",
     url: "URL da página",
     landingPage: "Página de destino",
@@ -126,8 +130,7 @@ export const ptBR = {
     invalidSchoolContext: "Identificador de escola inválido.",
     passengersLoadError: "Não foi possível carregar os passageiros.",
     /** Detail pane on `/trips/$tripId/passengers` when no passenger row is selected. */
-    selectPassengerPrompt:
-      "Comece escolhendo um passageiro na lista ao lado.",
+    selectPassengerPrompt: "Comece escolhendo um passageiro na lista ao lado.",
   },
   /** FR-012 unsaved changes Alert Dialog (004). */
   unsavedChanges: {
