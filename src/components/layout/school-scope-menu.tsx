@@ -58,6 +58,9 @@ export function SchoolScopeMenu(props: {
 
   const handleSelectSchool = (schoolId: string) => {
     setScopeOpen(false);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
     props.onSelectSchool(schoolId);
   };
 
@@ -73,6 +76,7 @@ export function SchoolScopeMenu(props: {
         tooltip={schoolTooltip(props.school?.title)}
         aria-label={ptBR.scope.openMenu}
         aria-expanded={scopeOpen}
+        closeMobileOnClick={false}
         onClick={handleHeaderClick}
       >
         <SchoolScopeSummary school={props.school} />

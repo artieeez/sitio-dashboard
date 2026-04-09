@@ -8,6 +8,7 @@ import {
   type ComponentProps,
   type CSSProperties,
   createContext,
+  type MouseEvent,
   useCallback,
   useContext,
   useEffect,
@@ -491,18 +492,39 @@ function SidebarMenuButton({
   size = "default",
   tooltip,
   className,
+  onClick,
+  closeMobileOnClick,
   ...props
 }: useRender.ComponentProps<"button"> &
   ComponentProps<"button"> & {
     isActive?: boolean;
     tooltip?: string | ComponentProps<typeof TooltipContent>;
+    /**
+     * On small screens the sidebar is a sheet; after a tap, close it.
+     * Defaults to `true` when `render` is set (e.g. TanStack Router `Link`), else `false`.
+     */
+    closeMobileOnClick?: boolean;
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
-  const { isMobile, state } = useSidebar();
+  const { isMobile, state, setOpenMobile } = useSidebar();
+  const dismissMobile =
+    closeMobileOnClick !== undefined ? closeMobileOnClick : render != null;
+
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      onClick?.(event);
+      if (isMobile && dismissMobile) {
+        setOpenMobile(false);
+      }
+    },
+    [dismissMobile, isMobile, onClick, setOpenMobile],
+  );
+
   const comp = useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
       {
         className: cn(sidebarMenuButtonVariants({ variant, size }), className),
+        onClick: handleClick,
       },
       props,
     ),

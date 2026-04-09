@@ -163,6 +163,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         type="button"
+                        closeMobileOnClick
                         onClick={editCurrentSchool}
                         aria-label={ptBR.scope.editSchool}
                       >
