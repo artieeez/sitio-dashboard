@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { PassengerRowActions } from "@/components/trips/PassengerRowActions";
-import { Button } from "@/components/ui/button";
+import { PassengerManualPaidMenuItems } from "@/components/trips/passenger-manual-paid-menu-items";
 import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { ApiError, apiPatchJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -10,7 +10,11 @@ import {
   type PaymentStatus,
   passengerWithStatusSchema,
 } from "@/lib/schemas/passenger";
-import { paymentsIndexLink, paymentsNewLink } from "@/lib/trip-payment-links";
+import {
+  passengerEditLink,
+  paymentsIndexLink,
+  paymentsNewLink,
+} from "@/lib/trip-payment-links";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
@@ -61,6 +65,7 @@ export function PassengerTable(props: {
     schoolId,
   } = props;
   const qc = useQueryClient();
+  const [manualPaidErr, setManualPaidErr] = useState<string | null>(null);
 
   const patchPassenger = useMutation({
     mutationFn: async (input: {
@@ -100,25 +105,30 @@ export function PassengerTable(props: {
         {ptBR.toggles.includeRemovedPassengers}
       </label>
       <div className="overflow-x-auto rounded-md border border-border">
-        <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+        <table className="w-full min-w-[520px] border-separate border-spacing-0 text-left text-sm">
           <thead className="border-b border-border bg-muted/40">
             <tr>
-              <th className="p-2 font-medium">{ptBR.fields.fullName}</th>
-              <th className="p-2 font-medium">{ptBR.fields.cpf}</th>
-              <th className="p-2 font-medium">{ptBR.fields.paymentStatus}</th>
-              <th className="p-2 font-medium">
-                {ptBR.fields.manualPaidWithoutInfo}
+              <th className="border-b border-border p-2 font-medium whitespace-normal">
+                {ptBR.fields.name}
               </th>
-              <th className="p-2 font-medium">
+              <th className="border-b border-border p-2 font-medium whitespace-normal">
+                {ptBR.fields.cpf}
+              </th>
+              <th className="border-b border-border p-2 font-medium whitespace-normal">
+                {ptBR.fields.paymentStatus}
+              </th>
+              <th className="sticky right-0 z-[3] w-12 min-w-12 border-border border-b border-l bg-muted/40 p-2 text-right font-medium whitespace-normal">
                 <span className="sr-only">{ptBR.aria.rowMenu}</span>
               </th>
-              <th className="p-2 font-medium">{ptBR.actions.restore}</th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="p-4 text-muted-foreground">
+                <td
+                  colSpan={4}
+                  className="border-b border-border p-4 text-muted-foreground whitespace-nowrap"
+                >
                   {ptBR.entities.passengers} — nenhum registro.
                 </td>
               </tr>
@@ -134,7 +144,7 @@ export function PassengerTable(props: {
                     selectedPassengerId === p.id ? true : undefined
                   }
                 >
-                  <td className="p-2">
+                  <td className="border-b border-border p-2 whitespace-nowrap">
                     {p.fullName}
                     {p.removedAt ? (
                       <span className="ml-2 text-xs text-muted-foreground">
@@ -142,15 +152,37 @@ export function PassengerTable(props: {
                       </span>
                     ) : null}
                   </td>
-                  <td className="p-2 tabular-nums">{p.cpf ?? "—"}</td>
-                  <td className={`p-2 ${statusToneClass(p.status)}`}>
+                  <td className="border-b border-border p-2 tabular-nums whitespace-nowrap">
+                    {p.cpf ?? "—"}
+                  </td>
+                  <td
+                    className={`border-b border-border p-2 whitespace-nowrap ${statusToneClass(p.status)}`}
+                  >
                     {statusLabel(p.status)}
                   </td>
-                  <td className="p-2 align-top">
-                    <PassengerRowActions tripId={tripId} passenger={p} />
-                  </td>
-                  <td className="p-2">
-                    <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
+                  <td
+                    className={cn(
+                      "sticky right-0 z-[2] w-12 min-w-12 border-border border-b border-l p-2 whitespace-nowrap align-middle",
+                      selectedPassengerId === p.id
+                        ? "bg-muted/50"
+                        : "bg-background",
+                    )}
+                  >
+                    <div className="flex justify-end">
+                      <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
+                      {!p.removedAt ? (
+                        <Link
+                          role="menuitem"
+                          {...passengerEditLink({
+                            tripId,
+                            passengerId: p.id,
+                            schoolId,
+                          })}
+                          className="rounded px-2 py-1.5 text-sm hover:bg-muted"
+                        >
+                          {ptBR.actions.edit} {ptBR.entities.passenger}
+                        </Link>
+                      ) : null}
                       <Link
                         role="menuitem"
                         {...paymentsIndexLink({
@@ -175,40 +207,46 @@ export function PassengerTable(props: {
                           {ptBR.actions.newPayment}
                         </Link>
                       ) : null}
-                    </RowKebabMenu>
-                  </td>
-                  <td className="p-2">
-                    {p.removedAt ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={patchPassenger.isPending}
-                        onClick={() =>
-                          patchPassenger.mutate({
-                            passengerId: p.id,
-                            body: { removed: false },
-                          })
-                        }
-                      >
-                        {ptBR.actions.restore}
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        disabled={patchPassenger.isPending}
-                        onClick={() =>
-                          patchPassenger.mutate({
-                            passengerId: p.id,
-                            body: { removed: true },
-                          })
-                        }
-                      >
-                        {ptBR.actions.delete}
-                      </Button>
-                    )}
+                      {!p.removedAt ? (
+                        <PassengerManualPaidMenuItems
+                          tripId={tripId}
+                          passenger={p}
+                          onManualPaidError={setManualPaidErr}
+                        />
+                      ) : null}
+                      {p.removedAt ? (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className="w-full rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                          disabled={patchPassenger.isPending}
+                          onClick={() =>
+                            patchPassenger.mutate({
+                              passengerId: p.id,
+                              body: { removed: false },
+                            })
+                          }
+                        >
+                          {ptBR.actions.restore}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className="w-full rounded px-2 py-1.5 text-left text-sm text-destructive hover:bg-destructive/10"
+                          disabled={patchPassenger.isPending}
+                          onClick={() =>
+                            patchPassenger.mutate({
+                              passengerId: p.id,
+                              body: { removed: true },
+                            })
+                          }
+                        >
+                          {ptBR.actions.delete}
+                        </button>
+                      )}
+                      </RowKebabMenu>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -216,6 +254,11 @@ export function PassengerTable(props: {
           </tbody>
         </table>
       </div>
+      {manualPaidErr ? (
+        <p className="text-sm text-red-600" role="alert">
+          {manualPaidErr}
+        </p>
+      ) : null}
       {patchPassenger.error instanceof ApiError ? (
         <p className="text-sm text-red-600" role="alert">
           Falha ao atualizar passageiro.
