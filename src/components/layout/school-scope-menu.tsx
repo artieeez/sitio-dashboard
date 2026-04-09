@@ -17,6 +17,8 @@ function schoolTooltip(title: string | null | undefined) {
 const listButtonClass =
   "w-full rounded-md px-2 py-1.5 text-left text-sm text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2";
 
+const suggestListId = "school-scope-search-suggestions";
+
 export function SchoolScopeMenu(props: {
   school: School | null;
   schools: School[];
@@ -37,11 +39,19 @@ export function SchoolScopeMenu(props: {
     [props.schools, query],
   );
 
+  const showSearchSuggestions = scopeOpen && query.trim().length > 0;
+
   useEffect(() => {
     if (state === "collapsed") {
       setScopeOpen(false);
     }
   }, [state]);
+
+  useEffect(() => {
+    if (!scopeOpen) {
+      setQuery("");
+    }
+  }, [scopeOpen]);
 
   useEffect(() => {
     if (!scopeOpen) return;
@@ -105,70 +115,85 @@ export function SchoolScopeMenu(props: {
             )}
           />
         </SidebarMenuButton>
-        <CollapsibleContent className="min-w-0 overflow-hidden pt-2 pb-1">
+        <CollapsibleContent className="min-w-0 overflow-visible pt-2 pb-1">
           <div className="flex flex-col gap-3 px-0.5">
-            <Input
-              value={query}
-              onChange={(ev) => setQuery(ev.target.value)}
-              placeholder={ptBR.scope.searchPlaceholder}
-              aria-label={ptBR.scope.searchPlaceholder}
-              autoComplete="off"
-              className="h-8 bg-background"
-            />
-            <div
-              className={cn(
-                "max-h-[min(40vh,16rem)] space-y-3 overflow-y-auto pr-0.5",
-              )}
-            >
-              <section>
-                <p className="mb-1 px-1 font-medium text-sidebar-foreground/70 text-xs">
-                  {ptBR.scope.searchResults}
-                </p>
-                <ul className="flex flex-col gap-0.5">
+            <div className="relative z-20 min-w-0">
+              <Input
+                value={query}
+                onChange={(ev) => setQuery(ev.target.value)}
+                placeholder={ptBR.scope.searchPlaceholder}
+                aria-label={ptBR.scope.searchPlaceholder}
+                aria-expanded={showSearchSuggestions}
+                aria-controls={
+                  showSearchSuggestions ? suggestListId : undefined
+                }
+                aria-autocomplete="list"
+                autoComplete="off"
+                className="h-8 bg-background"
+              />
+              {showSearchSuggestions ? (
+                <div
+                  id={suggestListId}
+                  role="listbox"
+                  aria-label={ptBR.scope.searchResults}
+                  className={cn(
+                    "absolute top-full right-0 left-0 z-30 mt-1 max-h-48 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10",
+                  )}
+                >
                   {filtered.length === 0 ? (
-                    <li className="px-1 text-muted-foreground text-xs">
+                    <p className="px-2 py-1.5 text-muted-foreground text-xs">
                       {ptBR.scope.noResults}
-                    </li>
-                  ) : null}
-                  {filtered.map((school) => (
-                    <li key={`search-${school.id}`}>
-                      <button
-                        type="button"
-                        className={listButtonClass}
-                        onClick={() => handleSelectSchool(school.id)}
-                      >
-                        {school.title?.trim() ||
-                          `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-              <section>
-                <p className="mb-1 px-1 font-medium text-sidebar-foreground/70 text-xs">
-                  {ptBR.scope.recents}
-                </p>
-                <ul className="flex flex-col gap-0.5">
-                  {recentSchools.length === 0 ? (
-                    <li className="px-1 text-muted-foreground text-xs">
-                      {ptBR.scope.noRecents}
-                    </li>
-                  ) : null}
-                  {recentSchools.map((school) => (
-                    <li key={school.id}>
-                      <button
-                        type="button"
-                        className={listButtonClass}
-                        onClick={() => handleSelectSchool(school.id)}
-                      >
-                        {school.title?.trim() ||
-                          `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+                    </p>
+                  ) : (
+                    <ul className="flex flex-col gap-0.5">
+                      {filtered.map((school) => (
+                        <li key={`search-${school.id}`} role="presentation">
+                          <button
+                            type="button"
+                            role="option"
+                            className={cn(
+                              listButtonClass,
+                              "text-popover-foreground hover:bg-accent hover:text-accent-foreground",
+                            )}
+                            onMouseDown={(ev) => {
+                              ev.preventDefault();
+                            }}
+                            onClick={() => handleSelectSchool(school.id)}
+                          >
+                            {school.title?.trim() ||
+                              `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ) : null}
             </div>
+            <section className="min-w-0">
+              <p className="mb-1 px-1 font-medium text-sidebar-foreground/70 text-xs">
+                {ptBR.scope.recents}
+              </p>
+              <ul className="flex flex-col gap-0.5">
+                {recentSchools.length === 0 ? (
+                  <li className="px-1 text-muted-foreground text-xs">
+                    {ptBR.scope.noRecents}
+                  </li>
+                ) : null}
+                {recentSchools.map((school) => (
+                  <li key={school.id}>
+                    <button
+                      type="button"
+                      className={listButtonClass}
+                      onClick={() => handleSelectSchool(school.id)}
+                    >
+                      {school.title?.trim() ||
+                        `${ptBR.entities.school} ${school.id.slice(0, 8)}…`}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
           </div>
         </CollapsibleContent>
       </Collapsible>
