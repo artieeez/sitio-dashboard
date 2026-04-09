@@ -92,7 +92,7 @@ export const ptBR = {
     placeholderUser: "Artur",
     noSchoolSelected: "Selecione uma escola",
     searchPlaceholder: "Buscar escola",
-    recents: "Recentes",
+    recents: "Escolas recentes",
     noRecents: "Nenhuma escola recente.",
     noResults: "Nenhuma escola encontrada.",
     /** Label for the filtered list section in the scope menu (Base UI requires group + label). */

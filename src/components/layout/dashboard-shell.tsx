@@ -22,7 +22,6 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
-  SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -143,7 +142,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
-            <SidebarSeparator className="mx-0" />
             <SidebarGroup>
               <SidebarGroupLabel>{ptBR.shell.schoolGroup}</SidebarGroupLabel>
               <SidebarGroupContent>
@@ -179,7 +177,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           </ScrollArea>
         </SidebarContent>
         <SidebarFooter>
-          <SidebarSeparator className="mx-0" />
           <SidebarMenu>
             <SidebarMenuItem>
               <ModeToggle />

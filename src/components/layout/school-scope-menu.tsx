@@ -84,7 +84,7 @@ export function SchoolScopeMenu(props: {
           )}
         />
       </SidebarMenuButton>
-      <CollapsibleContent className="min-w-0 overflow-hidden border-sidebar-border border-t pt-2 pb-1">
+      <CollapsibleContent className="min-w-0 overflow-hidden pt-2 pb-1">
         <div className="flex flex-col gap-3 px-0.5">
           <Input
             value={query}
@@ -99,18 +99,19 @@ export function SchoolScopeMenu(props: {
               "max-h-[min(40vh,16rem)] space-y-3 overflow-y-auto pr-0.5",
             )}
           >
+
             <section>
               <p className="mb-1 px-1 font-medium text-sidebar-foreground/70 text-xs">
-                {ptBR.scope.recents}
+                {ptBR.scope.searchResults}
               </p>
               <ul className="flex flex-col gap-0.5">
-                {recentSchools.length === 0 ? (
+                {filtered.length === 0 ? (
                   <li className="px-1 text-muted-foreground text-xs">
-                    {ptBR.scope.noRecents}
+                    {ptBR.scope.noResults}
                   </li>
                 ) : null}
-                {recentSchools.map((school) => (
-                  <li key={school.id}>
+                {filtered.map((school) => (
+                  <li key={`search-${school.id}`}>
                     <button
                       type="button"
                       className={listButtonClass}
@@ -125,16 +126,16 @@ export function SchoolScopeMenu(props: {
             </section>
             <section>
               <p className="mb-1 px-1 font-medium text-sidebar-foreground/70 text-xs">
-                {ptBR.scope.searchResults}
+                {ptBR.scope.recents}
               </p>
               <ul className="flex flex-col gap-0.5">
-                {filtered.length === 0 ? (
+                {recentSchools.length === 0 ? (
                   <li className="px-1 text-muted-foreground text-xs">
-                    {ptBR.scope.noResults}
+                    {ptBR.scope.noRecents}
                   </li>
                 ) : null}
-                {filtered.map((school) => (
-                  <li key={`search-${school.id}`}>
+                {recentSchools.map((school) => (
+                  <li key={school.id}>
                     <button
                       type="button"
                       className={listButtonClass}
