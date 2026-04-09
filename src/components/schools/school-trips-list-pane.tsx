@@ -74,8 +74,8 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
             params={{ schoolId }}
             aria-label={ptBR.actions.addTrip}
             className={cn(
-              buttonVariants({ variant: "default", size: "sm" }),
-              "w-fit gap-1",
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "w-fit gap-1 no-underline",
             )}
           >
             <Plus className="size-4 shrink-0" aria-hidden />

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import { z } from "zod";
 import { buttonVariants } from "@/components/ui/button";
 import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
@@ -67,11 +68,13 @@ export function PassengerPaymentHistory(props: {
           {!removedAt ? (
             <Link
               {...paymentsNewLink(pay)}
+              aria-label={ptBR.actions.newPayment}
               className={cn(
-                buttonVariants({ variant: "default", size: "sm" }),
-                "no-underline",
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "w-fit no-underline",
               )}
             >
+              <Plus className="size-4 shrink-0" aria-hidden />
               {ptBR.actions.newPayment}
             </Link>
           ) : null}

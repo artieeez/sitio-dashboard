@@ -83,7 +83,7 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
         <h1 className="text-lg font-medium">{ptBR.entities.passengers}</h1>
         <Button
           type="button"
-          variant="default"
+          variant="outline"
           size="sm"
           aria-label={ptBR.actions.addPassenger}
           className="w-fit gap-1"
