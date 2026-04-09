@@ -4,50 +4,77 @@ import {
   useNavigate,
   useRouterState,
 } from "@tanstack/react-router";
+import { useCallback, useMemo, useState } from "react";
 
 import { ListDetailLayout } from "@/components/layout/list-detail-layout";
+import { NavigationUnsavedGuard } from "@/components/layout/navigation-unsaved-guard";
 import { SchoolsListPane } from "@/components/schools/schools-list-pane";
+import { WorkspaceDirtyProvider } from "@/contexts/workspace-dirty-context";
 
 export const Route = createFileRoute("/schools")({
   component: SchoolsShell,
 });
 
 /**
- * M3: **Schools directory** is list–detail only at `/schools` / `/schools/`.
- * Scoped school hub (`/schools/$schoolId/*`) is a **single** main column so it
- * does not stack the directory list beside trips or other nested list–detail
- * shells. `/schools/$schoolId/` redirects to `.../home` (no bare id index URL).
+ * M3: **Schools directory** list–detail at `/schools`, `/schools/`, and
+ * `/schools/new` (create in **detail** pane). Scoped `/schools/$schoolId/*` is a
+ * single main column (no directory list beside hub/trips).
  */
 function SchoolsShell() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  if (pathname === "/schools/new") {
-    return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col">
-        <Outlet />
-      </div>
-    );
-  }
+  const isSchoolsDirectoryShell =
+    pathname === "/schools" ||
+    pathname === "/schools/" ||
+    pathname === "/schools/new";
 
-  const isSchoolsDirectory =
-    pathname === "/schools" || pathname === "/schools/";
+  const directorySelectedKey = useMemo(
+    () => (pathname === "/schools/new" ? "__new__" : null),
+    [pathname],
+  );
 
-  if (isSchoolsDirectory) {
+  const [workspaceDirty, setWorkspaceDirty] = useState(false);
+  const [outletKey, setOutletKey] = useState(0);
+  const handleDiscardDirty = useCallback(() => {
+    setWorkspaceDirty(false);
+    setOutletKey((k) => k + 1);
+  }, []);
+
+  const onDirectorySelectedKeyChange = useCallback(
+    (key: string | null) => {
+      if (key == null) {
+        void navigate({ to: "/schools" });
+        return;
+      }
+      if (key === "__new__") {
+        void navigate({ to: "/schools/new" });
+        return;
+      }
+      void navigate({
+        to: "/schools/$schoolId/home",
+        params: { schoolId: key },
+      });
+    },
+    [navigate],
+  );
+
+  if (isSchoolsDirectoryShell) {
     return (
-      <ListDetailLayout
-        selectedKey={null}
-        onSelectedKeyChange={(key) => {
-          if (key) {
-            void navigate({
-              to: "/schools/$schoolId/home",
-              params: { schoolId: key },
-            });
-          }
-        }}
-        list={<SchoolsListPane />}
-        detail={<Outlet />}
-      />
+      <WorkspaceDirtyProvider setWorkspaceDirty={setWorkspaceDirty}>
+        <NavigationUnsavedGuard
+          isDirty={workspaceDirty}
+          onDiscard={handleDiscardDirty}
+        />
+        <ListDetailLayout
+          selectedKey={directorySelectedKey}
+          onSelectedKeyChange={onDirectorySelectedKeyChange}
+          isDirty={workspaceDirty}
+          onDiscardDirty={handleDiscardDirty}
+          list={<SchoolsListPane />}
+          detail={<Outlet key={outletKey} />}
+        />
+      </WorkspaceDirtyProvider>
     );
   }
 

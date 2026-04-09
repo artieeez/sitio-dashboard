@@ -41,9 +41,11 @@ export function SchoolsListPane() {
           <h1 className="text-lg font-medium">{ptBR.entities.schools}</h1>
           <Link
             to="/schools/new"
+            aria-current={selectedKey === "__new__" ? true : undefined}
             className={cn(
               buttonVariants({ variant: "default", size: "sm" }),
               "w-fit",
+              selectedKey === "__new__" && "ring-2 ring-ring ring-offset-2",
             )}
           >
             {ptBR.actions.create} {ptBR.entities.school}

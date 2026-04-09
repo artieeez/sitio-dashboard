@@ -85,11 +85,11 @@ function NewPassengerPaymentPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 p-6">
+    <div className="flex min-w-0 flex-col gap-4 p-6">
       <Link
         to="/trips/$tripId/passengers/$passengerId/payments"
         params={{ tripId, passengerId }}
-        className="text-sm text-muted-foreground hover:text-foreground"
+        className="w-fit text-sm text-muted-foreground hover:text-foreground"
       >
         ← {ptBR.actions.paymentHistory}
       </Link>

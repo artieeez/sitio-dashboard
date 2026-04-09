@@ -63,7 +63,7 @@ function PassengerPaymentsIndexPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl p-6">
+    <div className="min-w-0 p-6">
       <PassengerPaymentHistory
         tripId={tripId}
         passengerId={passengerId}

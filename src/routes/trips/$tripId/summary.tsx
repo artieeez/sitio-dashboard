@@ -71,7 +71,7 @@ function TripSummaryPage() {
   const schoolId = trip.schoolId;
 
   return (
-    <div className="mx-auto max-w-5xl p-6">
+    <div className="min-w-0 p-6">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
         <div className="flex flex-col gap-6 lg:col-span-2">
           <div className="flex flex-wrap items-center justify-between gap-2">

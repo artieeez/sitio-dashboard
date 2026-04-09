@@ -31,7 +31,7 @@ function NewTripPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+    <div className="flex min-w-0 flex-col gap-6 p-6">
       <header className="flex flex-col gap-2">
         <h1 className="text-lg font-medium">
           {ptBR.actions.create} {ptBR.entities.trip}
