@@ -157,7 +157,7 @@ export function SchoolForm(props: {
   return (
     <form
       onSubmit={submit}
-      className="flex max-w-xl flex-col gap-3 rounded-md border border-border p-4"
+      className="flex flex-col gap-3"
     >
       {error ? (
         <p className="text-sm text-red-600 dark:text-red-400" role="alert">

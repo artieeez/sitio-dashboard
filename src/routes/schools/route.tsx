@@ -8,7 +8,7 @@ import { useCallback, useMemo, useState } from "react";
 
 import { ListDetailLayout } from "@/components/layout/list-detail-layout";
 import { NavigationUnsavedGuard } from "@/components/layout/navigation-unsaved-guard";
-import { SchoolsListPane } from "@/components/schools/schools-list-pane";
+import { SchoolsDirectoryHomePane } from "@/components/schools/schools-directory-home-pane";
 import { WorkspaceDirtyProvider } from "@/contexts/workspace-dirty-context";
 
 export const Route = createFileRoute("/schools")({
@@ -17,8 +17,9 @@ export const Route = createFileRoute("/schools")({
 
 /**
  * M3: **Schools directory** list–detail at `/schools`, `/schools/`, and
- * `/schools/new` (create in **detail** pane). Scoped `/schools/$schoolId/*` is a
- * single main column (no directory list beside hub/trips).
+ * `/schools/new` (create in **detail** pane). List pane is a blank directory
+ * “root”; school list lives in the `/schools/` index detail. Scoped
+ * `/schools/$schoolId/trips` (and below) is a single main column.
  */
 function SchoolsShell() {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ function SchoolsShell() {
     () => (pathname === "/schools/new" ? "__new__" : null),
     [pathname],
   );
+
+  const hidePaneDetailClose = pathname === "/schools/new";
 
   const [workspaceDirty, setWorkspaceDirty] = useState(false);
   const [outletKey, setOutletKey] = useState(0);
@@ -52,7 +55,7 @@ function SchoolsShell() {
         return;
       }
       void navigate({
-        to: "/schools/$schoolId/home",
+        to: "/schools/$schoolId",
         params: { schoolId: key },
       });
     },
@@ -69,9 +72,10 @@ function SchoolsShell() {
         <ListDetailLayout
           selectedKey={directorySelectedKey}
           onSelectedKeyChange={onDirectorySelectedKeyChange}
+          hidePaneDetailClose={hidePaneDetailClose}
           isDirty={workspaceDirty}
           onDiscardDirty={handleDiscardDirty}
-          list={<SchoolsListPane />}
+          list={<SchoolsDirectoryHomePane />}
           detail={<Outlet key={outletKey} />}
         />
       </WorkspaceDirtyProvider>

@@ -54,7 +54,7 @@ function scopedHomeLink(schoolId: string): BreadcrumbSegment {
   return {
     key: "home",
     label: ptBR.nav.home,
-    to: "/schools/$schoolId/home",
+    to: "/schools/$schoolId",
     params: { schoolId },
   };
 }
@@ -268,11 +268,11 @@ export function buildBreadcrumbTrail(
   }
 
   if (pathname.startsWith("/schools/") && sidPath) {
-    if (pathname === `/schools/${sidPath}/home`) {
+    if (pathname === `/schools/${sidPath}`) {
       return [{ key: "home", label: ptBR.nav.home }];
     }
 
-    if (pathname === `/schools/${sidPath}`) {
+    if (pathname === `/schools/${sidPath}/edit`) {
       return [
         scopedHomeLink(sidPath),
         { key: "edit-school", label: ptBR.scope.editSchool },

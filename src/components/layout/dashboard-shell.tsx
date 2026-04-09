@@ -60,7 +60,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const editCurrentSchool = () => {
     if (!activeSchoolId) return;
     navigate({
-      to: "/schools/$schoolId/home",
+      to: "/schools/$schoolId/edit",
       params: { schoolId: activeSchoolId },
     });
   };
@@ -85,7 +85,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     queryKey: queryKeys.school(schoolId),
                   });
                   navigate({
-                    to: "/schools/$schoolId/home",
+                    to: "/schools/$schoolId",
                     params: { schoolId },
                   });
                 }}
@@ -103,7 +103,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     <SidebarMenuButton
                       render={
                         <Link
-                          to={activeSchoolId ? "/schools/$schoolId/home" : "/"}
+                          to={activeSchoolId ? "/schools/$schoolId" : "/"}
                           params={
                             activeSchoolId
                               ? { schoolId: activeSchoolId }

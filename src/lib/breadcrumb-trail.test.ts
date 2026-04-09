@@ -10,7 +10,7 @@ const PLACEHOLDER = "\u2026";
 describe("buildBreadcrumbTrail", () => {
   it("school-scoped home: first segment is Início (ptBR.nav.home), no Escolas", () => {
     const trail = buildBreadcrumbTrail({
-      pathname: `/schools/${SCHOOL}/home`,
+      pathname: `/schools/${SCHOOL}`,
       schoolIdFromPath: SCHOOL,
       schoolIdForLinks: SCHOOL,
       tripId: "",
@@ -20,6 +20,26 @@ describe("buildBreadcrumbTrail", () => {
     });
     expect(trail[0]?.label).toBe(ptBR.nav.home);
     expect(trail.map((s) => s.label)).not.toContain(ptBR.entities.schools);
+  });
+
+  it("school-scoped edit: Início (link) → Editar escola ativa", () => {
+    const trail = buildBreadcrumbTrail({
+      pathname: `/schools/${SCHOOL}/edit`,
+      schoolIdFromPath: SCHOOL,
+      schoolIdForLinks: SCHOOL,
+      tripId: "",
+      passengerId: "",
+      tripLabel: PLACEHOLDER,
+      passengerLabel: PLACEHOLDER,
+    });
+    expect(trail.map((s) => s.label)).toEqual([
+      ptBR.nav.home,
+      ptBR.scope.editSchool,
+    ]);
+    expect(trail[0]).toMatchObject({
+      to: "/schools/$schoolId",
+      params: { schoolId: SCHOOL },
+    });
   });
 
   it("school-scoped trips list: Viagens is the root segment (sidebar Trips); no Escolas", () => {

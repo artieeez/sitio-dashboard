@@ -26,7 +26,7 @@ function HomePage() {
       setLastAccessedSchoolId(nextSchoolId);
       touchRecentSchool(nextSchoolId);
       navigate({
-        to: "/schools/$schoolId/home",
+        to: "/schools/$schoolId",
         params: { schoolId: nextSchoolId },
       });
       return;

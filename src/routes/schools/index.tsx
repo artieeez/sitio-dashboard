@@ -1,15 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { ptBR } from "@/messages/pt-BR";
+import { SchoolsListPane } from "@/components/schools/schools-list-pane";
 
 export const Route = createFileRoute("/schools/")({
-  component: SchoolsIndexDetailPlaceholder,
+  component: SchoolsIndexDetail,
 });
 
-function SchoolsIndexDetailPlaceholder() {
-  return (
-    <div className="p-6 text-sm text-muted-foreground">
-      {ptBR.listDetail.selectSchoolPrompt}
-    </div>
-  );
+/** Schools directory listing: right pane beside blank directory “home” list pane. */
+function SchoolsIndexDetail() {
+  return <SchoolsListPane />;
 }
