@@ -12,7 +12,14 @@ import { NavigationUnsavedGuard } from "@/components/layout/navigation-unsaved-g
 import { SchoolTripsListPane } from "@/components/schools/school-trips-list-pane";
 import { TripWorkspaceListPane } from "@/components/trips/trip-workspace-list-pane";
 import { WorkspaceDirtyProvider } from "@/contexts/workspace-dirty-context";
-import { navigateFromTripWorkspaceKey } from "@/lib/trip-workspace-navigation";
+import {
+  isPassengerPaymentsBranchPath,
+  passengersListLink,
+} from "@/lib/trip-payment-links";
+import {
+  isTripSummaryEditDetailPath,
+  navigateFromTripWorkspaceKey,
+} from "@/lib/trip-workspace-navigation";
 import { isUuid } from "@/lib/uuid";
 
 export const Route = createFileRoute("/schools/$schoolId/trips")({
@@ -78,6 +85,22 @@ function SchoolTripsShell() {
     [navigate, schoolId, tripIdFromChild],
   );
 
+  const onCloseDetail = useMemo(() => {
+    if (!isPassengerPaymentsBranchPath(pathname)) return undefined;
+    if (!tripIdFromChild || !isUuid(tripIdFromChild) || !isUuid(schoolId)) {
+      return undefined;
+    }
+    return () => {
+      void navigate(passengersListLink({ tripId: tripIdFromChild, schoolId }));
+    };
+  }, [pathname, tripIdFromChild, schoolId, navigate]);
+
+  const hidePaneDetailClose = useMemo(() => {
+    if (pathname.includes("/trips/new")) return true;
+    if (!tripIdFromChild || !isUuid(tripIdFromChild)) return false;
+    return isTripSummaryEditDetailPath(pathname, tripIdFromChild);
+  }, [pathname, tripIdFromChild]);
+
   const [workspaceDirty, setWorkspaceDirty] = useState(false);
   const [outletKey, setOutletKey] = useState(0);
   const handleDiscardDirty = useCallback(() => {
@@ -94,6 +117,8 @@ function SchoolTripsShell() {
       <ListDetailLayout
         selectedKey={selectedKey}
         onSelectedKeyChange={onSelectedKeyChange}
+        onCloseDetail={onCloseDetail}
+        hidePaneDetailClose={hidePaneDetailClose}
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}
         list={

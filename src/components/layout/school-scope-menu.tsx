@@ -99,7 +99,6 @@ export function SchoolScopeMenu(props: {
               "max-h-[min(40vh,16rem)] space-y-3 overflow-y-auto pr-0.5",
             )}
           >
-
             <section>
               <p className="mb-1 px-1 font-medium text-sidebar-foreground/70 text-xs">
                 {ptBR.scope.searchResults}

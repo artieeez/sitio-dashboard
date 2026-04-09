@@ -16,6 +16,11 @@ import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { tripSchema } from "@/lib/schemas/trip";
 import {
+  isPassengerPaymentsBranchPath,
+  passengersListLink,
+} from "@/lib/trip-payment-links";
+import {
+  isTripSummaryEditDetailPath,
   navigateFromTripWorkspaceKey,
   tripWorkspaceSelectionKey,
 } from "@/lib/trip-workspace-navigation";
@@ -66,6 +71,18 @@ function TripWorkspaceShell() {
     [navigate, tripId, tripQuery.data?.schoolId],
   );
 
+  const onCloseDetail = useMemo(() => {
+    if (!isPassengerPaymentsBranchPath(pathname)) return undefined;
+    return () => {
+      void navigate(passengersListLink({ tripId }));
+    };
+  }, [pathname, tripId, navigate]);
+
+  const hidePaneDetailClose = useMemo(
+    () => isTripSummaryEditDetailPath(pathname, tripId),
+    [pathname, tripId],
+  );
+
   const [workspaceDirty, setWorkspaceDirty] = useState(false);
   const [outletKey, setOutletKey] = useState(0);
   const handleDiscardDirty = useCallback(() => {
@@ -82,6 +99,8 @@ function TripWorkspaceShell() {
       <ListDetailLayout
         selectedKey={selectedKey}
         onSelectedKeyChange={onSelectedKeyChange}
+        onCloseDetail={onCloseDetail}
+        hidePaneDetailClose={hidePaneDetailClose}
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}
         list={<TripWorkspaceListPane tripId={tripId} />}

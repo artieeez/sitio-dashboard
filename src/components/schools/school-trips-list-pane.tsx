@@ -80,7 +80,7 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
           Não foi possível carregar as viagens.
         </p>
       ) : (
-        <ul className="flex flex-col gap-2 rounded-xl border border-border bg-card p-3 shadow-sm">
+        <ul className="flex flex-col gap-2">
           {tripsQuery.data?.length === 0 ? (
             <li className="p-4 text-sm text-muted-foreground">
               {ptBR.emptyStates.trips}
@@ -88,7 +88,7 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
           ) : null}
           {tripsQuery.data?.map((t) => (
             <li key={t.id}>
-              <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border px-3 py-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border px-3 py-2 bg-card">
                 <button
                   type="button"
                   className="min-w-0 flex-1 rounded-md text-left"

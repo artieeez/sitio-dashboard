@@ -120,20 +120,6 @@ export function SchoolsListPane() {
                   >
                     {ptBR.actions.viewTrips}
                   </button>
-                  {s.url ? (
-                    <a
-                      role="menuitem"
-                      href={s.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={cn(
-                        buttonVariants({ variant: "ghost", size: "sm" }),
-                        "justify-start rounded px-2 py-1.5 font-normal",
-                      )}
-                    >
-                      {ptBR.actions.openLanding}
-                    </a>
-                  ) : null}
                   <button
                     type="button"
                     role="menuitem"

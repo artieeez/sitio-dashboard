@@ -145,3 +145,19 @@ export function navigateFromTripWorkspaceKey(opts: {
     }
   }
 }
+
+function stripTrailingSlash(path: string): string {
+  if (path === "/" || path.length <= 1) return path;
+  return path.endsWith("/") ? path.slice(0, -1) : path;
+}
+
+/** Trip edit detail only: `/trips/:id/summary` or `/schools/.../trips/:id` (no passengers segment). */
+export function isTripSummaryEditDetailPath(
+  pathname: string,
+  tripId: string,
+): boolean {
+  const p = stripTrailingSlash(pathname);
+  if (p === `/trips/${tripId}/summary`) return true;
+  const schoolTrip = p.match(/^\/schools\/[^/]+\/trips\/([0-9a-f-]{36})$/i);
+  return schoolTrip?.[1] === tripId;
+}

@@ -1,13 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { XIcon } from "lucide-react";
 
+import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { TripForm } from "@/components/trips/TripForm";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
-import { tripSchema } from "@/lib/schemas/trip";
-import { cn } from "@/lib/utils";
+import { type Trip, tripSchema } from "@/lib/schemas/trip";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 import { useUiPreferencesStore } from "@/stores/ui-preferences-store";
@@ -78,7 +79,6 @@ export function TripSummaryDetail({
   }
 
   const trip = tripQuery.data;
-  const schoolId = trip.schoolId;
 
   if (
     expectedSchoolId &&
@@ -102,6 +102,27 @@ export function TripSummaryDetail({
   }
 
   return (
+    <TripSummaryEditFormView
+      trip={trip}
+      tripId={tripId}
+      schoolId={trip.schoolId}
+      includeInactiveTrips={includeInactiveTrips}
+      qc={qc}
+    />
+  );
+}
+
+function TripSummaryEditFormView(props: {
+  trip: Trip;
+  tripId: string;
+  schoolId: string;
+  includeInactiveTrips: boolean;
+  qc: ReturnType<typeof useQueryClient>;
+}) {
+  const { trip, tripId, schoolId, includeInactiveTrips, qc } = props;
+  const { requestCloseDetail } = useListDetailLayout();
+
+  return (
     <div className="min-w-0 p-6">
       <div className="flex flex-col gap-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -109,31 +130,17 @@ export function TripSummaryDetail({
             {trip.title?.trim() ||
               `${ptBR.entities.trip} ${tripId.slice(0, 8)}…`}
           </h1>
-          {expectedSchoolId && isUuid(expectedSchoolId) ? (
-            <Link
-              to="/schools/$schoolId/trips/$tripId/passengers"
-              params={{ schoolId: expectedSchoolId, tripId }}
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "no-underline",
-              )}
-            >
-              {ptBR.entities.passengers}
-            </Link>
-          ) : (
-            <Link
-              to="/trips/$tripId/passengers"
-              params={{ tripId }}
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "no-underline",
-              )}
-            >
-              {ptBR.entities.passengers}
-            </Link>
-          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="shrink-0 gap-1 px-2"
+            onClick={() => requestCloseDetail()}
+            aria-label={ptBR.listDetail.detailClose}
+          >
+            <XIcon className="size-4 shrink-0" aria-hidden />
+          </Button>
         </div>
-
         <TripForm
           mode="edit"
           schoolId={schoolId}

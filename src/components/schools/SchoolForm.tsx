@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import {
@@ -11,7 +11,6 @@ import {
   schoolCreateSchema,
   schoolUpdateSchema,
 } from "@/lib/schemas/school";
-import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
 type Mode = "create" | "edit";
@@ -22,7 +21,6 @@ type SchoolFormSnapshot = {
   description: string;
   imageUrl: string;
   faviconUrl: string;
-  active: boolean;
 };
 
 function schoolBaseline(
@@ -36,7 +34,6 @@ function schoolBaseline(
       description: "",
       imageUrl: "",
       faviconUrl: "",
-      active: true,
     };
   }
   return {
@@ -45,7 +42,6 @@ function schoolBaseline(
     description: school.description ?? "",
     imageUrl: school.imageUrl ?? "",
     faviconUrl: school.faviconUrl ?? "",
-    active: school.active ?? true,
   };
 }
 
@@ -60,7 +56,6 @@ export function SchoolForm(props: {
   const [description, setDescription] = useState(school?.description ?? "");
   const [imageUrl, setImageUrl] = useState(school?.imageUrl ?? "");
   const [faviconUrl, setFaviconUrl] = useState(school?.faviconUrl ?? "");
-  const [active, setActive] = useState(school?.active ?? true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,10 +68,9 @@ export function SchoolForm(props: {
       description,
       imageUrl,
       faviconUrl,
-      active,
     };
     return JSON.stringify(current) !== JSON.stringify(baseline);
-  }, [baseline, url, title, description, imageUrl, faviconUrl, active]);
+  }, [baseline, url, title, description, imageUrl, faviconUrl]);
 
   useReportWorkspaceDirty(isDirty);
 
@@ -131,7 +125,7 @@ export function SchoolForm(props: {
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
           faviconUrl: faviconUrl.trim() || null,
-          active,
+          active: true,
         });
         await apiPostJson("/schools", body);
       } else if (school) {
@@ -141,7 +135,7 @@ export function SchoolForm(props: {
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
           faviconUrl: faviconUrl.trim() || null,
-          active,
+          active: school?.active ?? true,
         });
         await apiPatchJson(`/schools/${school.id}`, body);
       }
@@ -179,26 +173,14 @@ export function SchoolForm(props: {
           placeholder="https://"
         />
       </label>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={busy}
-          onClick={fetchMetadata}
-        >
-          {ptBR.actions.fetchMetadata}
-        </Button>
-        {url.trim() ? (
-          <a
-            href={url.trim()}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(buttonVariants({ variant: "outline" }))}
-          >
-            {ptBR.actions.openLanding}
-          </a>
-        ) : null}
-      </div>
+      <Button
+        type="button"
+        variant="outline"
+        disabled={busy}
+        onClick={fetchMetadata}
+      >
+        {ptBR.actions.fetchMetadata}
+      </Button>
       <label className="flex flex-col gap-1 text-sm">
         <span>Título</span>
         <input
@@ -230,14 +212,6 @@ export function SchoolForm(props: {
           value={faviconUrl}
           onChange={(ev) => setFaviconUrl(ev.target.value)}
         />
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={active}
-          onChange={(ev) => setActive(ev.target.checked)}
-        />
-        {ptBR.fields.active}
       </label>
       <Button type="submit" disabled={busy}>
         {ptBR.actions.save}

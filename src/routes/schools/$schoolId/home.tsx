@@ -116,16 +116,6 @@ function SchoolHomeDetailPage() {
             >
               {ptBR.entities.trips}
             </Link>
-            {s.url ? (
-              <a
-                href={s.url}
-                target="_blank"
-                rel="noreferrer"
-                className={cn(buttonVariants({ variant: "outline" }))}
-              >
-                {ptBR.actions.openLanding}
-              </a>
-            ) : null}
             <Button
               variant="destructive"
               type="button"

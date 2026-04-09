@@ -18,6 +18,11 @@ export type PaymentRouteIds = {
   schoolId?: string;
 };
 
+/** Payments index, new, or edit under `/.../passengers/:passengerId/payments/...`. */
+export function isPassengerPaymentsBranchPath(pathname: string): boolean {
+  return /\/passengers\/[0-9a-f-]{36}\/payments(?:\/|$)/i.test(pathname);
+}
+
 export function passengersListLink(opts: {
   tripId: string;
   schoolId?: string;

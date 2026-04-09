@@ -5,11 +5,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { paymentSchema } from "@/lib/schemas/payment";
-import {
-  passengersListLink,
-  paymentEditLink,
-  paymentsNewLink,
-} from "@/lib/trip-payment-links";
+import { paymentEditLink, paymentsNewLink } from "@/lib/trip-payment-links";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
@@ -78,15 +74,6 @@ export function PassengerPaymentHistory(props: {
               {ptBR.actions.newPayment}
             </Link>
           ) : null}
-          <Link
-            {...passengersListLink({ tripId, schoolId })}
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "no-underline",
-            )}
-          >
-            ← {ptBR.entities.passengers}
-          </Link>
         </div>
       </div>
       {removedAt ? (

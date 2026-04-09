@@ -19,7 +19,7 @@ import { ptBR } from "@/messages/pt-BR";
 export type ListDetailLayoutContextValue = {
   selectedKey: string | null | undefined;
   requestSelect: (key: string | null) => void;
-  /** Clears selection via `onSelectedKeyChange(null)` and shows the list on compact. */
+  /** Detail Close (X): runs `onCloseDetail` if provided, else `onSelectedKeyChange(null)`; compact shows list. */
   requestCloseDetail: () => void;
   isCompact: boolean;
 };
@@ -42,6 +42,13 @@ export type ListDetailLayoutPaneProps = {
   detail: ReactNode;
   selectedKey?: string | null;
   onSelectedKeyChange?: (key: string | null) => void;
+  /**
+   * When set, the detail **Close** (X) runs this inside the unsaved guard instead of
+   * `onSelectedKeyChange(null)` (e.g. return to passengers list from payment routes).
+   */
+  onCloseDetail?: () => void;
+  /** When true, omit the default detail chrome row; embed Close in the detail content (e.g. trip title row). */
+  hidePaneDetailClose?: boolean;
   isDirty?: boolean;
   onDiscardDirty?: () => void;
   isCompact: boolean;
@@ -57,6 +64,8 @@ export function ListDetailLayoutPane({
   detail,
   selectedKey = null,
   onSelectedKeyChange,
+  onCloseDetail,
+  hidePaneDetailClose = false,
   isDirty = false,
   onDiscardDirty = () => {},
   isCompact,
@@ -110,10 +119,14 @@ export function ListDetailLayoutPane({
 
   const requestCloseDetail = useCallback(() => {
     tryRun(() => {
-      onSelectedKeyChange?.(null);
+      if (onCloseDetail) {
+        onCloseDetail();
+      } else {
+        onSelectedKeyChange?.(null);
+      }
       setStackTop("list");
     });
-  }, [tryRun, onSelectedKeyChange]);
+  }, [tryRun, onSelectedKeyChange, onCloseDetail]);
 
   const contextValue = useMemo<ListDetailLayoutContextValue>(
     () => ({
@@ -152,7 +165,7 @@ export function ListDetailLayoutPane({
               className={cn(
                 "flex min-h-0 min-w-0 flex-col overflow-y-auto",
                 !isCompact &&
-                  "max-w-sm min-w-[18rem] flex-none border-border border-r",
+                  "min-w-[18rem] flex-1 basis-0 border-border border-r",
               )}
             >
               {list}
@@ -162,9 +175,11 @@ export function ListDetailLayoutPane({
             <section
               aria-label={detailLabel}
               data-testid="list-detail-detail-pane"
-              className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
+              className="flex min-h-0 min-w-0 flex-1 basis-0 flex-col overflow-y-auto"
             >
-              {showDetailClose && (!isCompact || stackTop === "detail") ? (
+              {showDetailClose &&
+              (!isCompact || stackTop === "detail") &&
+              !hidePaneDetailClose ? (
                 <div className="flex shrink-0 justify-end border-border border-b p-2">
                   <Button
                     type="button"
@@ -175,7 +190,6 @@ export function ListDetailLayoutPane({
                     aria-label={ptBR.listDetail.detailClose}
                   >
                     <XIcon className="size-4 shrink-0" aria-hidden />
-                    {ptBR.listDetail.detailClose}
                   </Button>
                 </div>
               ) : null}

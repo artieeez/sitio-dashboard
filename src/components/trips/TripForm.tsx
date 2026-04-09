@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import {
@@ -8,7 +8,6 @@ import {
 } from "@/lib/schemas/metadata";
 import type { Trip } from "@/lib/schemas/trip";
 import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
-import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
 type Mode = "create" | "edit";
@@ -20,7 +19,6 @@ type TripFormSnapshot = {
   description: string;
   imageUrl: string;
   faviconUrl: string;
-  active: boolean;
 };
 
 function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
@@ -66,7 +64,6 @@ export function TripForm(props: {
   const [description, setDescription] = useState(trip?.description ?? "");
   const [imageUrl, setImageUrl] = useState(trip?.imageUrl ?? "");
   const [faviconUrl, setFaviconUrl] = useState(trip?.faviconUrl ?? "");
-  const [active, setActive] = useState(trip?.active ?? true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,7 +77,6 @@ export function TripForm(props: {
       description,
       imageUrl,
       faviconUrl,
-      active,
     };
     return JSON.stringify(current) !== JSON.stringify(baseline);
   }, [
@@ -91,7 +87,6 @@ export function TripForm(props: {
     description,
     imageUrl,
     faviconUrl,
-    active,
   ]);
 
   useReportWorkspaceDirty(isDirty);
@@ -157,7 +152,7 @@ export function TripForm(props: {
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
           faviconUrl: faviconUrl.trim() || null,
-          active,
+          active: true,
         });
         await apiPostJson(`/schools/${schoolId}/trips`, body);
       } else if (trip) {
@@ -168,7 +163,7 @@ export function TripForm(props: {
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
           faviconUrl: faviconUrl.trim() || null,
-          active,
+          active: trip?.active ?? true,
         });
         await apiPatchJson(`/trips/${trip.id}`, body);
       }
@@ -188,10 +183,7 @@ export function TripForm(props: {
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className="flex max-w-xl flex-col gap-3 rounded-md border border-border p-4"
-    >
+    <form onSubmit={submit} className="flex flex-col gap-3 rounded-md">
       {error ? (
         <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {error}
@@ -216,26 +208,14 @@ export function TripForm(props: {
           placeholder="https://"
         />
       </label>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={busy}
-          onClick={fetchMetadata}
-        >
-          {ptBR.actions.fetchMetadata}
-        </Button>
-        {url.trim() ? (
-          <a
-            href={url.trim()}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(buttonVariants({ variant: "outline" }))}
-          >
-            {ptBR.actions.openLanding}
-          </a>
-        ) : null}
-      </div>
+      <Button
+        type="button"
+        variant="outline"
+        disabled={busy}
+        onClick={fetchMetadata}
+      >
+        {ptBR.actions.fetchMetadata}
+      </Button>
       <label className="flex flex-col gap-1 text-sm">
         <span>Título</span>
         <input
@@ -267,14 +247,6 @@ export function TripForm(props: {
           value={faviconUrl}
           onChange={(ev) => setFaviconUrl(ev.target.value)}
         />
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={active}
-          onChange={(ev) => setActive(ev.target.checked)}
-        />
-        {ptBR.fields.active}
       </label>
       <Button type="submit" disabled={busy}>
         {ptBR.actions.save}

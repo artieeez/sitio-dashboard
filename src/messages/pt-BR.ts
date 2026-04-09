@@ -57,7 +57,6 @@ export const ptBR = {
     editPayment: "Editar pagamento",
     markManualPaid: "Marcar pago (sem informações)",
     clearManualPaid: "Desmarcar pago manual",
-    openLanding: "Abrir página",
     fetchMetadata: "Buscar dados da página",
     viewSchool: "Ver escola",
     viewTrips: "Viagens",
