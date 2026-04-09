@@ -88,27 +88,23 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
               {ptBR.emptyStates.trips}
             </li>
           ) : null}
-          {tripsQuery.data?.map((t) => (
+          {(tripsQuery.data ?? []).map((t, rowIndex) => (
             <li key={t.id}>
               <div
                 className={cn(
-                  "flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2 bg-card",
-                  selectedKey === t.id && "ring-2 ring-ring ring-offset-2",
+                  "flex items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2",
+                  selectedKey === t.id &&
+                    "bg-muted/40 ring-2 ring-ring ring-offset-2",
                 )}
               >
                 <button
                   ref={(el) => {
-                    rowButtonRefs.current[
-                      tripsQuery.data?.findIndex((trip) => trip.id === t.id) ?? 0
-                    ] = el;
+                    rowButtonRefs.current[rowIndex] = el;
                   }}
                   type="button"
                   role="option"
                   aria-selected={selectedKey === t.id}
-                  className={cn(
-                    "min-w-0 flex-1 rounded-md text-left",
-                    selectedKey === t.id && "bg-muted/40",
-                  )}
+                  className="min-w-0 flex-1 rounded-md text-left outline-none focus-visible:ring-0"
                   onClick={() => requestSelect(t.id)}
                   onKeyDown={(ev) => {
                     const rows = tripsQuery.data ?? [];
