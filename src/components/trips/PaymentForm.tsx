@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import {
@@ -16,6 +17,35 @@ function brlMinorHint(minor: number): string {
     style: "currency",
     currency: "BRL",
   });
+}
+
+type PaymentFieldBaseline = {
+  amountMinor: string;
+  paidOn: string;
+  location: string;
+  payerIdentity: string;
+};
+
+function paymentFormBaseline(props: {
+  mode: "create" | "edit";
+  payment?: Payment;
+  defaultAmountMinor?: number | null;
+}): PaymentFieldBaseline {
+  const { mode, payment, defaultAmountMinor } = props;
+  if (mode === "edit" && payment) {
+    return {
+      amountMinor: String(payment.amountMinor),
+      paidOn: payment.paidOn,
+      location: payment.location.trim(),
+      payerIdentity: payment.payerIdentity.trim(),
+    };
+  }
+  return {
+    amountMinor: defaultAmountMinor != null ? String(defaultAmountMinor) : "",
+    paidOn: payment?.paidOn ?? new Date().toISOString().slice(0, 10),
+    location: "",
+    payerIdentity: "",
+  };
 }
 
 export function PaymentForm(props: {
@@ -38,21 +68,34 @@ export function PaymentForm(props: {
     onCancel,
   } = props;
   const qc = useQueryClient();
-  const [amountMinor, setAmountMinor] = useState(() =>
-    mode === "edit" && payment
-      ? String(payment.amountMinor)
-      : defaultAmountMinor != null
-        ? String(defaultAmountMinor)
-        : "",
+  const [amountMinor, setAmountMinor] = useState(
+    () =>
+      paymentFormBaseline({ mode, payment, defaultAmountMinor }).amountMinor,
   );
   const [paidOn, setPaidOn] = useState(
-    () => payment?.paidOn ?? new Date().toISOString().slice(0, 10),
+    () => paymentFormBaseline({ mode, payment, defaultAmountMinor }).paidOn,
   );
   const [location, setLocation] = useState(() => payment?.location ?? "");
   const [payerIdentity, setPayerIdentity] = useState(
     () => payment?.payerIdentity ?? "",
   );
   const [error, setError] = useState<string | null>(null);
+
+  const baseline = useMemo(
+    () => paymentFormBaseline({ mode, payment, defaultAmountMinor }),
+    [mode, payment, defaultAmountMinor],
+  );
+
+  const isDirty = useMemo(() => {
+    return (
+      amountMinor !== baseline.amountMinor ||
+      paidOn !== baseline.paidOn ||
+      location.trim() !== baseline.location ||
+      payerIdentity.trim() !== baseline.payerIdentity
+    );
+  }, [amountMinor, paidOn, location, payerIdentity, baseline]);
+
+  useReportWorkspaceDirty(isDirty);
 
   const save = useMutation({
     mutationFn: async () => {

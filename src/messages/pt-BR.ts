@@ -110,7 +110,8 @@ export const ptBR = {
   listDetail: {
     listRegion: "Lista",
     detailRegion: "Detalhes",
-    compactBack: "Voltar à lista",
+    /** Clears list selection and returns to list + placeholder (any list–detail shell). */
+    detailClose: "Fechar",
     /** Detail pane on `/schools/` when no school is selected. */
     selectSchoolPrompt:
       "Selecione uma escola na lista para ver os detalhes aqui.",

@@ -61,7 +61,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const editCurrentSchool = () => {
     if (!activeSchoolId) return;
     navigate({
-      to: "/schools/$schoolId",
+      to: "/schools/$schoolId/home",
       params: { schoolId: activeSchoolId },
     });
   };
@@ -86,7 +86,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     queryKey: queryKeys.school(schoolId),
                   });
                   navigate({
-                    to: "/schools/$schoolId",
+                    to: "/schools/$schoolId/home",
                     params: { schoolId },
                   });
                 }}

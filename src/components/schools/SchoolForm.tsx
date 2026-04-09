@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import {
   fetchPageRequestSchema,
@@ -15,6 +16,39 @@ import { ptBR } from "@/messages/pt-BR";
 
 type Mode = "create" | "edit";
 
+type SchoolFormSnapshot = {
+  url: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  faviconUrl: string;
+  active: boolean;
+};
+
+function schoolBaseline(
+  school: School | undefined,
+  mode: Mode,
+): SchoolFormSnapshot {
+  if (mode === "create" || !school) {
+    return {
+      url: "",
+      title: "",
+      description: "",
+      imageUrl: "",
+      faviconUrl: "",
+      active: true,
+    };
+  }
+  return {
+    url: school.url ?? "",
+    title: school.title ?? "",
+    description: school.description ?? "",
+    imageUrl: school.imageUrl ?? "",
+    faviconUrl: school.faviconUrl ?? "",
+    active: school.active ?? true,
+  };
+}
+
 export function SchoolForm(props: {
   mode: Mode;
   school?: School;
@@ -29,6 +63,22 @@ export function SchoolForm(props: {
   const [active, setActive] = useState(school?.active ?? true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const baseline = useMemo(() => schoolBaseline(school, mode), [school, mode]);
+
+  const isDirty = useMemo(() => {
+    const current: SchoolFormSnapshot = {
+      url,
+      title,
+      description,
+      imageUrl,
+      faviconUrl,
+      active,
+    };
+    return JSON.stringify(current) !== JSON.stringify(baseline);
+  }, [baseline, url, title, description, imageUrl, faviconUrl, active]);
+
+  useReportWorkspaceDirty(isDirty);
 
   async function fetchMetadata() {
     setError(null);

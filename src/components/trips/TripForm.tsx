@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import {
   fetchPageRequestSchema,
@@ -11,6 +12,42 @@ import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
 type Mode = "create" | "edit";
+
+type TripFormSnapshot = {
+  defaultExpectedAmountMinor: string;
+  url: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  faviconUrl: string;
+  active: boolean;
+};
+
+function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
+  if (mode === "create" || !trip) {
+    return {
+      defaultExpectedAmountMinor: "",
+      url: "",
+      title: "",
+      description: "",
+      imageUrl: "",
+      faviconUrl: "",
+      active: true,
+    };
+  }
+  return {
+    defaultExpectedAmountMinor:
+      trip.defaultExpectedAmountMinor != null
+        ? String(trip.defaultExpectedAmountMinor)
+        : "",
+    url: trip.url ?? "",
+    title: trip.title ?? "",
+    description: trip.description ?? "",
+    imageUrl: trip.imageUrl ?? "",
+    faviconUrl: trip.faviconUrl ?? "",
+    active: trip.active ?? true,
+  };
+}
 
 export function TripForm(props: {
   mode: Mode;
@@ -32,6 +69,32 @@ export function TripForm(props: {
   const [active, setActive] = useState(trip?.active ?? true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const baseline = useMemo(() => tripBaseline(trip, mode), [trip, mode]);
+
+  const isDirty = useMemo(() => {
+    const current: TripFormSnapshot = {
+      defaultExpectedAmountMinor,
+      url,
+      title,
+      description,
+      imageUrl,
+      faviconUrl,
+      active,
+    };
+    return JSON.stringify(current) !== JSON.stringify(baseline);
+  }, [
+    baseline,
+    defaultExpectedAmountMinor,
+    url,
+    title,
+    description,
+    imageUrl,
+    faviconUrl,
+    active,
+  ]);
+
+  useReportWorkspaceDirty(isDirty);
 
   async function fetchMetadata() {
     setError(null);

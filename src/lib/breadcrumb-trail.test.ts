@@ -134,7 +134,7 @@ describe("buildBreadcrumbTrail navigation (US2)", () => {
     const tripSeg = trail[1];
     expect(tripSeg).toMatchObject({
       label: "Viagem X",
-      to: "/trips/$tripId",
+      to: "/trips/$tripId/summary",
       params: { tripId: TRIP },
     });
   });

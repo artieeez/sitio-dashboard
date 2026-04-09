@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPostJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import {
@@ -24,6 +25,28 @@ export function PassengerCreateForm(props: {
   const [expectedOverride, setExpectedOverride] = useState("");
   const [confirmNameDuplicate, setConfirmNameDuplicate] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isDirty = useMemo(
+    () =>
+      fullName.trim() !== "" ||
+      cpf.trim() !== "" ||
+      parentName.trim() !== "" ||
+      parentPhoneNumber.trim() !== "" ||
+      parentEmail.trim() !== "" ||
+      expectedOverride.trim() !== "" ||
+      confirmNameDuplicate,
+    [
+      fullName,
+      cpf,
+      parentName,
+      parentPhoneNumber,
+      parentEmail,
+      expectedOverride,
+      confirmNameDuplicate,
+    ],
+  );
+
+  useReportWorkspaceDirty(isDirty);
 
   const create = useMutation({
     mutationFn: async () => {

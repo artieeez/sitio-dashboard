@@ -64,7 +64,7 @@ describe("list-detail-layout shell (M3)", () => {
     );
   });
 
-  it("shows one primary pane at a time in compact mode with a back control on detail", () => {
+  it("shows one primary pane at a time in compact mode with a close control on detail", () => {
     render(
       <ListDetailLayoutPane
         isCompact
@@ -77,11 +77,11 @@ describe("list-detail-layout shell (M3)", () => {
     expect(screen.queryByTestId("compact-list")).not.toBeInTheDocument();
     expect(screen.getByTestId("compact-detail")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: ptBR.listDetail.compactBack }),
+      screen.getByRole("button", { name: ptBR.listDetail.detailClose }),
     ).toBeInTheDocument();
 
     fireEvent.click(
-      screen.getByRole("button", { name: ptBR.listDetail.compactBack }),
+      screen.getByRole("button", { name: ptBR.listDetail.detailClose }),
     );
 
     expect(screen.getByTestId("compact-list")).toBeInTheDocument();
@@ -154,7 +154,7 @@ describe("list-detail-layout shell (M3)", () => {
     expect(onSelectedKeyChange).toHaveBeenCalledWith("b");
   });
 
-  it("when dirty, compact back opens the unsaved dialog before leaving detail", () => {
+  it("when dirty, compact close opens the unsaved dialog before leaving detail", () => {
     const onDiscardDirty = vi.fn();
 
     render(
@@ -169,7 +169,7 @@ describe("list-detail-layout shell (M3)", () => {
     );
 
     fireEvent.click(
-      screen.getByRole("button", { name: ptBR.listDetail.compactBack }),
+      screen.getByRole("button", { name: ptBR.listDetail.detailClose }),
     );
 
     expect(screen.getByTestId("unsaved-changes-dialog")).toBeInTheDocument();

@@ -1,6 +1,6 @@
 /**
  * Unsaved-changes guard (004 M3): **application-layer** blocking for list selection
- * and compact “back” via `tryRun` + Alert Dialog (composed by `ListDetailLayoutPane`).
+ * and compact **Close** (deselect) via `tryRun` + Alert Dialog (composed by `ListDetailLayoutPane`).
  *
  * **Router layer (research.md §4) — chosen API**: In route layouts under
  * `RouterProvider`, use TanStack Router `useBlocker` with `withResolver: true`, e.g.

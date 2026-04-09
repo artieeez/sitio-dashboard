@@ -1,4 +1,4 @@
-import { ArrowLeftIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import {
   createContext,
   type ReactNode,
@@ -19,7 +19,8 @@ import { ptBR } from "@/messages/pt-BR";
 export type ListDetailLayoutContextValue = {
   selectedKey: string | null | undefined;
   requestSelect: (key: string | null) => void;
-  requestCompactBack: () => void;
+  /** Clears selection via `onSelectedKeyChange(null)` and shows the list on compact. */
+  requestCloseDetail: () => void;
   isCompact: boolean;
 };
 
@@ -47,7 +48,8 @@ export type ListDetailLayoutPaneProps = {
 };
 
 /**
- * M3 list–detail shell: list + detail regions, compact stack + back, unsaved dialog.
+ * M3 list–detail shell: list + detail regions, compact stack, unsaved dialog.
+ * Compact detail uses **Close** (deselect / clear detail), not “back” wording.
  * Does not call `useIsMobile` — pass `isCompact` from the parent (or from tests).
  */
 export function ListDetailLayoutPane({
@@ -106,19 +108,25 @@ export function ListDetailLayoutPane({
     [tryRun, onSelectedKeyChange, isCompact],
   );
 
-  const requestCompactBack = useCallback(() => {
-    tryRun(() => setStackTop("list"));
-  }, [tryRun]);
+  const requestCloseDetail = useCallback(() => {
+    tryRun(() => {
+      onSelectedKeyChange?.(null);
+      setStackTop("list");
+    });
+  }, [tryRun, onSelectedKeyChange]);
 
   const contextValue = useMemo<ListDetailLayoutContextValue>(
     () => ({
       selectedKey,
       requestSelect,
-      requestCompactBack,
+      requestCloseDetail,
       isCompact,
     }),
-    [selectedKey, requestSelect, requestCompactBack, isCompact],
+    [selectedKey, requestSelect, requestCloseDetail, isCompact],
   );
+
+  const showDetailClose =
+    selectedKey != null && (!isCompact || stackTop === "detail");
 
   const showList = !isCompact || stackTop === "list";
   const showDetail = !isCompact || stackTop === "detail";
@@ -156,18 +164,18 @@ export function ListDetailLayoutPane({
               data-testid="list-detail-detail-pane"
               className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
             >
-              {isCompact && stackTop === "detail" ? (
-                <div className="flex shrink-0 border-border border-b p-2">
+              {showDetailClose && (!isCompact || stackTop === "detail") ? (
+                <div className="flex shrink-0 justify-end border-border border-b p-2">
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     className="gap-1 px-2"
-                    onClick={() => requestCompactBack()}
-                    aria-label={ptBR.listDetail.compactBack}
+                    onClick={() => requestCloseDetail()}
+                    aria-label={ptBR.listDetail.detailClose}
                   >
-                    <ArrowLeftIcon className="size-4 shrink-0" aria-hidden />
-                    {ptBR.listDetail.compactBack}
+                    <XIcon className="size-4 shrink-0" aria-hidden />
+                    {ptBR.listDetail.detailClose}
                   </Button>
                 </div>
               ) : null}

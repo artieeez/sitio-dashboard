@@ -13,10 +13,10 @@ export const Route = createFileRoute("/schools")({
 });
 
 /**
- * M3 shell: **two-pane list–detail only** at `/schools` (pick a school). Active school
- * lives in the sidebar scope control, so `/schools/$schoolId/*` is a **single** main
- * column; nested routes (e.g. trips) supply their **own** list+detail pair—replacing
- * the previous list, never stacking a school directory list beside them.
+ * M3: **Schools directory** is list–detail only at `/schools` / `/schools/`.
+ * Scoped school hub (`/schools/$schoolId/*`) is a **single** main column so it
+ * does not stack the directory list beside trips or other nested list–detail
+ * shells. `/schools/$schoolId/` redirects to `.../home` (no bare id index URL).
  */
 function SchoolsShell() {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ function SchoolsShell() {
         onSelectedKeyChange={(key) => {
           if (key) {
             void navigate({
-              to: "/schools/$schoolId",
+              to: "/schools/$schoolId/home",
               params: { schoolId: key },
             });
           }

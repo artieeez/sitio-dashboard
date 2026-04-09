@@ -217,7 +217,9 @@ export function buildBreadcrumbTrail(
   if (pathname.startsWith("/trips/") && tId) {
     const sid = sidLinks;
     const tripOnly =
-      pathname === `/trips/${tId}` || pathname === `/trips/${tId}/`;
+      pathname === `/trips/${tId}` ||
+      pathname === `/trips/${tId}/` ||
+      pathname === `/trips/${tId}/summary`;
 
     if (!sid) {
       const items: BreadcrumbSegment[] = [
@@ -235,7 +237,7 @@ export function buildBreadcrumbTrail(
       items.push({
         key: "trip",
         label: tripLabel,
-        to: "/trips/$tripId",
+        to: "/trips/$tripId/summary",
         params: { tripId: tId },
       });
       return appendTripUnderPassengers(
@@ -257,7 +259,7 @@ export function buildBreadcrumbTrail(
     items.push({
       key: "trip",
       label: tripLabel,
-      to: "/trips/$tripId",
+      to: "/trips/$tripId/summary",
       params: { tripId: tId },
     });
     return appendTripUnderPassengers(items, pathname, tId, pId, passengerLabel);

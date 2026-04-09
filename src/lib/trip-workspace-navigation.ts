@@ -7,7 +7,13 @@ export function tripWorkspaceSelectionKey(
 ): string | null {
   if (!tripId) return null;
   const prefix = `/trips/${tripId}`;
-  if (pathname === prefix || pathname === `${prefix}/`) return "trip";
+  if (
+    pathname === `${prefix}/summary` ||
+    pathname === prefix ||
+    pathname === `${prefix}/`
+  ) {
+    return "trip";
+  }
   if (pathname === `${prefix}/passengers/new`) return "passengers-new";
   if (
     pathname === `${prefix}/passengers` ||
@@ -25,15 +31,27 @@ export function tripWorkspaceSelectionKey(
 export function navigateFromTripWorkspaceKey(opts: {
   navigate: (opts: {
     to: string;
-    params: Record<string, string>;
+    params?: Record<string, string>;
   }) => void | Promise<void>;
   tripId: string;
   key: string | null;
+  /** When leaving the trip workspace (close / deselect), return to this school's trips list. */
+  schoolId?: string | null;
 }): void {
-  const { navigate, tripId, key } = opts;
-  if (key == null) return;
+  const { navigate, tripId, key, schoolId } = opts;
+  if (key == null) {
+    if (schoolId) {
+      void navigate({
+        to: "/schools/$schoolId/trips",
+        params: { schoolId },
+      });
+    } else {
+      void navigate({ to: "/schools" });
+    }
+    return;
+  }
   if (key === "trip") {
-    void navigate({ to: "/trips/$tripId", params: { tripId } });
+    void navigate({ to: "/trips/$tripId/summary", params: { tripId } });
     return;
   }
   if (key === "passengers") {

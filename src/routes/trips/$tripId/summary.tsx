@@ -13,11 +13,11 @@ import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 import { useUiPreferencesStore } from "@/stores/ui-preferences-store";
 
-export const Route = createFileRoute("/trips/$tripId/")({
-  component: TripDetailPage,
+export const Route = createFileRoute("/trips/$tripId/summary")({
+  component: TripSummaryPage,
 });
 
-function TripDetailPage() {
+function TripSummaryPage() {
   const { tripId } = Route.useParams();
   const qc = useQueryClient();
   const tripIdValid = isUuid(tripId);
