@@ -63,7 +63,9 @@ export type ListDetailLayoutPaneProps = {
 
 /**
  * M3 list–detail shell: list + detail regions, compact stack, unsaved dialog.
- * Compact detail uses **Close** (deselect / clear detail), not “back” wording.
+ * Desktop: no vertical rule between panes; detail reads as an elevated surface
+ * (rounded leading edge, shadow, ring) over the list. Compact detail uses **Close**
+ * (deselect / clear detail), not “back” wording.
  * Does not call `useIsMobile` — pass `isCompact` from the parent (or from tests).
  */
 export function ListDetailLayoutPane({
@@ -167,6 +169,22 @@ export function ListDetailLayoutPane({
   const detailLabel = ptBR.listDetail.detailRegion;
   const desktopNarrowDetail = !isCompact && narrowDetailPane;
 
+  const detailCloseRow =
+    showDetailClose && !hidePaneDetailClose ? (
+      <div className="flex shrink-0 justify-end border-border border-b p-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="gap-1 px-2"
+          onClick={() => requestCloseDetail()}
+          aria-label={ptBR.listDetail.detailClose}
+        >
+          <XIcon className="size-4 shrink-0" aria-hidden />
+        </Button>
+      </div>
+    ) : null;
+
   return (
     <div
       data-testid="list-detail-layout"
@@ -176,7 +194,7 @@ export function ListDetailLayoutPane({
         <div
           className={cn(
             "flex min-h-0 flex-1",
-            isCompact ? "flex-col" : "flex-row",
+            isCompact ? "flex-col" : "flex-row gap-3 py-3",
           )}
         >
           {showList ? (
@@ -185,8 +203,7 @@ export function ListDetailLayoutPane({
               data-testid="list-detail-list-pane"
               className={cn(
                 "flex min-h-0 min-w-0 flex-col overflow-y-auto",
-                !isCompact &&
-                  "min-w-[18rem] flex-1 basis-0 border-border border-r",
+                !isCompact && "relative z-0 min-w-[18rem] flex-1 basis-0",
               )}
             >
               {list}
@@ -197,29 +214,26 @@ export function ListDetailLayoutPane({
               aria-label={detailLabel}
               data-testid="list-detail-detail-pane"
               className={cn(
-                "flex min-h-0 min-w-0 flex-col overflow-y-auto",
+                "flex min-h-0 min-w-0 flex-col",
+                isCompact
+                  ? "overflow-y-auto"
+                  : "relative z-[1] overflow-hidden rounded-l-2xl bg-card shadow-[0_1px_2px_rgba(0,0,0,0.06),0_6px_16px_-2px_rgba(0,0,0,0.1)] ring-1 ring-border/60 dark:shadow-[0_1px_3px_rgba(0,0,0,0.35),0_12px_28px_-6px_rgba(0,0,0,0.45)]",
                 desktopNarrowDetail
                   ? "w-[min(22rem,36vw)] max-w-[24rem] shrink-0 grow-0 basis-auto"
                   : "min-w-0 flex-1 basis-0",
               )}
             >
-              {showDetailClose &&
-              (!isCompact || stackTop === "detail") &&
-              !hidePaneDetailClose ? (
-                <div className="flex shrink-0 justify-end border-border border-b p-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="gap-1 px-2"
-                    onClick={() => requestCloseDetail()}
-                    aria-label={ptBR.listDetail.detailClose}
-                  >
-                    <XIcon className="size-4 shrink-0" aria-hidden />
-                  </Button>
+              {isCompact ? (
+                <>
+                  {detailCloseRow}
+                  {detail}
+                </>
+              ) : (
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
+                  {detailCloseRow}
+                  {detail}
                 </div>
-              ) : null}
-              {detail}
+              )}
             </section>
           ) : null}
         </div>

@@ -232,7 +232,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       <SidebarInset
         className={cn("flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden")}
       >
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-3 md:px-4">
+        <header className="flex h-14 shrink-0 items-center gap-2 px-3 md:px-4">
           <SidebarTrigger className="-ml-0.5" />
           <Separator
             orientation="vertical"
@@ -274,7 +274,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           </div>
         </header>
         {showMobileBreadcrumbRow ? (
-          <div className="shrink-0 border-b px-3 py-2 md:hidden">
+          <div className="shrink-0 px-3 py-2 md:hidden">
             <DashboardBreadcrumbs />
           </div>
         ) : null}
