@@ -97,10 +97,15 @@ export function DashboardBreadcrumbs() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-scroll when trail content changes (trailKey)
   useLayoutEffect(() => {
+    if (items.length === 0) return;
     const el = scrollRef.current;
     if (!el) return;
     setScrollLeftToEnd(el);
-  }, [trailKey]);
+  }, [trailKey, items.length]);
+
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <Breadcrumb className="min-w-0 flex-1">

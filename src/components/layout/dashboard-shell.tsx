@@ -27,15 +27,38 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSchoolsForScope } from "@/hooks/use-schools-for-scope";
 import { apiJson } from "@/lib/api-client";
+import { buildBreadcrumbTrail, extractPathIds } from "@/lib/breadcrumb-trail";
 import { queryKeys } from "@/lib/query-keys";
 import { schoolSchema } from "@/lib/schemas/school";
 import { schoolIdFromPathname } from "@/lib/school-scope-path";
 import { getRecentSchools, touchRecentSchool } from "@/lib/scope-persistence";
 import { cn } from "@/lib/utils";
+import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 
 function mobileSchoolTitle(title: string | null | undefined) {
   return title?.trim() || ptBR.scope.noSchoolSelected;
+}
+
+const BREADCRUMB_LABEL_PLACEHOLDER = "\u2026";
+
+/** Segment count matches `buildBreadcrumbTrail` for all routes when using path-only school id. */
+function mobileBreadcrumbRowVisible(pathname: string): boolean {
+  const { schoolId, tripId, passengerId } = extractPathIds(pathname);
+  const schoolIdVal = schoolId && isUuid(schoolId) ? schoolId : "";
+  const tripIdVal = tripId && isUuid(tripId) ? tripId : "";
+  const passengerIdVal = passengerId && isUuid(passengerId) ? passengerId : "";
+  return (
+    buildBreadcrumbTrail({
+      pathname,
+      schoolIdFromPath: schoolIdVal,
+      schoolIdForLinks: schoolIdVal,
+      tripId: tripIdVal,
+      passengerId: passengerIdVal,
+      tripLabel: BREADCRUMB_LABEL_PLACEHOLDER,
+      passengerLabel: BREADCRUMB_LABEL_PLACEHOLDER,
+    }).length > 0
+  );
 }
 
 /**
@@ -46,6 +69,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const showMobileBreadcrumbRow = mobileBreadcrumbRowVisible(pathname);
   const activeSchoolId = schoolIdFromPathname(pathname);
   const schoolsQuery = useSchoolsForScope();
   const activeSchoolQuery = useQuery({
@@ -243,9 +267,11 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             <DashboardBreadcrumbs />
           </div>
         </header>
-        <div className="shrink-0 border-b px-3 py-2 md:hidden">
-          <DashboardBreadcrumbs />
-        </div>
+        {showMobileBreadcrumbRow ? (
+          <div className="shrink-0 border-b px-3 py-2 md:hidden">
+            <DashboardBreadcrumbs />
+          </div>
+        ) : null}
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           {children}
         </div>
