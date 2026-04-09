@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { XIcon } from "lucide-react";
 import { z } from "zod";
 
+import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { PassengerPaymentHistory } from "@/components/trips/PassengerPaymentHistory";
 import { PaymentForm } from "@/components/trips/PaymentForm";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { passengerWithStatusSchema } from "@/lib/schemas/passenger";
@@ -14,6 +16,25 @@ import { paymentsIndexLink } from "@/lib/trip-payment-links";
 import { cn } from "@/lib/utils";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
+
+function PaymentFormDetailHeader(props: { title: string }) {
+  const { requestCloseDetail } = useListDetailLayout();
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <h1 className="text-lg font-medium">{props.title}</h1>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="shrink-0 gap-1 px-2"
+        onClick={() => requestCloseDetail()}
+        aria-label={ptBR.listDetail.detailClose}
+      >
+        <XIcon className="size-4 shrink-0" aria-hidden />
+      </Button>
+    </div>
+  );
+}
 
 export function PassengerPaymentsIndexBody(props: {
   tripId: string;
@@ -150,13 +171,10 @@ export function NewPassengerPaymentBody(props: {
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-4 p-6">
-      <Link
-        {...paymentsIndexLink(base)}
-        className="w-fit text-sm text-muted-foreground hover:text-foreground"
-      >
-        ← {ptBR.actions.paymentHistory}
-      </Link>
+    <div className="flex min-w-0 flex-col gap-6 p-6">
+      <PaymentFormDetailHeader
+        title={`${ptBR.actions.create} ${ptBR.entities.payment}`}
+      />
       <PaymentForm
         tripId={tripId}
         passengerId={passengerId}
@@ -276,13 +294,8 @@ export function EditPassengerPaymentBody(props: {
   };
 
   return (
-    <div className="flex min-w-0 flex-col gap-4 p-6">
-      <Link
-        {...paymentsIndexLink(base)}
-        className="w-fit text-sm text-muted-foreground hover:text-foreground"
-      >
-        ← {ptBR.actions.paymentHistory}
-      </Link>
+    <div className="flex min-w-0 flex-col gap-6 p-6">
+      <PaymentFormDetailHeader title={ptBR.actions.editPayment} />
       <PaymentForm
         tripId={tripId}
         passengerId={passengerId}

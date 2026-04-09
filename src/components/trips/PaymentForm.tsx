@@ -169,18 +169,13 @@ export function PaymentForm(props: {
 
   return (
     <form
-      className="flex max-w-xl flex-col gap-3 rounded-md border border-border p-4"
+      className="flex flex-col gap-3"
       onSubmit={(ev) => {
         ev.preventDefault();
         setError(null);
         save.mutate();
       }}
     >
-      <h3 className="text-sm font-medium">
-        {mode === "edit"
-          ? ptBR.actions.editPayment
-          : `${ptBR.actions.create} ${ptBR.entities.payment}`}
-      </h3>
       {error ? (
         <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {error}

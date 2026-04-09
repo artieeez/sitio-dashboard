@@ -23,6 +23,13 @@ export function isPassengerPaymentsBranchPath(pathname: string): boolean {
   return /\/passengers\/[0-9a-f-]{36}\/payments(?:\/|$)/i.test(pathname);
 }
 
+/** Create/edit payment form routes: embed title + close in content (like school form). */
+export function isPassengerPaymentFormDetailPath(pathname: string): boolean {
+  if (!isPassengerPaymentsBranchPath(pathname)) return false;
+  if (pathname.includes("/payments/new")) return true;
+  return /\/payments\/[0-9a-f-]{36}\/edit(?:\/|$)/i.test(pathname);
+}
+
 export function passengersListLink(opts: {
   tripId: string;
   schoolId?: string;

@@ -13,6 +13,7 @@ import { SchoolTripsListPane } from "@/components/schools/school-trips-list-pane
 import { TripWorkspaceListPane } from "@/components/trips/trip-workspace-list-pane";
 import { WorkspaceDirtyProvider } from "@/contexts/workspace-dirty-context";
 import {
+  isPassengerPaymentFormDetailPath,
   isPassengerPaymentsBranchPath,
   passengersListLink,
 } from "@/lib/trip-payment-links";
@@ -97,6 +98,7 @@ function SchoolTripsShell() {
 
   const hidePaneDetailClose = useMemo(() => {
     if (pathname.includes("/trips/new")) return true;
+    if (isPassengerPaymentFormDetailPath(pathname)) return true;
     if (!tripIdFromChild || !isUuid(tripIdFromChild)) return false;
     return isTripSummaryEditDetailPath(pathname, tripIdFromChild);
   }, [pathname, tripIdFromChild]);
