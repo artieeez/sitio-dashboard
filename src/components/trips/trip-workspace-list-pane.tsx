@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import { useCallback } from "react";
 import { z } from "zod";
 
@@ -77,16 +78,21 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4">
-      <Button
-        type="button"
-        variant="default"
-        size="sm"
-        className="w-fit"
-        onClick={() => requestSelect("passengers-new")}
-      >
-        {ptBR.actions.create} {ptBR.entities.passenger}
-      </Button>
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-lg font-medium">{ptBR.entities.passengers}</h1>
+        <Button
+          type="button"
+          variant="default"
+          size="sm"
+          aria-label={ptBR.actions.addPassenger}
+          className="w-fit gap-1"
+          onClick={() => requestSelect("passengers-new")}
+        >
+          <Plus className="size-4 shrink-0" aria-hidden />
+          {ptBR.actions.addPassenger}
+        </Button>
+      </div>
       {passengersQuery.isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando…</p>
       ) : passengersQuery.isError ? (

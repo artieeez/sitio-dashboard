@@ -47,10 +47,14 @@ export const ptBR = {
   toggles: {
     includeInactiveSchools: "Incluir escolas inativas",
     includeInactiveTrips: "Incluir viagens inativas",
-    includeRemovedPassengers: "Incluir passageiros removidos",
+    includeRemovedPassengers: "Incluir removidos",
   },
   actions: {
     create: "Criar",
+    /** Primary CTA on school trips list (`/schools/.../trips`). */
+    addTrip: "Adicionar viagem",
+    /** Primary CTA on trip workspace passengers list pane. */
+    addPassenger: "Adicionar passageiro",
     edit: "Editar",
     save: "Salvar",
     cancel: "Cancelar",

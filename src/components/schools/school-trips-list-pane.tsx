@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import { useRef } from "react";
 import { z } from "zod";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
+import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import { buttonVariants } from "@/components/ui/button";
 import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { apiJson } from "@/lib/api-client";
@@ -70,22 +72,24 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
           <Link
             to="/schools/$schoolId/trips/new"
             params={{ schoolId }}
+            aria-label={ptBR.actions.addTrip}
             className={cn(
               buttonVariants({ variant: "default", size: "sm" }),
-              "w-fit",
+              "w-fit gap-1",
             )}
           >
-            {ptBR.actions.create} {ptBR.entities.trip}
+            <Plus className="size-4 shrink-0" aria-hidden />
+            {ptBR.actions.addTrip}
           </Link>
         </div>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
+        <div className="flex flex-wrap items-center gap-2">
+          <BooleanFilterChip
             checked={includeInactive}
-            onChange={(ev) => setIncludeInactive(ev.target.checked)}
-          />
-          {ptBR.toggles.includeInactiveTrips}
-        </label>
+            onCheckedChange={setIncludeInactive}
+          >
+            {ptBR.toggles.includeInactiveTrips}
+          </BooleanFilterChip>
+        </div>
       </header>
 
       {tripsQuery.isLoading ? (

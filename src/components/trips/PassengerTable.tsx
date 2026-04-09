@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { PassengerManualPaidMenuItems } from "@/components/trips/passenger-manual-paid-menu-items";
+import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { ApiError, apiPatchJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -101,14 +102,14 @@ export function PassengerTable(props: {
 
   return (
     <div className="flex flex-col gap-3">
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
+      <div className="flex flex-wrap items-center gap-2">
+        <BooleanFilterChip
           checked={includeRemoved}
-          onChange={(ev) => onIncludeRemovedChange(ev.target.checked)}
-        />
-        {ptBR.toggles.includeRemovedPassengers}
-      </label>
+          onCheckedChange={onIncludeRemovedChange}
+        >
+          {ptBR.toggles.includeRemovedPassengers}
+        </BooleanFilterChip>
+      </div>
       <div className="overflow-x-auto rounded-md border border-border">
         <table className="w-full min-w-[520px] border-separate border-spacing-0 text-left text-sm">
           <thead className="border-b border-border bg-muted/40">
