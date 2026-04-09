@@ -28,6 +28,7 @@ describe("school-scoped passenger edit route", () => {
     const tripsShell = router.state.matches.find(
       (m) => m.routeId === "/schools/$schoolId/trips",
     );
-    expect(tripsShell?.params?.tripId).toBe(trip);
+    const shellParams = tripsShell?.params as Record<string, string> | undefined;
+    expect(shellParams?.tripId).toBe(trip);
   });
 });

@@ -1,3 +1,49 @@
+import {
+  isPassengerEditDetailPath,
+  isPassengerPaymentsBranchPath,
+  passengerEditLink,
+  paymentsIndexLink,
+  paymentsNewLink,
+} from "@/lib/trip-payment-links";
+
+export type TripWorkspaceNavigateFn = (opts: {
+  to: string;
+  params?: Record<string, string>;
+}) => void | Promise<void>;
+
+/**
+ * Open another passenger’s detail while preserving edit vs payments (index / new) to match the current panel.
+ */
+export function navigateToTripWorkspacePassengerDetail(opts: {
+  navigate: TripWorkspaceNavigateFn;
+  pathname: string;
+  tripId: string;
+  passengerId: string;
+  /** Set when the URL is under `/schools/.../trips/...` (same as payment links). */
+  scopedSchoolId?: string;
+}): void {
+  const { navigate, pathname, tripId, passengerId, scopedSchoolId } = opts;
+  const routeIds = {
+    tripId,
+    passengerId,
+    ...(scopedSchoolId ? { schoolId: scopedSchoolId } : {}),
+  };
+
+  if (isPassengerEditDetailPath(pathname)) {
+    void navigate(passengerEditLink(routeIds));
+    return;
+  }
+  if (pathname.includes("/payments/new")) {
+    void navigate(paymentsNewLink(routeIds));
+    return;
+  }
+  if (isPassengerPaymentsBranchPath(pathname)) {
+    void navigate(paymentsIndexLink(routeIds));
+    return;
+  }
+  void navigate(paymentsIndexLink(routeIds));
+}
+
 /**
  * Derives list–detail selection key from the current path under `/trips/$tripId/*`
  * or `/schools/$schoolId/trips/$tripId/*` (004 M3).
@@ -10,7 +56,9 @@ function selectionKeyFromPassengersRest(rest: string): string {
     return "passengers-new";
   }
   if (rest.startsWith("/passengers")) {
-    const editMatch = rest.match(/^\/passengers\/([0-9a-f-]{36})\/edit(?:\/|$)/);
+    const editMatch = rest.match(
+      /^\/passengers\/([0-9a-f-]{36})\/edit(?:\/|$)/,
+    );
     if (editMatch) {
       return `passenger:${editMatch[1]}`;
     }
