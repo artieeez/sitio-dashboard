@@ -117,6 +117,7 @@ function TripWorkspaceShell() {
         disableLocalUnsavedGuard
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}
+        narrowDetailPane={selectedKey == null}
         list={<TripWorkspaceListPane tripId={tripId} />}
         detail={<Outlet key={outletKey} />}
       />

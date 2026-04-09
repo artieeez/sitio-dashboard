@@ -48,6 +48,12 @@ function SchoolTripsShell() {
     return null;
   }, [pathname, tripIdFromChild]);
 
+  /** Narrow when trips hub or passengers hub (placeholder until a passenger row is opened). */
+  const narrowDetailPane =
+    selectedKey == null &&
+    (!(tripIdFromChild && isUuid(tripIdFromChild)) ||
+      isTripPassengersListHubPath(pathname, tripIdFromChild));
+
   const showTripWorkspaceList =
     tripIdFromChild &&
     isUuid(tripIdFromChild) &&
@@ -140,6 +146,7 @@ function SchoolTripsShell() {
         disableLocalUnsavedGuard
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}
+        narrowDetailPane={narrowDetailPane}
         list={
           showTripWorkspaceList && tripIdFromChild ? (
             <TripWorkspaceListPane tripId={tripIdFromChild} />

@@ -42,6 +42,21 @@ describe("list-detail-layout shell (M3)", () => {
     ).toBeInTheDocument();
   });
 
+  it("uses a narrow detail column on desktop when narrowDetailPane is set", () => {
+    render(
+      <ListDetailLayoutPane
+        isCompact={false}
+        narrowDetailPane
+        list={<span>lista</span>}
+        detail={<span>detalhe</span>}
+      />,
+    );
+
+    const detail = screen.getByTestId("list-detail-detail-pane");
+    expect(detail.className).toContain("max-w-");
+    expect(detail.className).toContain("shrink-0");
+  });
+
   it("marks the selected row with aria-current in expanded mode", () => {
     render(
       <ListDetailLayoutPane

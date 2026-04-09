@@ -74,6 +74,7 @@ function SchoolIdLayout() {
         disableLocalUnsavedGuard
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}
+        narrowDetailPane={selectedKey == null}
         list={<SchoolHomeListPane />}
         detail={<Outlet key={outletKey} />}
       />

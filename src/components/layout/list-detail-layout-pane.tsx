@@ -54,6 +54,11 @@ export type ListDetailLayoutPaneProps = {
   isDirty?: boolean;
   onDiscardDirty?: () => void;
   isCompact: boolean;
+  /**
+   * Desktop only: detail column stays narrow so the list uses most of the width
+   * (empty detail / placeholder). Ignored in compact mode.
+   */
+  narrowDetailPane?: boolean;
 };
 
 /**
@@ -72,6 +77,7 @@ export function ListDetailLayoutPane({
   isDirty = false,
   onDiscardDirty = () => {},
   isCompact,
+  narrowDetailPane = false,
 }: ListDetailLayoutPaneProps) {
   const [stackTop, setStackTop] = useState<"list" | "detail">("list");
   const lastSyncedSelectionRef = useRef<string | null | undefined>(undefined);
@@ -159,6 +165,7 @@ export function ListDetailLayoutPane({
   const showDetail = !isCompact || stackTop === "detail";
   const listLabel = ptBR.listDetail.listRegion;
   const detailLabel = ptBR.listDetail.detailRegion;
+  const desktopNarrowDetail = !isCompact && narrowDetailPane;
 
   return (
     <div
@@ -189,7 +196,12 @@ export function ListDetailLayoutPane({
             <section
               aria-label={detailLabel}
               data-testid="list-detail-detail-pane"
-              className="flex min-h-0 min-w-0 flex-1 basis-0 flex-col overflow-y-auto"
+              className={cn(
+                "flex min-h-0 min-w-0 flex-col overflow-y-auto",
+                desktopNarrowDetail
+                  ? "w-[min(22rem,36vw)] max-w-[24rem] shrink-0 grow-0 basis-auto"
+                  : "min-w-0 flex-1 basis-0",
+              )}
             >
               {showDetailClose &&
               (!isCompact || stackTop === "detail") &&
