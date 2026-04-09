@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
@@ -60,6 +60,15 @@ export function SchoolForm(props: {
   const [error, setError] = useState<string | null>(null);
 
   const baseline = useMemo(() => schoolBaseline(school, mode), [school, mode]);
+
+  useEffect(() => {
+    setUrl(baseline.url);
+    setTitle(baseline.title);
+    setDescription(baseline.description);
+    setImageUrl(baseline.imageUrl);
+    setFaviconUrl(baseline.faviconUrl);
+    setError(null);
+  }, [baseline]);
 
   const isDirty = useMemo(() => {
     const current: SchoolFormSnapshot = {

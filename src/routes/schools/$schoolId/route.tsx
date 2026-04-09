@@ -71,6 +71,7 @@ function SchoolIdLayout() {
         selectedKey={selectedKey}
         onSelectedKeyChange={onSelectedKeyChange}
         hidePaneDetailClose={selectedKey === "edit"}
+        disableLocalUnsavedGuard
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}
         list={<SchoolHomeListPane />}

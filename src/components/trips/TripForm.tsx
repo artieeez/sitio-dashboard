@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
@@ -30,7 +30,6 @@ function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
       description: "",
       imageUrl: "",
       faviconUrl: "",
-      active: true,
     };
   }
   return {
@@ -43,7 +42,6 @@ function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
     description: trip.description ?? "",
     imageUrl: trip.imageUrl ?? "",
     faviconUrl: trip.faviconUrl ?? "",
-    active: trip.active ?? true,
   };
 }
 
@@ -68,6 +66,16 @@ export function TripForm(props: {
   const [error, setError] = useState<string | null>(null);
 
   const baseline = useMemo(() => tripBaseline(trip, mode), [trip, mode]);
+
+  useEffect(() => {
+    setDefaultExpectedAmountMinor(baseline.defaultExpectedAmountMinor);
+    setUrl(baseline.url);
+    setTitle(baseline.title);
+    setDescription(baseline.description);
+    setImageUrl(baseline.imageUrl);
+    setFaviconUrl(baseline.faviconUrl);
+    setError(null);
+  }, [baseline]);
 
   const isDirty = useMemo(() => {
     const current: TripFormSnapshot = {

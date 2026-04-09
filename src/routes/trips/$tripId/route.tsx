@@ -101,6 +101,7 @@ function TripWorkspaceShell() {
         onSelectedKeyChange={onSelectedKeyChange}
         onCloseDetail={onCloseDetail}
         hidePaneDetailClose={hidePaneDetailClose}
+        disableLocalUnsavedGuard
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}
         list={<TripWorkspaceListPane tripId={tripId} />}

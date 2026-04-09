@@ -49,6 +49,8 @@ export type ListDetailLayoutPaneProps = {
   onCloseDetail?: () => void;
   /** When true, omit the default detail chrome row; embed Close in the detail content (e.g. trip title row). */
   hidePaneDetailClose?: boolean;
+  /** When true, delegates unsaved blocking to route-level guard (no local dialog). */
+  disableLocalUnsavedGuard?: boolean;
   isDirty?: boolean;
   onDiscardDirty?: () => void;
   isCompact: boolean;
@@ -66,6 +68,7 @@ export function ListDetailLayoutPane({
   onSelectedKeyChange,
   onCloseDetail,
   hidePaneDetailClose = false,
+  disableLocalUnsavedGuard = false,
   isDirty = false,
   onDiscardDirty = () => {},
   isCompact,
@@ -79,6 +82,17 @@ export function ListDetailLayoutPane({
       isDirty,
       onDiscard: onDiscardDirty,
     });
+
+  const guardedRun = useCallback(
+    (run: () => void) => {
+      if (disableLocalUnsavedGuard) {
+        run();
+        return;
+      }
+      tryRun(run);
+    },
+    [disableLocalUnsavedGuard, tryRun],
+  );
 
   useEffect(() => {
     const wasCompact = prevCompactRef.current;
@@ -107,18 +121,18 @@ export function ListDetailLayoutPane({
 
   const requestSelect = useCallback(
     (key: string | null) => {
-      tryRun(() => {
+      guardedRun(() => {
         onSelectedKeyChange?.(key);
         if (isCompact) {
           setStackTop(key != null ? "detail" : "list");
         }
       });
     },
-    [tryRun, onSelectedKeyChange, isCompact],
+    [guardedRun, onSelectedKeyChange, isCompact],
   );
 
   const requestCloseDetail = useCallback(() => {
-    tryRun(() => {
+    guardedRun(() => {
       if (onCloseDetail) {
         onCloseDetail();
       } else {
@@ -126,7 +140,7 @@ export function ListDetailLayoutPane({
       }
       setStackTop("list");
     });
-  }, [tryRun, onSelectedKeyChange, onCloseDetail]);
+  }, [guardedRun, onSelectedKeyChange, onCloseDetail]);
 
   const contextValue = useMemo<ListDetailLayoutContextValue>(
     () => ({

@@ -34,6 +34,12 @@ export function useUnsavedChangesGuard({
     isDirtyRef.current = isDirty;
   }, [isDirty]);
 
+  useEffect(() => {
+    if (!isDirty) {
+      setLocalPending(null);
+    }
+  }, [isDirty]);
+
   const dialogOpen = localPending !== null;
 
   const cancelDialog = useCallback(() => {

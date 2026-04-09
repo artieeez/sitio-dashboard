@@ -73,6 +73,7 @@ function SchoolsShell() {
           selectedKey={directorySelectedKey}
           onSelectedKeyChange={onDirectorySelectedKeyChange}
           hidePaneDetailClose={hidePaneDetailClose}
+          disableLocalUnsavedGuard
           isDirty={workspaceDirty}
           onDiscardDirty={handleDiscardDirty}
           list={<SchoolsDirectoryHomePane />}

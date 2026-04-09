@@ -28,14 +28,7 @@ export function UnsavedChangesDialog({
   const copy = ptBR.unsavedChanges;
 
   return (
-    <AlertDialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen) {
-          onContinueEditing();
-        }
-      }}
-    >
+    <AlertDialog open={open}>
       <AlertDialogContent data-testid="unsaved-changes-dialog">
         <AlertDialogHeader>
           <AlertDialogTitle>{copy.title}</AlertDialogTitle>

@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { XIcon } from "lucide-react";
 import { useEffect } from "react";
 
@@ -7,7 +7,7 @@ import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { SchoolForm } from "@/components/schools/SchoolForm";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { apiDelete, apiJson } from "@/lib/api-client";
+import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { schoolSchema } from "@/lib/schemas/school";
 import {
@@ -26,7 +26,6 @@ export const Route = createFileRoute("/schools/$schoolId/edit")({
 function SchoolEditPage() {
   const { schoolId } = useParams({ strict: false }) as { schoolId: string };
   const { requestCloseDetail } = useListDetailLayout();
-  const navigate = useNavigate();
   const qc = useQueryClient();
   const includeInactive = useUiPreferencesStore(
     (s) => s.includeInactiveSchools,
