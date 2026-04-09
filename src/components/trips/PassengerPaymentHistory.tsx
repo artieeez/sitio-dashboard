@@ -7,6 +7,7 @@ import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { paymentSchema } from "@/lib/schemas/payment";
+import { tableStickyActionUnselected } from "@/lib/table-sticky-action-surface";
 import { paymentEditLink, paymentsNewLink } from "@/lib/trip-payment-links";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
@@ -140,7 +141,12 @@ export function PassengerPaymentHistory(props: {
                     <td className="px-2 py-1.5 align-middle">
                       {p.payerIdentity}
                     </td>
-                    <td className="sticky right-0 z-[2] w-11 min-w-11 cursor-default bg-background px-2 py-1.5 align-middle whitespace-nowrap group-hover:bg-muted/40">
+                    <td
+                      className={cn(
+                        "sticky right-0 z-[2] w-11 min-w-11 cursor-default px-2 py-1.5 align-middle whitespace-nowrap",
+                        tableStickyActionUnselected,
+                      )}
+                    >
                       <div className="flex justify-end">
                         <RowKebabMenu
                           ariaLabel={ptBR.aria.rowMenu}

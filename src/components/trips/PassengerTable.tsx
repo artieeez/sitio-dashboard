@@ -12,6 +12,10 @@ import {
   passengerWithStatusSchema,
 } from "@/lib/schemas/passenger";
 import {
+  tableStickyActionSelected,
+  tableStickyActionUnselected,
+} from "@/lib/table-sticky-action-surface";
+import {
   passengerEditLink,
   paymentsIndexLink,
   paymentsNewLink,
@@ -211,8 +215,8 @@ export function PassengerTable(props: {
                     className={cn(
                       "sticky right-0 z-[2] w-11 min-w-11 cursor-default px-2 py-1.5 whitespace-nowrap align-middle",
                       selectedPassengerId === p.id
-                        ? "bg-muted/50 group-hover:bg-muted/55"
-                        : "bg-background group-hover:bg-muted/40",
+                        ? tableStickyActionSelected
+                        : tableStickyActionUnselected,
                     )}
                     onClick={(e) => e.stopPropagation()}
                   >

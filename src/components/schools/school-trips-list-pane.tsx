@@ -11,6 +11,10 @@ import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { type Trip, tripSchema } from "@/lib/schemas/trip";
+import {
+  tableStickyActionSelected,
+  tableStickyActionUnselected,
+} from "@/lib/table-sticky-action-surface";
 import { cn } from "@/lib/utils";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
@@ -202,8 +206,8 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                       className={cn(
                         "sticky right-0 z-[2] w-11 min-w-11 cursor-default px-2 py-1.5 align-middle whitespace-nowrap",
                         selectedKey === t.id
-                          ? "bg-muted/50 group-hover:bg-muted/55"
-                          : "bg-background group-hover:bg-muted/40",
+                          ? tableStickyActionSelected
+                          : tableStickyActionUnselected,
                       )}
                       onClick={(e) => e.stopPropagation()}
                     >
