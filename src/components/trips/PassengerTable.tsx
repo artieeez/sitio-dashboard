@@ -110,20 +110,20 @@ export function PassengerTable(props: {
           {ptBR.toggles.includeRemovedPassengers}
         </BooleanFilterChip>
       </div>
-      <div className="overflow-x-auto rounded-md border border-border">
-        <table className="w-full min-w-[520px] border-separate border-spacing-0 text-left text-sm">
-          <thead className="border-b border-border bg-muted/40">
-            <tr>
-              <th className="border-b border-border p-2 font-medium whitespace-normal">
+      <div className="overflow-x-auto rounded-md">
+        <table className="w-full min-w-[520px] border-collapse text-left text-sm">
+          <thead>
+            <tr className="border-b border-border">
+              <th className="px-2 py-1.5 font-medium whitespace-normal">
                 {ptBR.fields.name}
               </th>
-              <th className="border-b border-border p-2 font-medium whitespace-normal">
+              <th className="px-2 py-1.5 font-medium whitespace-normal">
                 {ptBR.fields.cpf}
               </th>
-              <th className="border-b border-border p-2 font-medium whitespace-normal">
+              <th className="px-2 py-1.5 font-medium whitespace-normal">
                 {ptBR.fields.paymentStatus}
               </th>
-              <th className="sticky right-0 z-[3] w-12 min-w-12 border-border border-b border-l bg-muted/40 p-2 text-right font-medium whitespace-normal">
+              <th className="sticky right-0 z-[3] w-11 min-w-11 bg-background px-2 py-1.5 text-right font-medium whitespace-normal">
                 <span className="sr-only">{ptBR.aria.rowMenu}</span>
               </th>
             </tr>
@@ -133,7 +133,7 @@ export function PassengerTable(props: {
               <tr>
                 <td
                   colSpan={4}
-                  className="border-b border-border p-4 text-muted-foreground whitespace-nowrap"
+                  className="border-b border-border px-2 py-3 text-muted-foreground whitespace-nowrap"
                 >
                   {ptBR.entities.passengers} — nenhum registro.
                 </td>
@@ -147,8 +147,10 @@ export function PassengerTable(props: {
                   }}
                   tabIndex={rowNav ? 0 : undefined}
                   className={cn(
-                    "border-b border-border/80",
-                    selectedPassengerId === p.id && "bg-muted/50",
+                    "group border-b border-border/80",
+                    selectedPassengerId === p.id
+                      ? "bg-muted/50 hover:bg-muted/55"
+                      : "hover:bg-muted/40",
                     rowNav && "cursor-pointer outline-none",
                   )}
                   aria-selected={
@@ -188,7 +190,7 @@ export function PassengerTable(props: {
                       : undefined
                   }
                 >
-                  <td className="border-b border-border p-2 whitespace-nowrap">
+                  <td className="px-2 py-1.5 whitespace-nowrap">
                     {p.fullName}
                     {p.removedAt ? (
                       <span className="ml-2 text-xs text-muted-foreground">
@@ -196,26 +198,29 @@ export function PassengerTable(props: {
                       </span>
                     ) : null}
                   </td>
-                  <td className="border-b border-border p-2 tabular-nums whitespace-nowrap">
+                  <td className="px-2 py-1.5 tabular-nums whitespace-nowrap">
                     {p.cpf ?? "—"}
                   </td>
                   <td
-                    className={`border-b border-border p-2 whitespace-nowrap ${statusToneClass(p.status)}`}
+                    className={`px-2 py-1.5 whitespace-nowrap ${statusToneClass(p.status)}`}
                   >
                     {statusLabel(p.status)}
                   </td>
                   {/* biome-ignore lint/a11y/useKeyWithClickEvents: stopPropagation only; menu items handle their own keyboard activation */}
                   <td
                     className={cn(
-                      "sticky right-0 z-[2] w-12 min-w-12 border-border border-b border-l p-2 whitespace-nowrap align-middle",
+                      "sticky right-0 z-[2] w-11 min-w-11 cursor-default px-2 py-1.5 whitespace-nowrap align-middle",
                       selectedPassengerId === p.id
-                        ? "bg-muted/50"
-                        : "bg-background",
+                        ? "bg-muted/50 group-hover:bg-muted/55"
+                        : "bg-background group-hover:bg-muted/40",
                     )}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex justify-end">
-                      <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
+                      <RowKebabMenu
+                        ariaLabel={ptBR.aria.rowMenu}
+                        iconOrientation="horizontal"
+                      >
                         {!p.removedAt ? (
                           <Link
                             role="menuitem"

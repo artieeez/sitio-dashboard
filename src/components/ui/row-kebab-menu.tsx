@@ -1,4 +1,4 @@
-import { MoreVertical } from "lucide-react";
+import { MoreHorizontal, MoreVertical } from "lucide-react";
 import {
   type ReactNode,
   useEffect,
@@ -8,18 +8,22 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
-/** Disclosure-based row menu (vertical kebab icon). */
+/** Disclosure-based row menu (⋮ or ⋯ trigger). */
 export function RowKebabMenu(props: {
   ariaLabel: string;
   children: ReactNode;
+  /** Default vertical (⋮); use horizontal (⋯) in dense tables. */
+  iconOrientation?: "vertical" | "horizontal";
 }) {
-  const { ariaLabel, children } = props;
+  const { ariaLabel, children, iconOrientation = "vertical" } = props;
+  const Icon = iconOrientation === "horizontal" ? MoreHorizontal : MoreVertical;
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
-  const [menuStyle, setMenuStyle] = useState<{ top: number; left: number } | null>(
-    null,
-  );
+  const [menuStyle, setMenuStyle] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   useLayoutEffect(() => {
     if (!open || !triggerRef.current || !menuRef.current) return;
@@ -32,7 +36,10 @@ export function RowKebabMenu(props: {
     );
     const left = Math.max(
       margin,
-      Math.min(window.innerWidth - menuRect.width - margin, rect.right - menuRect.width),
+      Math.min(
+        window.innerWidth - menuRect.width - margin,
+        rect.right - menuRect.width,
+      ),
     );
     setMenuStyle({ top, left });
   }, [open]);
@@ -66,27 +73,32 @@ export function RowKebabMenu(props: {
       <button
         ref={triggerRef}
         type="button"
-        className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"
+        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md hover:bg-muted"
         aria-label={ariaLabel}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <MoreVertical className="h-4 w-4" aria-hidden />
+        <Icon className="pointer-events-none h-4 w-4" aria-hidden />
       </button>
       {open
         ? createPortal(
-            <div
-              ref={menuRef}
-              className="fixed z-50 flex min-w-[12rem] flex-col gap-1 rounded-md border border-border bg-background p-1 text-left shadow-md"
-              style={
-                menuStyle ? { top: menuStyle.top, left: menuStyle.left } : { visibility: "hidden" }
-              }
-              role="menu"
-              onClick={() => setOpen(false)}
-            >
-              {children}
-            </div>,
+            <>
+              {/* biome-ignore lint/a11y/useKeyWithClickEvents: closes after menu item activation; items handle keyboard */}
+              <div
+                ref={menuRef}
+                className="fixed z-50 flex min-w-[12rem] flex-col gap-1 rounded-md border border-border bg-background p-1 text-left shadow-md"
+                style={
+                  menuStyle
+                    ? { top: menuStyle.top, left: menuStyle.left }
+                    : { visibility: "hidden" }
+                }
+                role="menu"
+                onClick={() => setOpen(false)}
+              >
+                {children}
+              </div>
+            </>,
             document.body,
           )
         : null}

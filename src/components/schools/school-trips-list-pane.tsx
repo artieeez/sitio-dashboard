@@ -99,21 +99,18 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
           Não foi possível carregar as viagens.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-md border border-border">
-          <table className="w-full min-w-[480px] border-separate border-spacing-0 text-left text-sm">
-            <thead className="border-b border-border bg-muted/40">
-              <tr>
-                <th
-                  className="w-14 min-w-14 border-b border-border p-2"
-                  aria-hidden
-                />
-                <th className="border-b border-border p-2 font-medium whitespace-normal">
+        <div className="overflow-x-auto rounded-md">
+          <table className="w-full min-w-[480px] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="w-14 min-w-14 px-2 py-1.5" aria-hidden />
+                <th className="px-2 py-1.5 font-medium whitespace-normal">
                   {ptBR.fields.title}
                 </th>
-                <th className="border-b border-border p-2 font-medium whitespace-normal">
+                <th className="px-2 py-1.5 font-medium whitespace-normal">
                   {ptBR.fields.createdAt}
                 </th>
-                <th className="sticky right-0 z-[3] w-12 min-w-12 border-border border-b border-l bg-muted/40 p-2 text-right font-medium whitespace-normal">
+                <th className="sticky right-0 z-[3] w-11 min-w-11 bg-background px-2 py-1.5 text-right font-medium whitespace-normal">
                   <span className="sr-only">{ptBR.aria.rowMenu}</span>
                 </th>
               </tr>
@@ -123,7 +120,7 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                 <tr>
                   <td
                     colSpan={4}
-                    className="border-b border-border p-4 text-muted-foreground whitespace-nowrap"
+                    className="border-b border-border px-2 py-3 text-muted-foreground whitespace-nowrap"
                   >
                     {ptBR.emptyStates.trips}
                   </td>
@@ -137,8 +134,10 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                     }}
                     tabIndex={0}
                     className={cn(
-                      "border-b border-border/80 cursor-pointer outline-none",
-                      selectedKey === t.id && "bg-muted/50",
+                      "group cursor-pointer border-b border-border/80 outline-none",
+                      selectedKey === t.id
+                        ? "bg-muted/50 hover:bg-muted/55"
+                        : "hover:bg-muted/40",
                     )}
                     aria-selected={selectedKey === t.id ? true : undefined}
                     aria-label={tripTitle(t)}
@@ -171,7 +170,7 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                       }
                     }}
                   >
-                    <td className="border-b border-border p-2 align-middle whitespace-nowrap">
+                    <td className="px-2 py-1.5 align-middle whitespace-nowrap">
                       {t.imageUrl?.trim() ? (
                         <img
                           src={t.imageUrl}
@@ -185,7 +184,7 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                         />
                       )}
                     </td>
-                    <td className="border-b border-border p-2 align-middle">
+                    <td className="px-2 py-1.5 align-middle">
                       <span className="font-medium text-foreground">
                         {tripTitle(t)}
                       </span>
@@ -195,19 +194,24 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                         </span>
                       ) : null}
                     </td>
-                    <td className="border-b border-border p-2 align-middle tabular-nums whitespace-nowrap">
+                    <td className="px-2 py-1.5 align-middle tabular-nums whitespace-nowrap">
                       {formatTripCreatedAt(t.createdAt)}
                     </td>
                     {/* biome-ignore lint/a11y/useKeyWithClickEvents: stopPropagation only; menu items handle their own keyboard activation */}
                     <td
                       className={cn(
-                        "sticky right-0 z-[2] w-12 min-w-12 border-border border-b border-l p-2 align-middle whitespace-nowrap",
-                        selectedKey === t.id ? "bg-muted/50" : "bg-background",
+                        "sticky right-0 z-[2] w-11 min-w-11 cursor-default px-2 py-1.5 align-middle whitespace-nowrap",
+                        selectedKey === t.id
+                          ? "bg-muted/50 group-hover:bg-muted/55"
+                          : "bg-background group-hover:bg-muted/40",
                       )}
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex justify-end">
-                        <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
+                        <RowKebabMenu
+                          ariaLabel={ptBR.aria.rowMenu}
+                          iconOrientation="horizontal"
+                        >
                           <button
                             type="button"
                             role="menuitem"
