@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   highlightedPassengerIdFromTripWorkspacePathname,
+  isPassengerPaymentsIndexPath,
   isTripPassengersListHubPath,
 } from "@/lib/trip-payment-links";
 
@@ -78,6 +79,43 @@ describe("isTripPassengersListHubPath", () => {
     ).toBe(false);
     expect(
       isTripPassengersListHubPath(`/trips/${trip}/passengers/new`, trip),
+    ).toBe(false);
+  });
+});
+
+describe("isPassengerPaymentsIndexPath", () => {
+  const trip = "660e8400-e29b-41d4-a716-446655440001";
+  const pass = "770e8400-e29b-41d4-a716-446655440002";
+  const school = "550e8400-e29b-41d4-a716-446655440000";
+
+  it("is true for payments index with or without trailing slash", () => {
+    expect(
+      isPassengerPaymentsIndexPath(
+        `/trips/${trip}/passengers/${pass}/payments`,
+      ),
+    ).toBe(true);
+    expect(
+      isPassengerPaymentsIndexPath(
+        `/trips/${trip}/passengers/${pass}/payments/`,
+      ),
+    ).toBe(true);
+    expect(
+      isPassengerPaymentsIndexPath(
+        `/schools/${school}/trips/${trip}/passengers/${pass}/payments`,
+      ),
+    ).toBe(true);
+  });
+
+  it("is false for new/edit payment routes", () => {
+    expect(
+      isPassengerPaymentsIndexPath(
+        `/trips/${trip}/passengers/${pass}/payments/new`,
+      ),
+    ).toBe(false);
+    expect(
+      isPassengerPaymentsIndexPath(
+        `/trips/${trip}/passengers/${pass}/payments/770e8400-e29b-41d4-a716-446655440003/edit`,
+      ),
     ).toBe(false);
   });
 });

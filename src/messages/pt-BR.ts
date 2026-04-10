@@ -116,6 +116,12 @@ export const ptBR = {
     schools: "Nenhuma escola na lista (com os filtros atuais).",
     trips: "Nenhuma viagem para esta escola (com os filtros atuais).",
   },
+  /** Passenger detail + payments index shared chrome (tabs under header). */
+  passengerWorkspace: {
+    tabNavAria: "Seções do passageiro",
+    detailsTab: "Dados",
+    paymentsTab: "Pagamentos",
+  },
   /** M3 list–detail regions (004); shell `aria-label`s. */
   listDetail: {
     listRegion: "Lista",

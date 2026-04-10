@@ -30,6 +30,14 @@ export function isPassengerPaymentFormDetailPath(pathname: string): boolean {
   return /\/payments\/[0-9a-f-]{36}\/edit(?:\/|$)/i.test(pathname);
 }
 
+/** Payments list for a passenger (`.../payments` or `.../payments/`); close lives in the pane header. */
+export function isPassengerPaymentsIndexPath(pathname: string): boolean {
+  return (
+    isPassengerPaymentsBranchPath(pathname) &&
+    !isPassengerPaymentFormDetailPath(pathname)
+  );
+}
+
 /** Passenger edit form (`.../passengers/:id/edit`): embed title + close like school form. */
 export function isPassengerEditDetailPath(pathname: string): boolean {
   return /\/passengers\/[0-9a-f-]{36}\/edit(?:\/|$)/i.test(pathname);

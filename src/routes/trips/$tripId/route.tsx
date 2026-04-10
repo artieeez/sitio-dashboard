@@ -19,6 +19,7 @@ import {
   isPassengerEditDetailPath,
   isPassengerPaymentFormDetailPath,
   isPassengerPaymentsBranchPath,
+  isPassengerPaymentsIndexPath,
   isTripPassengersListHubPath,
   passengersListLink,
 } from "@/lib/trip-payment-links";
@@ -91,6 +92,7 @@ function TripWorkspaceShell() {
     () =>
       isPassengerEditDetailPath(pathname) ||
       isPassengerPaymentFormDetailPath(pathname) ||
+      isPassengerPaymentsIndexPath(pathname) ||
       isTripSummaryEditDetailPath(pathname, tripId) ||
       isTripPassengersListHubPath(pathname, tripId),
     [pathname, tripId],
