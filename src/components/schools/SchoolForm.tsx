@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
@@ -12,6 +13,8 @@ import {
   schoolUpdateSchema,
 } from "@/lib/schemas/school";
 import { ptBR } from "@/messages/pt-BR";
+
+const METADATA_DEBOUNCE_MS = 600;
 
 type Mode = "create" | "edit";
 
@@ -56,8 +59,11 @@ export function SchoolForm(props: {
   const [description, setDescription] = useState(school?.description ?? "");
   const [imageUrl, setImageUrl] = useState(school?.imageUrl ?? "");
   const [faviconUrl, setFaviconUrl] = useState(school?.faviconUrl ?? "");
-  const [busy, setBusy] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [metadataLoading, setMetadataLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const metadataAbortRef = useRef<AbortController | null>(null);
+  const metadataGenerationRef = useRef(0);
 
   const baseline = useMemo(() => schoolBaseline(school, mode), [school, mode]);
 
@@ -83,49 +89,90 @@ export function SchoolForm(props: {
 
   useReportWorkspaceDirty(isDirty);
 
-  async function fetchMetadata() {
-    setError(null);
-    const parsed = fetchPageRequestSchema.safeParse({ url: url.trim() });
-    if (!parsed.success) {
-      setError("Informe uma URL válida.");
+  useEffect(() => {
+    const trimmed = url.trim();
+    if (trimmed === baseline.url.trim()) {
       return;
     }
-    setBusy(true);
-    try {
-      const raw = await apiPostJson<unknown>(
-        "/metadata/fetch-page",
-        parsed.data,
-      );
-      const meta = landingMetadataSchema.parse(raw);
-      if (meta.title) {
-        setTitle(meta.title);
-      }
-      if (meta.description) {
-        setDescription(meta.description);
-      }
-      if (meta.imageUrl) {
-        setImageUrl(meta.imageUrl);
-      }
-      if (meta.faviconUrl) {
-        setFaviconUrl(meta.faviconUrl);
-      }
-    } catch (e) {
-      if (e instanceof ApiError && e.status === 502) {
-        setError(
-          "Não foi possível buscar a página. Preencha os campos manualmente.",
-        );
-      } else {
-        setError("Falha ao buscar metadados.");
-      }
-    } finally {
-      setBusy(false);
+    const parsed = fetchPageRequestSchema.safeParse({ url: trimmed });
+    if (!parsed.success) {
+      return;
     }
-  }
+
+    const generation = metadataGenerationRef.current;
+    const timeoutId = window.setTimeout(() => {
+      if (metadataGenerationRef.current !== generation) return;
+
+      metadataAbortRef.current?.abort();
+      const ac = new AbortController();
+      metadataAbortRef.current = ac;
+
+      void (async () => {
+        setMetadataLoading(true);
+        setError(null);
+        try {
+          const raw = await apiPostJson<unknown>(
+            "/metadata/fetch-page",
+            parsed.data,
+            { signal: ac.signal },
+          );
+          if (
+            ac.signal.aborted ||
+            metadataGenerationRef.current !== generation
+          ) {
+            return;
+          }
+          const meta = landingMetadataSchema.parse(raw);
+          if (meta.title) {
+            setTitle(meta.title);
+          }
+          if (meta.description) {
+            setDescription(meta.description);
+          }
+          if (meta.imageUrl) {
+            setImageUrl(meta.imageUrl);
+          }
+          if (meta.faviconUrl) {
+            setFaviconUrl(meta.faviconUrl);
+          }
+        } catch (e) {
+          if (
+            ac.signal.aborted ||
+            metadataGenerationRef.current !== generation
+          ) {
+            return;
+          }
+          if (e instanceof ApiError && e.status === 502) {
+            setError(
+              "Não foi possível buscar a página. Preencha os campos manualmente.",
+            );
+          } else {
+            setError("Falha ao buscar metadados.");
+          }
+        } finally {
+          if (
+            metadataGenerationRef.current === generation &&
+            !ac.signal.aborted
+          ) {
+            setMetadataLoading(false);
+          }
+        }
+      })();
+    }, METADATA_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      metadataAbortRef.current?.abort();
+      metadataAbortRef.current = null;
+      metadataGenerationRef.current += 1;
+      setMetadataLoading(false);
+    };
+  }, [url, baseline.url]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setBusy(true);
+    setSubmitting(true);
     try {
       if (mode === "create") {
         const body = schoolCreateSchema.parse({
@@ -159,37 +206,38 @@ export function SchoolForm(props: {
         setError("Erro ao salvar.");
       }
     } finally {
-      setBusy(false);
+      setSubmitting(false);
     }
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className="flex flex-col gap-3"
-    >
+    <form onSubmit={submit} className="flex flex-col gap-3">
       {error ? (
         <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {error}
         </p>
       ) : null}
       <label className="flex flex-col gap-1 text-sm">
-        <span>{ptBR.fields.url}</span>
+        <span className="flex items-center gap-2">
+          {ptBR.fields.url}
+          {metadataLoading ? (
+            <Loader2
+              className="size-4 shrink-0 animate-spin text-muted-foreground"
+              aria-hidden
+            />
+          ) : null}
+          {metadataLoading ? (
+            <span className="sr-only">Carregando dados da página…</span>
+          ) : null}
+        </span>
         <input
           className="rounded border border-input bg-background px-2 py-1"
           value={url}
           onChange={(ev) => setUrl(ev.target.value)}
           placeholder="https://"
+          aria-busy={metadataLoading}
         />
       </label>
-      <Button
-        type="button"
-        variant="outline"
-        disabled={busy}
-        onClick={fetchMetadata}
-      >
-        {ptBR.actions.fetchMetadata}
-      </Button>
       <label className="flex flex-col gap-1 text-sm">
         <span>Título</span>
         <input
@@ -222,7 +270,7 @@ export function SchoolForm(props: {
           onChange={(ev) => setFaviconUrl(ev.target.value)}
         />
       </label>
-      <Button type="submit" disabled={busy}>
+      <Button type="submit" disabled={submitting} className="self-end">
         {ptBR.actions.save}
       </Button>
     </form>
