@@ -5,9 +5,9 @@ import { useRef } from "react";
 import { z } from "zod";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
+import { TripWorkspaceListOptionsMenu } from "@/components/trips/trip-workspace-list-options-menu";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import { buttonVariants } from "@/components/ui/button";
-import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { type Trip, tripSchema } from "@/lib/schemas/trip";
@@ -38,9 +38,20 @@ function tripTitle(t: Trip): string {
  * Trips collection for the M3 list pane under `/schools/$schoolId/trips` (004).
  * Table layout aligned with `PassengerTable` (image, title, created date).
  */
+function navigateToSchoolTripPassengers(
+  navigate: ReturnType<typeof useNavigate>,
+  schoolId: string,
+  tripId: string,
+) {
+  void navigate({
+    to: "/schools/$schoolId/trips/$tripId/passengers",
+    params: { schoolId, tripId },
+  });
+}
+
 export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
   const navigate = useNavigate();
-  const { requestSelect, selectedKey } = useListDetailLayout();
+  const { selectedKey } = useListDetailLayout();
   const rowRefs = useRef<Array<HTMLTableRowElement | null>>([]);
   const includeInactive = useUiPreferencesStore((s) => s.includeInactiveTrips);
   const setIncludeInactive = useUiPreferencesStore(
@@ -145,7 +156,9 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                     )}
                     aria-selected={selectedKey === t.id ? true : undefined}
                     aria-label={tripTitle(t)}
-                    onClick={() => requestSelect(t.id)}
+                    onClick={() =>
+                      navigateToSchoolTripPassengers(navigate, schoolId, t.id)
+                    }
                     onKeyDown={(ev) => {
                       const idx = rows.findIndex((trip) => trip.id === t.id);
                       if (idx < 0) return;
@@ -153,24 +166,24 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                         ev.preventDefault();
                         const next = Math.min(idx + 1, rows.length - 1);
                         rowRefs.current[next]?.focus();
-                        requestSelect(rows[next].id);
                       } else if (ev.key === "ArrowUp") {
                         ev.preventDefault();
                         const prev = Math.max(idx - 1, 0);
                         rowRefs.current[prev]?.focus();
-                        requestSelect(rows[prev].id);
                       } else if (ev.key === "Home") {
                         ev.preventDefault();
                         rowRefs.current[0]?.focus();
-                        requestSelect(rows[0].id);
                       } else if (ev.key === "End") {
                         ev.preventDefault();
                         const last = rows.length - 1;
                         rowRefs.current[last]?.focus();
-                        requestSelect(rows[last].id);
                       } else if (ev.key === "Enter" || ev.key === " ") {
                         ev.preventDefault();
-                        requestSelect(t.id);
+                        navigateToSchoolTripPassengers(
+                          navigate,
+                          schoolId,
+                          t.id,
+                        );
                       }
                     }}
                   >
@@ -212,32 +225,11 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex justify-end">
-                        <RowKebabMenu
-                          ariaLabel={ptBR.aria.rowMenu}
-                          iconOrientation="horizontal"
-                        >
-                          <button
-                            type="button"
-                            role="menuitem"
-                            className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                            onClick={() => requestSelect(t.id)}
-                          >
-                            {ptBR.actions.edit} {ptBR.entities.trip}
-                          </button>
-                          <button
-                            type="button"
-                            role="menuitem"
-                            className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                            onClick={() => {
-                              void navigate({
-                                to: "/schools/$schoolId/trips/$tripId/passengers",
-                                params: { schoolId, tripId: t.id },
-                              });
-                            }}
-                          >
-                            {ptBR.actions.viewPassengers}
-                          </button>
-                        </RowKebabMenu>
+                        <TripWorkspaceListOptionsMenu
+                          tripId={t.id}
+                          schoolId={schoolId}
+                          showViewPassengers
+                        />
                       </div>
                     </td>
                   </tr>

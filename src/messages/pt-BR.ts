@@ -128,6 +128,8 @@ export const ptBR = {
   },
   /** Trip workspace list pane (passengers + trip options menu). */
   tripWorkspace: {
+    /** Header control: leave trip workspace for the school trips list (or escolas). */
+    goBackAria: "Voltar à lista de viagens",
     passengersTab: "Passageiros",
     optionsMenuAria: "Mais opções da viagem",
     /** Placeholder until the header uses `trip.createdAt` from the API. */

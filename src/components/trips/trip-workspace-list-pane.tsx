@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useCallback } from "react";
 import { z } from "zod";
 
@@ -16,7 +16,10 @@ import {
   highlightedPassengerIdFromTripWorkspacePathname,
   scopedSchoolIdFromPathname,
 } from "@/lib/trip-payment-links";
-import { navigateToTripWorkspacePassengerDetail } from "@/lib/trip-workspace-navigation";
+import {
+  navigateFromTripWorkspaceKey,
+  navigateToTripWorkspacePassengerDetail,
+} from "@/lib/trip-workspace-navigation";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 import { useUiPreferencesStore } from "@/stores/ui-preferences-store";
@@ -84,6 +87,16 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
     [navigate, pathname, tripId, paymentsSchoolId],
   );
 
+  const onGoBack = useCallback(() => {
+    navigateFromTripWorkspaceKey({
+      navigate,
+      tripId,
+      key: null,
+      ...(paymentsSchoolId ? { scopedSchoolId: paymentsSchoolId } : {}),
+      tripSchoolIdForClose: tripQuery.data?.schoolId ?? null,
+    });
+  }, [navigate, tripId, paymentsSchoolId, tripQuery.data?.schoolId]);
+
   if (!tripIdValid) {
     return (
       <div className="p-4 text-sm text-muted-foreground">
@@ -95,6 +108,18 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
       <header className="flex min-w-0 items-start gap-3">
+        <div className="mt-0.5 shrink-0">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            aria-label={ptBR.tripWorkspace.goBackAria}
+            onClick={onGoBack}
+          >
+            <ArrowLeft className="size-4 shrink-0" aria-hidden />
+          </Button>
+        </div>
         {tripQuery.isLoading ? (
           <span
             className="size-12 shrink-0 animate-pulse rounded-lg bg-muted"
