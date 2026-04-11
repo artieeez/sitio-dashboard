@@ -40,8 +40,8 @@ export const ptBR = {
   },
   status: {
     pending: "Pendente",
-    settledPayments: "Quitado (pagamentos)",
-    settledManual: "Quitado (manual)",
+    settledPayments: "Quitado",
+    settledManual: "Marcado como pago",
     unavailable: "Indisponível",
   },
   toggles: {
@@ -65,6 +65,7 @@ export const ptBR = {
     editPayment: "Editar pagamento",
     markManualPaid: "Marcar pago (sem informações)",
     clearManualPaid: "Desmarcar pago manual",
+    adjustToPaid: "Ajustar para pago",
     fetchMetadata: "Buscar dados da página",
     viewSchool: "Ver escola",
     viewTrips: "Viagens",
@@ -121,6 +122,7 @@ export const ptBR = {
     tabNavAria: "Seções do passageiro",
     detailsTab: "Dados",
     paymentsTab: "Pagamentos",
+    optionsMenuAria: "Mais opções do passageiro",
   },
   /** M3 list–detail regions (004); shell `aria-label`s. */
   listDetail: {

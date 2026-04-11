@@ -101,12 +101,10 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
         </p>
       ) : (
         <PassengerTable
-          tripId={tripId}
           rows={passengersQuery.data ?? []}
           includeRemoved={includeRemoved}
           onIncludeRemovedChange={(v) => setIncludeRemoved(v)}
           selectedPassengerId={selectedPassengerId}
-          schoolId={paymentsSchoolId}
           onPassengerRowNavigate={onPassengerRowNavigate}
         />
       )}

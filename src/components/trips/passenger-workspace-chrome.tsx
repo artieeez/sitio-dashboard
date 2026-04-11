@@ -1,17 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { User, XIcon } from "lucide-react";
+import {
+  BadgeCheck,
+  CircleOff,
+  Clock,
+  CreditCard,
+  User,
+  XIcon,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { z } from "zod";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
+import { PassengerAdjustToPaidChip } from "@/components/trips/passenger-adjust-to-paid-chip";
+import { PassengerClearManualPaidControl } from "@/components/trips/passenger-clear-manual-paid-control";
+import { PassengerWorkspaceOptionsMenu } from "@/components/trips/passenger-workspace-options-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { apiJson } from "@/lib/api-client";
+import {
+  passengerPaymentStatusBadgeClass,
+  passengerPaymentStatusLabel,
+} from "@/lib/passenger-payment-status";
 import { queryKeys } from "@/lib/query-keys";
 import {
   type PassengerWithStatus,
+  type PaymentStatus,
   passengerWithStatusSchema,
 } from "@/lib/schemas/passenger";
 import { passengerEditLink, paymentsIndexLink } from "@/lib/trip-payment-links";
@@ -19,22 +34,45 @@ import { cn } from "@/lib/utils";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
 
+function PassengerPaymentStatusBadgeIcon({
+  status,
+  className,
+}: {
+  status: PaymentStatus;
+  className?: string;
+}) {
+  const iconClass = cn("size-3.5 shrink-0", className);
+  switch (status) {
+    case "pending":
+      return <Clock className={iconClass} aria-hidden />;
+    case "settled_payments":
+      return <CreditCard className={iconClass} aria-hidden />;
+    case "settled_manual":
+      return <BadgeCheck className={iconClass} aria-hidden />;
+    default:
+      return <CircleOff className={iconClass} aria-hidden />;
+  }
+}
+
 function PassengerWorkspacePaneHeader(props: {
-  fullName: string;
-  cpf: string | null;
+  tripId: string;
+  passenger: PassengerWithStatus;
 }) {
   const { requestCloseDetail } = useListDetailLayout();
-  const cpfLine = props.cpf?.trim() ? props.cpf : "—";
+  const { passenger } = props;
+  const cpfLine = passenger.cpf?.trim() ? passenger.cpf : "—";
+  const statusText = passengerPaymentStatusLabel(passenger.status);
+
   return (
-    <header className="mb-6 flex items-start gap-3">
+    <header className="mb-6 flex flex-wrap items-start gap-3">
       <Avatar size="lg" variant="circle" className="shrink-0">
         <AvatarFallback aria-hidden>
           <User className="size-5 text-muted-foreground" strokeWidth={1.75} />
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0 flex-1">
-        <h1 className="truncate font-semibold text-lg tracking-tight">
-          {props.fullName}
+        <h1 className="break-words font-semibold text-lg tracking-tight">
+          {passenger.fullName}
         </h1>
         <p className="truncate text-muted-foreground text-sm">{cpfLine}</p>
       </div>
@@ -48,6 +86,27 @@ function PassengerWorkspacePaneHeader(props: {
       >
         <XIcon className="size-4 shrink-0" aria-hidden />
       </Button>
+      <div className="min-w-full shrink-0 basis-full">
+        <div className="flex flex-wrap items-start gap-2">
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-medium text-xs",
+              passengerPaymentStatusBadgeClass(passenger.status),
+            )}
+          >
+            <PassengerPaymentStatusBadgeIcon status={passenger.status} />
+            {statusText}
+          </span>
+          <PassengerAdjustToPaidChip
+            tripId={props.tripId}
+            passenger={passenger}
+          />
+          <PassengerClearManualPaidControl
+            tripId={props.tripId}
+            passenger={passenger}
+          />
+        </div>
+      </div>
     </header>
   );
 }
@@ -60,42 +119,50 @@ function PassengerDetailPaymentsTabNav(props: {
   passengerId: string;
   schoolId?: string;
   active: "details" | "payments";
+  passenger: PassengerWithStatus;
 }) {
-  const { tripId, passengerId, schoolId, active } = props;
+  const { tripId, passengerId, schoolId, active, passenger } = props;
   const ids = { tripId, passengerId, schoolId };
   const editLink = passengerEditLink(ids);
   const paymentsLink = paymentsIndexLink(ids);
 
   return (
-    <nav
-      className="mb-6 flex w-full min-w-0 gap-1"
-      aria-label={ptBR.passengerWorkspace.tabNavAria}
-    >
-      <Link
-        {...editLink}
-        className={cn(
-          tabLinkClass,
-          active === "details"
-            ? "border-foreground text-foreground"
-            : "border-transparent text-muted-foreground hover:text-foreground",
-        )}
-        aria-current={active === "details" ? "page" : undefined}
+    <div className="mb-6 flex w-full min-w-0 items-center gap-2">
+      <nav
+        className="flex min-w-0 flex-1 gap-1"
+        aria-label={ptBR.passengerWorkspace.tabNavAria}
       >
-        {ptBR.passengerWorkspace.detailsTab}
-      </Link>
-      <Link
-        {...paymentsLink}
-        className={cn(
-          tabLinkClass,
-          active === "payments"
-            ? "border-foreground text-foreground"
-            : "border-transparent text-muted-foreground hover:text-foreground",
-        )}
-        aria-current={active === "payments" ? "page" : undefined}
-      >
-        {ptBR.passengerWorkspace.paymentsTab}
-      </Link>
-    </nav>
+        <Link
+          {...editLink}
+          className={cn(
+            tabLinkClass,
+            active === "details"
+              ? "border-foreground text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground",
+          )}
+          aria-current={active === "details" ? "page" : undefined}
+        >
+          {ptBR.passengerWorkspace.detailsTab}
+        </Link>
+        <Link
+          {...paymentsLink}
+          className={cn(
+            tabLinkClass,
+            active === "payments"
+              ? "border-foreground text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground",
+          )}
+          aria-current={active === "payments" ? "page" : undefined}
+        >
+          {ptBR.passengerWorkspace.paymentsTab}
+        </Link>
+      </nav>
+      <PassengerWorkspaceOptionsMenu
+        tripId={tripId}
+        passenger={passenger}
+        schoolId={schoolId}
+      />
+    </div>
   );
 }
 
@@ -153,15 +220,13 @@ export function PassengerWorkspacePageShell(props: {
 
   return (
     <div className="min-w-0 p-6">
-      <PassengerWorkspacePaneHeader
-        fullName={passenger.fullName}
-        cpf={passenger.cpf}
-      />
+      <PassengerWorkspacePaneHeader tripId={tripId} passenger={passenger} />
       <PassengerDetailPaymentsTabNav
         tripId={tripId}
         passengerId={passengerId}
         schoolId={schoolId}
         active={activeTab}
+        passenger={passenger}
       />
       {children(passenger)}
     </div>
