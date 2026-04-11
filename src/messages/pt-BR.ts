@@ -85,8 +85,6 @@ export const ptBR = {
   },
   shell: {
     mainNavGroup: "Menu",
-    /** Sidebar group label for edit current school + add school. */
-    schoolGroup: "Escola",
     sidebarNav: "Navegação principal",
     loading: "Carregando resumo…",
     aggregatesError: "Não foi possível carregar o resumo da viagem.",
@@ -96,9 +94,6 @@ export const ptBR = {
   scope: {
     initError: "Não foi possível carregar os dados iniciais do escopo.",
     retry: "Tentar novamente",
-    addSchool: "Adicionar escola",
-    /** Sidebar link to the schools directory (`/schools`). */
-    viewAllSchools: "Ver todas as escolas",
     openMenu: "Abrir menu de escopo",
     editSchool: "Editar escola ativa",
     placeholderUser: "Artur",

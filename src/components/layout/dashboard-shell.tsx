@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, List, Pencil, Plus, Route } from "lucide-react";
+import { Home, Route, School } from "lucide-react";
 import { type ReactNode, useMemo } from "react";
 import { SchoolScopeAvatar } from "@/components/layout/school-scope-header";
 import { SchoolScopeMenu } from "@/components/layout/school-scope-menu";
@@ -39,7 +39,7 @@ function mobileSchoolTitle(title: string | null | undefined) {
 
 /**
  * US5 shell: shadcn sidebar + scrollable main (UI-FR-001).
- * School-scoped nav per specs/002-sidebar-school-scope: Home + Trips (trip list hub per 001).
+ * Main nav: Início, Viagens, Escolas (directory); scope menu above for switching school.
  */
 export function DashboardShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
@@ -64,13 +64,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   });
 
   const activeSchool = activeSchoolQuery.data ?? null;
-  const editCurrentSchool = () => {
-    if (!activeSchoolId) return;
-    navigate({
-      to: "/schools/$schoolId/edit",
-      params: { schoolId: activeSchoolId },
-    });
-  };
 
   return (
     <SidebarProvider className="flex h-[100dvh] min-h-0 w-full flex-row overflow-hidden">
@@ -162,54 +155,19 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                       </SidebarMenuButton>
                     )}
                   </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-            <SidebarGroup>
-              <SidebarGroupLabel>{ptBR.shell.schoolGroup}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      tooltip={ptBR.scope.viewAllSchools}
+                      tooltip={ptBR.entities.schools}
                       render={
                         <Link
                           to="/schools"
-                          aria-label={ptBR.scope.viewAllSchools}
+                          aria-label={ptBR.entities.schools}
                           aria-current={onSchoolsDirectory ? "page" : undefined}
                         />
                       }
                     >
-                      <List className="size-4" />
-                      <span>{ptBR.scope.viewAllSchools}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  {activeSchoolId ? (
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        type="button"
-                        closeMobileOnClick
-                        tooltip={ptBR.scope.editSchool}
-                        onClick={editCurrentSchool}
-                        aria-label={ptBR.scope.editSchool}
-                      >
-                        <Pencil className="size-4" />
-                        <span>{ptBR.scope.editSchool}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ) : null}
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      tooltip={ptBR.scope.addSchool}
-                      render={
-                        <Link
-                          to="/schools/new"
-                          aria-label={ptBR.scope.addSchool}
-                        />
-                      }
-                    >
-                      <Plus className="size-4" />
-                      <span>{ptBR.scope.addSchool}</span>
+                      <School className="size-4" />
+                      <span>{ptBR.entities.schools}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>

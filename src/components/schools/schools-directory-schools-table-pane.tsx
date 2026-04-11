@@ -39,8 +39,28 @@ function navigateToSchoolTrips(
   });
 }
 
+/** Row click: trips from directory; stay on `/schools/$id/edit` when the table is shown next to school edit. */
+function navigateFromSchoolTableRowClick(
+  navigate: ReturnType<typeof useNavigate>,
+  schoolId: string,
+  keepSchoolEditRoute: boolean,
+) {
+  if (keepSchoolEditRoute) {
+    void navigate({
+      to: "/schools/$schoolId/edit",
+      params: { schoolId },
+    });
+    return;
+  }
+  navigateToSchoolTrips(navigate, schoolId);
+}
+
 export type SchoolsDirectorySchoolsTablePaneProps = {
-  /** Highlight this row (e.g. school open for edit in the detail pane). */
+  /**
+   * When set, marks the current school row and makes **row click / Enter / Space**
+   * navigate to `/schools/$schoolId/edit` (switch school while staying on edit)
+   * instead of opening trips.
+   */
   highlightSchoolId?: string;
 };
 
@@ -73,6 +93,7 @@ export function SchoolsDirectorySchoolsTablePane({
   });
 
   const rows = schoolsQuery.data ?? [];
+  const rowClickKeepsSchoolEdit = highlightSchoolId !== undefined;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
@@ -155,7 +176,13 @@ export function SchoolsDirectorySchoolsTablePane({
                       )}
                       aria-selected={rowHighlighted ? true : undefined}
                       aria-label={schoolTitle(s)}
-                      onClick={() => navigateToSchoolTrips(navigate, s.id)}
+                      onClick={() =>
+                        navigateFromSchoolTableRowClick(
+                          navigate,
+                          s.id,
+                          rowClickKeepsSchoolEdit,
+                        )
+                      }
                       onKeyDown={(ev) => {
                         const idx = rows.findIndex((row) => row.id === s.id);
                         if (idx < 0) return;
@@ -176,7 +203,11 @@ export function SchoolsDirectorySchoolsTablePane({
                           rowRefs.current[last]?.focus();
                         } else if (ev.key === "Enter" || ev.key === " ") {
                           ev.preventDefault();
-                          navigateToSchoolTrips(navigate, s.id);
+                          navigateFromSchoolTableRowClick(
+                            navigate,
+                            s.id,
+                            rowClickKeepsSchoolEdit,
+                          );
                         }
                       }}
                     >
