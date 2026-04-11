@@ -58,7 +58,8 @@ function SchoolTripsShell() {
   const showTripWorkspaceList =
     tripIdFromChild &&
     isUuid(tripIdFromChild) &&
-    pathname.includes(`/trips/${tripIdFromChild}/passengers`);
+    (pathname.includes(`/trips/${tripIdFromChild}/passengers`) ||
+      isTripSummaryEditDetailPath(pathname, tripIdFromChild));
 
   const onSelectedKeyChange = useCallback(
     (key: string | null) => {
@@ -104,14 +105,14 @@ function SchoolTripsShell() {
     if (!tripIdFromChild || !isUuid(tripIdFromChild) || !isUuid(schoolId)) {
       return undefined;
     }
+    const tid = tripIdFromChild;
     if (
       isPassengerEditDetailPath(pathname) ||
-      isPassengerPaymentsBranchPath(pathname)
+      isPassengerPaymentsBranchPath(pathname) ||
+      isTripSummaryEditDetailPath(pathname, tid)
     ) {
       return () => {
-        void navigate(
-          passengersListLink({ tripId: tripIdFromChild, schoolId }),
-        );
+        void navigate(passengersListLink({ tripId: tid, schoolId }));
       };
     }
     return undefined;

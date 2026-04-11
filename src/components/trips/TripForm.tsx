@@ -190,75 +190,90 @@ export function TripForm(props: {
     }
   }
 
+  const fieldClass =
+    "w-full min-w-0 rounded border border-input bg-background px-2 py-1";
+
   return (
-    <form onSubmit={submit} className="flex flex-col gap-3 rounded-md">
-      {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <label className="flex flex-col gap-1 text-sm">
-        <span>{ptBR.fields.defaultExpectedAmount}</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          inputMode="numeric"
-          value={defaultExpectedAmountMinor}
-          onChange={(ev) => setDefaultExpectedAmountMinor(ev.target.value)}
-          placeholder="ex.: 15000 (= R$ 150,00)"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>{ptBR.fields.url}</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          value={url}
-          onChange={(ev) => setUrl(ev.target.value)}
-          placeholder="https://"
-        />
-      </label>
-      <Button
-        type="button"
-        variant="outline"
-        disabled={busy}
-        onClick={fetchMetadata}
-      >
-        {ptBR.actions.fetchMetadata}
-      </Button>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>Título</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          value={title}
-          onChange={(ev) => setTitle(ev.target.value)}
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>Descrição</span>
-        <textarea
-          className="min-h-[4rem] rounded border border-input bg-background px-2 py-1"
-          value={description}
-          onChange={(ev) => setDescription(ev.target.value)}
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>URL da imagem</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          value={imageUrl}
-          onChange={(ev) => setImageUrl(ev.target.value)}
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>Favicon</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          value={faviconUrl}
-          onChange={(ev) => setFaviconUrl(ev.target.value)}
-        />
-      </label>
-      <Button type="submit" disabled={busy}>
-        {ptBR.actions.save}
-      </Button>
+    <form
+      onSubmit={submit}
+      className="mx-auto w-full max-w-2xl rounded-md md:max-w-3xl"
+    >
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-x-4 md:gap-y-3">
+        {error ? (
+          <p
+            className="text-sm text-red-600 md:col-span-2 dark:text-red-400"
+            role="alert"
+          >
+            {error}
+          </p>
+        ) : null}
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
+          <span>{ptBR.fields.defaultExpectedAmount}</span>
+          <input
+            className={fieldClass}
+            inputMode="numeric"
+            value={defaultExpectedAmountMinor}
+            onChange={(ev) => setDefaultExpectedAmountMinor(ev.target.value)}
+            placeholder="ex.: 15000 (= R$ 150,00)"
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
+          <span>Título</span>
+          <input
+            className={fieldClass}
+            value={title}
+            onChange={(ev) => setTitle(ev.target.value)}
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+          <span>{ptBR.fields.url}</span>
+          <input
+            className={fieldClass}
+            value={url}
+            onChange={(ev) => setUrl(ev.target.value)}
+            placeholder="https://"
+          />
+        </label>
+        <div className="md:col-span-2">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={busy}
+            onClick={fetchMetadata}
+          >
+            {ptBR.actions.fetchMetadata}
+          </Button>
+        </div>
+        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+          <span>Descrição</span>
+          <textarea
+            className={`min-h-[4rem] ${fieldClass}`}
+            value={description}
+            onChange={(ev) => setDescription(ev.target.value)}
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
+          <span>URL da imagem</span>
+          <input
+            className={fieldClass}
+            value={imageUrl}
+            onChange={(ev) => setImageUrl(ev.target.value)}
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
+          <span>Favicon</span>
+          <input
+            className={fieldClass}
+            value={faviconUrl}
+            onChange={(ev) => setFaviconUrl(ev.target.value)}
+          />
+        </label>
+        <div className="flex justify-end pt-1 md:col-span-2">
+          <Button type="submit" disabled={busy}>
+            {ptBR.actions.save}
+          </Button>
+        </div>
+      </div>
     </form>
   );
 }

@@ -107,6 +107,28 @@ export function passengersListLink(opts: {
   return { to: "/trips/$tripId/passengers", params: { tripId: opts.tripId } };
 }
 
+/** Trip edit/summary: `/trips/:id/summary` or school list–detail `/schools/.../trips/:id`. */
+export function tripSummaryLink(opts: { tripId: string; schoolId?: string }): {
+  to: string;
+  params: Record<string, string>;
+} {
+  if (opts.schoolId) {
+    return {
+      to: "/schools/$schoolId/trips/$tripId",
+      params: { schoolId: opts.schoolId, tripId: opts.tripId },
+    };
+  }
+  return { to: "/trips/$tripId/summary", params: { tripId: opts.tripId } };
+}
+
+/** Any trip-workspace URL under `.../trips/:tripId/passengers/...` (global or school-prefixed). */
+export function isTripWorkspacePassengersPath(
+  pathname: string,
+  tripId: string,
+): boolean {
+  return pathname.includes(`/trips/${tripId}/passengers`);
+}
+
 export function paymentsIndexLink(opts: PaymentRouteIds): {
   to: string;
   params: Record<string, string>;

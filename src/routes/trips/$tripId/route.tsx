@@ -79,7 +79,8 @@ function TripWorkspaceShell() {
     if (!tripIdValid) return undefined;
     if (
       isPassengerEditDetailPath(pathname) ||
-      isPassengerPaymentsBranchPath(pathname)
+      isPassengerPaymentsBranchPath(pathname) ||
+      isTripSummaryEditDetailPath(pathname, tripId)
     ) {
       return () => {
         void navigate(passengersListLink({ tripId }));

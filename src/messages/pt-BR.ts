@@ -70,6 +70,8 @@ export const ptBR = {
     viewSchool: "Ver escola",
     viewTrips: "Viagens",
     viewPassengers: "Passageiros",
+    /** Trip workspace list pane; control is a placeholder until share is implemented. */
+    share: "Compartilhar",
   },
   theme: {
     label: "Tema",
@@ -124,6 +126,13 @@ export const ptBR = {
     paymentsTab: "Pagamentos",
     optionsMenuAria: "Mais opções do passageiro",
   },
+  /** Trip workspace list pane (passengers + trip options menu). */
+  tripWorkspace: {
+    passengersTab: "Passageiros",
+    optionsMenuAria: "Mais opções da viagem",
+    /** Placeholder until the header uses `trip.createdAt` from the API. */
+    subtitleDateMock: "Criada em 9 de abr. de 2026",
+  },
   /** M3 list–detail regions (004); shell `aria-label`s. */
   listDetail: {
     listRegion: "Lista",
@@ -141,6 +150,8 @@ export const ptBR = {
     /** School trips list pane: invalid `schoolId` in URL. */
     invalidSchoolContext: "Identificador de escola inválido.",
     passengersLoadError: "Não foi possível carregar os passageiros.",
+    /** Trip workspace list pane: trip metadata failed to load. */
+    tripContextLoadError: "Não foi possível carregar os dados da viagem.",
     /** Detail pane on `/trips/$tripId/passengers` when no passenger row is selected. */
     selectPassengerPrompt: "Comece escolhendo um passageiro na lista ao lado.",
   },

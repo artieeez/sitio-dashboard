@@ -4,6 +4,8 @@ import {
   highlightedPassengerIdFromTripWorkspacePathname,
   isPassengerPaymentsIndexPath,
   isTripPassengersListHubPath,
+  isTripWorkspacePassengersPath,
+  tripSummaryLink,
 } from "@/lib/trip-payment-links";
 
 describe("highlightedPassengerIdFromTripWorkspacePathname", () => {
@@ -80,6 +82,54 @@ describe("isTripPassengersListHubPath", () => {
     expect(
       isTripPassengersListHubPath(`/trips/${trip}/passengers/new`, trip),
     ).toBe(false);
+  });
+});
+
+describe("isTripWorkspacePassengersPath", () => {
+  const trip = "660e8400-e29b-41d4-a716-446655440001";
+  const school = "550e8400-e29b-41d4-a716-446655440000";
+
+  it("is true for global and school passengers routes", () => {
+    expect(
+      isTripWorkspacePassengersPath(`/trips/${trip}/passengers`, trip),
+    ).toBe(true);
+    expect(
+      isTripWorkspacePassengersPath(
+        `/schools/${school}/trips/${trip}/passengers`,
+        trip,
+      ),
+    ).toBe(true);
+    expect(
+      isTripWorkspacePassengersPath(
+        `/schools/${school}/trips/${trip}/passengers/${"770e8400-e29b-41d4-a716-446655440002"}/payments`,
+        trip,
+      ),
+    ).toBe(true);
+  });
+
+  it("is false for trip summary paths", () => {
+    expect(isTripWorkspacePassengersPath(`/trips/${trip}/summary`, trip)).toBe(
+      false,
+    );
+    expect(
+      isTripWorkspacePassengersPath(`/schools/${school}/trips/${trip}`, trip),
+    ).toBe(false);
+  });
+});
+
+describe("tripSummaryLink", () => {
+  const trip = "660e8400-e29b-41d4-a716-446655440001";
+  const school = "550e8400-e29b-41d4-a716-446655440000";
+
+  it("targets global summary or school trip detail", () => {
+    expect(tripSummaryLink({ tripId: trip })).toEqual({
+      to: "/trips/$tripId/summary",
+      params: { tripId: trip },
+    });
+    expect(tripSummaryLink({ tripId: trip, schoolId: school })).toEqual({
+      to: "/schools/$schoolId/trips/$tripId",
+      params: { schoolId: school, tripId: trip },
+    });
   });
 });
 
