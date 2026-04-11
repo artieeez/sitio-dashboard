@@ -43,6 +43,11 @@ export function isPassengerEditDetailPath(pathname: string): boolean {
   return /\/passengers\/[0-9a-f-]{36}\/edit(?:\/|$)/i.test(pathname);
 }
 
+/** Create passenger (`.../passengers/new`): title row + close aligned in page header. */
+export function isPassengerNewFormPath(pathname: string): boolean {
+  return /\/passengers\/new(?:\/|$)/.test(pathname);
+}
+
 /**
  * Passengers list hub only: `.../trips/:tripId/passengers` (no `/new`, no passenger id).
  * Used to hide the list–detail chrome close control when nothing is selected in the table.

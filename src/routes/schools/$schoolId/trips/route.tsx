@@ -14,6 +14,7 @@ import { TripWorkspaceListPane } from "@/components/trips/trip-workspace-list-pa
 import { WorkspaceDirtyProvider } from "@/contexts/workspace-dirty-context";
 import {
   isPassengerEditDetailPath,
+  isPassengerNewFormPath,
   isPassengerPaymentFormDetailPath,
   isPassengerPaymentsBranchPath,
   isPassengerPaymentsIndexPath,
@@ -121,6 +122,7 @@ function SchoolTripsShell() {
   const hidePaneDetailClose = useMemo(() => {
     if (pathname.includes("/trips/new")) return true;
     if (isPassengerEditDetailPath(pathname)) return true;
+    if (isPassengerNewFormPath(pathname)) return true;
     if (isPassengerPaymentFormDetailPath(pathname)) return true;
     if (isPassengerPaymentsIndexPath(pathname)) return true;
     if (!tripIdFromChild || !isUuid(tripIdFromChild)) return false;

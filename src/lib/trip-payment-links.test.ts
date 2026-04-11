@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   highlightedPassengerIdFromTripWorkspacePathname,
+  isPassengerNewFormPath,
   isPassengerPaymentsIndexPath,
   isTripPassengersListHubPath,
   isTripWorkspacePassengersPath,
@@ -81,6 +82,27 @@ describe("isTripPassengersListHubPath", () => {
     ).toBe(false);
     expect(
       isTripPassengersListHubPath(`/trips/${trip}/passengers/new`, trip),
+    ).toBe(false);
+  });
+});
+
+describe("isPassengerNewFormPath", () => {
+  const trip = "660e8400-e29b-41d4-a716-446655440001";
+  const school = "550e8400-e29b-41d4-a716-446655440000";
+
+  it("is true for global and school create-passenger routes", () => {
+    expect(isPassengerNewFormPath(`/trips/${trip}/passengers/new`)).toBe(true);
+    expect(isPassengerNewFormPath(`/trips/${trip}/passengers/new/`)).toBe(true);
+    expect(
+      isPassengerNewFormPath(`/schools/${school}/trips/${trip}/passengers/new`),
+    ).toBe(true);
+  });
+
+  it("is false for passengers hub and payment new", () => {
+    expect(isPassengerNewFormPath(`/trips/${trip}/passengers`)).toBe(false);
+    const pass = "770e8400-e29b-41d4-a716-446655440002";
+    expect(
+      isPassengerNewFormPath(`/trips/${trip}/passengers/${pass}/payments/new`),
     ).toBe(false);
   });
 });

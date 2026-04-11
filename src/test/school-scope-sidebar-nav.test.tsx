@@ -3,10 +3,6 @@ import { render, screen } from "@testing-library/react";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/components/layout/dashboard-breadcrumbs", () => ({
-  DashboardBreadcrumbs: () => <div data-testid="breadcrumbs-stub" />,
-}));
-
 vi.mock("@/components/layout/school-scope-menu", () => ({
   SchoolScopeMenu: () => null,
 }));
