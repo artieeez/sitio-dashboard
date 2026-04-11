@@ -97,6 +97,8 @@ export const ptBR = {
     initError: "Não foi possível carregar os dados iniciais do escopo.",
     retry: "Tentar novamente",
     addSchool: "Adicionar escola",
+    /** Sidebar link to the schools directory (`/schools`). */
+    viewAllSchools: "Ver todas as escolas",
     openMenu: "Abrir menu de escopo",
     editSchool: "Editar escola ativa",
     placeholderUser: "Artur",
@@ -144,6 +146,9 @@ export const ptBR = {
     /** Detail pane on `/schools/` when no school is selected. */
     selectSchoolPrompt:
       "Selecione uma escola na lista para ver os detalhes aqui.",
+    /** Detail pane on `/schools` / `/schools/`: left table is the directory; no card list here. */
+    schoolsDirectoryDetailHint:
+      "Use a tabela à esquerda para abrir viagens, editar ou criar uma escola.",
     /** Detail pane on `/schools/$schoolId/trips` when no trip is open in this shell. */
     selectTripPrompt:
       "Selecione uma viagem na lista para ver os detalhes aqui.",

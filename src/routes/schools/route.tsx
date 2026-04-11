@@ -17,8 +17,8 @@ export const Route = createFileRoute("/schools")({
 
 /**
  * M3: **Schools directory** list–detail at `/schools`, `/schools/`, and
- * `/schools/new` (create in **detail** pane). List pane is a blank directory
- * “root”; school list lives in the `/schools/` index detail. Scoped
+ * `/schools/new` (create in **detail** pane). List pane shows the schools table
+ * (trip-style). Index detail is a placeholder (no duplicate school list). Scoped
  * `/schools/$schoolId/trips` (and below) is a single main column.
  */
 function SchoolsShell() {
@@ -76,6 +76,7 @@ function SchoolsShell() {
           disableLocalUnsavedGuard
           isDirty={workspaceDirty}
           onDiscardDirty={handleDiscardDirty}
+          narrowDetailPane={directorySelectedKey == null}
           list={<SchoolsDirectoryHomePane />}
           detail={<Outlet key={outletKey} />}
         />

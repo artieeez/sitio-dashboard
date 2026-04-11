@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { SchoolsListPane } from "@/components/schools/schools-list-pane";
+import { SchoolsDirectoryIndexPlaceholder } from "@/components/schools/schools-directory-index-placeholder";
 
 export const Route = createFileRoute("/schools/")({
   component: SchoolsIndexDetail,
 });
 
-/** Schools directory listing: right pane beside blank directory “home” list pane. */
+/** Schools directory hub: detail stays empty; schools are listed in the left table only. */
 function SchoolsIndexDetail() {
-  return <SchoolsListPane />;
+  return <SchoolsDirectoryIndexPlaceholder />;
 }

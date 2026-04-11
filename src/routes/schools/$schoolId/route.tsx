@@ -9,6 +9,7 @@ import { useCallback, useMemo, useState } from "react";
 import { ListDetailLayout } from "@/components/layout/list-detail-layout";
 import { NavigationUnsavedGuard } from "@/components/layout/navigation-unsaved-guard";
 import { SchoolHomeListPane } from "@/components/schools/school-home-list-pane";
+import { SchoolsDirectorySchoolsTablePane } from "@/components/schools/schools-directory-schools-table-pane";
 import { WorkspaceDirtyProvider } from "@/contexts/workspace-dirty-context";
 import { isUuid } from "@/lib/uuid";
 
@@ -41,6 +42,10 @@ function SchoolIdLayout() {
       }
       if (key === "edit") {
         void navigate({ to: "/schools/$schoolId/edit", params: { schoolId } });
+        return;
+      }
+      if (isUuid(key)) {
+        void navigate({ to: "/schools/$schoolId", params: { schoolId: key } });
       }
     },
     [navigate, schoolId],
@@ -75,7 +80,13 @@ function SchoolIdLayout() {
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}
         narrowDetailPane={selectedKey == null}
-        list={<SchoolHomeListPane />}
+        list={
+          selectedKey === "edit" ? (
+            <SchoolsDirectorySchoolsTablePane highlightSchoolId={schoolId} />
+          ) : (
+            <SchoolHomeListPane />
+          )
+        }
         detail={<Outlet key={outletKey} />}
       />
     </WorkspaceDirtyProvider>

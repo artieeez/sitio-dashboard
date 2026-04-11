@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, Pencil, Plus, Route } from "lucide-react";
-import type { ReactNode } from "react";
+import { Home, List, Pencil, Plus, Route } from "lucide-react";
+import { type ReactNode, useMemo } from "react";
 import { SchoolScopeAvatar } from "@/components/layout/school-scope-header";
 import { SchoolScopeMenu } from "@/components/layout/school-scope-menu";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -46,6 +46,13 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const activeSchoolId = schoolIdFromPathname(pathname);
+  const onSchoolsDirectory = useMemo(
+    () =>
+      pathname === "/schools" ||
+      pathname === "/schools/" ||
+      pathname === "/schools/new",
+    [pathname],
+  );
   const schoolsQuery = useSchoolsForScope();
   const activeSchoolQuery = useQuery({
     queryKey: queryKeys.school(activeSchoolId || "skip"),
@@ -85,7 +92,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     queryKey: queryKeys.school(schoolId),
                   });
                   navigate({
-                    to: "/schools/$schoolId",
+                    to: "/schools/$schoolId/trips",
                     params: { schoolId },
                   });
                 }}
@@ -162,6 +169,21 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               <SidebarGroupLabel>{ptBR.shell.schoolGroup}</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      tooltip={ptBR.scope.viewAllSchools}
+                      render={
+                        <Link
+                          to="/schools"
+                          aria-label={ptBR.scope.viewAllSchools}
+                          aria-current={onSchoolsDirectory ? "page" : undefined}
+                        />
+                      }
+                    >
+                      <List className="size-4" />
+                      <span>{ptBR.scope.viewAllSchools}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                   {activeSchoolId ? (
                     <SidebarMenuItem>
                       <SidebarMenuButton
