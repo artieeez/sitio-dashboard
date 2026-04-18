@@ -27,6 +27,11 @@ function SchoolIdLayout() {
     [pathname, schoolId],
   );
 
+  const isIntegrationsBranch = useMemo(
+    () => pathname.startsWith(`/schools/${schoolId}/integrations`),
+    [pathname, schoolId],
+  );
+
   const selectedKey = useMemo(() => {
     const base = `/schools/${schoolId}`;
     const normalized = pathname.replace(/\/$/, "") || pathname;
@@ -62,7 +67,7 @@ function SchoolIdLayout() {
     return <Outlet />;
   }
 
-  if (isTripsBranch) {
+  if (isTripsBranch || isIntegrationsBranch) {
     return <Outlet />;
   }
 

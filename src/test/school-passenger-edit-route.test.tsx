@@ -22,13 +22,17 @@ describe("school-scoped passenger edit route", () => {
       "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit",
     );
 
-    const notFound = router.state.matches.filter((m) => m.status === "notFound");
+    const notFound = router.state.matches.filter(
+      (m) => m.status === "notFound",
+    );
     expect(notFound).toHaveLength(0);
 
     const tripsShell = router.state.matches.find(
       (m) => m.routeId === "/schools/$schoolId/trips",
     );
-    const shellParams = tripsShell?.params as Record<string, string> | undefined;
+    const shellParams = tripsShell?.params as
+      | Record<string, string>
+      | undefined;
     expect(shellParams?.tripId).toBe(trip);
   });
 });

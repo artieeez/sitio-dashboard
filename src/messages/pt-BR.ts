@@ -8,6 +8,8 @@ export const ptBR = {
     schools: "Escolas",
     trip: "Viagem",
     trips: "Viagens",
+    /** Sidebar + page: Wix payment gateway console (005). */
+    wixIntegration: "Integração Wix",
     passenger: "Passageiro",
     passengers: "Passageiros",
     payment: "Pagamento",
@@ -100,7 +102,7 @@ export const ptBR = {
     noSchoolSelected: "Selecione uma escola",
     /** Native tooltip when main sidebar nav is disabled until a school is chosen. */
     selectSchoolForSidebarNav:
-      "Selecione uma escola no menu acima para usar Início e Viagens.",
+      "Selecione uma escola no menu acima para usar Início, Viagens e Integração Wix.",
     searchPlaceholder: "Buscar escola",
     recents: "Escolas recentes",
     noRecents: "Nenhuma escola recente.",
@@ -151,6 +153,9 @@ export const ptBR = {
     invalidTripContext: "Identificador de viagem inválido.",
     /** School trips list pane: invalid `schoolId` in URL. */
     invalidSchoolContext: "Identificador de escola inválido.",
+    /** Wix integration detail when no event row is selected. */
+    selectWixEventPrompt:
+      "Selecione um evento de pagamento na lista para ver os detalhes aqui.",
     passengersLoadError: "Não foi possível carregar os passageiros.",
     /** Trip workspace list pane: trip metadata failed to load. */
     tripContextLoadError: "Não foi possível carregar os dados da viagem.",
@@ -158,6 +163,69 @@ export const ptBR = {
     selectPassengerPrompt: "Comece escolhendo um passageiro na lista ao lado.",
   },
   /** FR-012 unsaved changes Alert Dialog (004). */
+  /** Wix payment gateway event console (005); UI strings only. */
+  wixIntegration: {
+    pageTitle: "Pagamentos Wix",
+    pageSubtitle:
+      "Eventos recebidos do gateway (dados simulados nesta versão).",
+    emptyTable: "Nenhum evento para exibir com os filtros atuais.",
+    emptyOrphans: "Nenhum evento órfão com os filtros atuais.",
+    orphanBadge: "Órfão",
+    noTripLabel: "—",
+    columns: {
+      trip: "Viagem",
+      value: "Valor",
+      buyerName: "Nome do comprador",
+      email: "E-mail",
+      date: "Data",
+    },
+    keys: {
+      publicKey: "Chave pública",
+      publicKeyPlaceholder: "Cole a chave pública do site",
+      privateKey: "Chave da API (privada)",
+      privateKeyPlaceholder: "Cole a chave privada ou da API",
+      revealPrivate: "Mostrar chave",
+      hidePrivate: "Ocultar chave",
+    },
+    toggles: {
+      orphanOnly: "Somente órfãos",
+    },
+    pagination: {
+      pageSize: "Itens por página",
+      prev: "Página anterior",
+      next: "Próxima página",
+      pageOf: (page: number, totalPages: number) =>
+        `Página ${page} de ${totalPages}`,
+    },
+    detailTitle: "Detalhes do evento",
+    detailFields: {
+      id: "ID do evento",
+      dateCreated: "Data de criação",
+      buyerInfoId: "ID do comprador",
+      buyerIndoFirstname: "Nome",
+      buyerIndoLastname: "Sobrenome",
+      buyerIndoPhone: "Telefone do comprador",
+      buyerIndoEmail: "E-mail do comprador",
+      buyerIndoContactId: "ID de contato",
+      orderId: "ID do pedido",
+      orderTotal: "Total do pedido",
+      billingInfoPaymentMethod: "Forma de pagamento",
+      billingInfoCountry: "País (cobrança)",
+      billingInfoSubdivision: "UF / subdivisão",
+      billingInfoCity: "Cidade",
+      billingInfoZipCode: "CEP",
+      billingInfoPhone: "Telefone (cobrança)",
+      billingInfoEmail: "E-mail (cobrança)",
+      billingInfoVatIdNumber: "Documento fiscal",
+      billingInfoVatIdType: "Tipo de documento",
+      billingInfoStreetNumber: "Número",
+      billingInfoStreetName: "Logradouro",
+      lineItemsName: "Item (nome)",
+      lineItemsProductId: "ID do produto",
+      lineItemsOptions: "Opções do item",
+      lineItemsCustomTextFields: "Campos de texto personalizados",
+    },
+  },
   unsavedChanges: {
     title: "Descartar alterações?",
     description:

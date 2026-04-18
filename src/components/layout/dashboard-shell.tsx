@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, Route, School } from "lucide-react";
+import { CreditCard, Home, Route, School } from "lucide-react";
 import { type ReactNode, useMemo } from "react";
 import { SchoolScopeAvatar } from "@/components/layout/school-scope-header";
 import { SchoolScopeMenu } from "@/components/layout/school-scope-menu";
@@ -152,6 +152,34 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                       >
                         <Route className="size-4" />
                         <span>{ptBR.entities.trips}</span>
+                      </SidebarMenuButton>
+                    )}
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    {activeSchoolId ? (
+                      <SidebarMenuButton
+                        tooltip={ptBR.entities.wixIntegration}
+                        render={
+                          <Link
+                            to="/schools/$schoolId/integrations/wix"
+                            params={{ schoolId: activeSchoolId }}
+                            aria-label={ptBR.entities.wixIntegration}
+                          />
+                        }
+                      >
+                        <CreditCard className="size-4" />
+                        <span>{ptBR.entities.wixIntegration}</span>
+                      </SidebarMenuButton>
+                    ) : (
+                      <SidebarMenuButton
+                        type="button"
+                        disabled
+                        tooltip={ptBR.scope.selectSchoolForSidebarNav}
+                        aria-label={ptBR.entities.wixIntegration}
+                        title={ptBR.scope.selectSchoolForSidebarNav}
+                      >
+                        <CreditCard className="size-4" />
+                        <span>{ptBR.entities.wixIntegration}</span>
                       </SidebarMenuButton>
                     )}
                   </SidebarMenuItem>

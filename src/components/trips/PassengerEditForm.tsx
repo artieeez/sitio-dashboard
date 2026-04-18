@@ -83,7 +83,16 @@ export function PassengerEditForm(props: {
       expectedOverride.trim() !== baseline.expectedOverride ||
       confirmNameDuplicate !== baseline.confirmNameDuplicate
     );
-  }, [baseline, fullName, cpf, parentName, parentPhoneNumber, parentEmail, expectedOverride, confirmNameDuplicate]);
+  }, [
+    baseline,
+    fullName,
+    cpf,
+    parentName,
+    parentPhoneNumber,
+    parentEmail,
+    expectedOverride,
+    confirmNameDuplicate,
+  ]);
 
   useReportWorkspaceDirty(isDirty);
 
@@ -131,7 +140,9 @@ export function PassengerEditForm(props: {
       }
       if (e instanceof ApiError) {
         const b = e.body as { message?: string } | null;
-        setError(typeof b?.message === "string" ? b.message : "Erro ao salvar.");
+        setError(
+          typeof b?.message === "string" ? b.message : "Erro ao salvar.",
+        );
         return;
       }
       if (e instanceof Error && e.message === "Valor inválido") {
@@ -143,9 +154,7 @@ export function PassengerEditForm(props: {
   });
 
   if (passengersQuery.isLoading) {
-    return (
-      <p className="text-sm text-muted-foreground">Carregando…</p>
-    );
+    return <p className="text-sm text-muted-foreground">Carregando…</p>;
   }
 
   if (!passenger) {

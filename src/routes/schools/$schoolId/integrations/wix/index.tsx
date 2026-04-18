@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
+
 import { ptBR } from "@/messages/pt-BR";
 
-export const Route = createFileRoute("/schools/$schoolId/trips/")({
-  component: SchoolTripsIndexDetailPlaceholder,
+export const Route = createFileRoute("/schools/$schoolId/integrations/wix/")({
+  component: WixIntegrationDetailPlaceholder,
 });
 
-function SchoolTripsIndexDetailPlaceholder() {
+function WixIntegrationDetailPlaceholder() {
   return (
     <div
       className="flex min-h-[min(240px,45dvh)] flex-col items-center justify-center gap-4 px-6 py-12 text-center"
@@ -17,7 +18,7 @@ function SchoolTripsIndexDetailPlaceholder() {
         aria-hidden
       />
       <p className="max-w-sm text-muted-foreground text-sm">
-        {ptBR.listDetail.selectTripPrompt}
+        {ptBR.listDetail.selectWixEventPrompt}
       </p>
     </div>
   );
