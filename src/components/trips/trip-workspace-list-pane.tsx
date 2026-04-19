@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import {
+  ListPanePageHeader,
   ListPaneScrollArea,
   ListPaneShell,
 } from "@/components/layout/list-pane-layout";
@@ -181,11 +182,10 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
             />
           </div>
         </header>
-        <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
-          <span className="font-medium text-sm">
-            {ptBR.tripWorkspace.passengersTab}
-          </span>
-          <div className="flex shrink-0 items-center gap-2">
+        <ListPanePageHeader
+          variant="compact"
+          title={ptBR.tripWorkspace.passengersTab}
+          menu={
             <Button
               type="button"
               variant="outline"
@@ -197,8 +197,8 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
               <Plus className="size-4 shrink-0" aria-hidden />
               {ptBR.actions.addPassenger}
             </Button>
-          </div>
-        </div>
+          }
+        />
         {passengersQuery.isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : passengersQuery.isError ? (

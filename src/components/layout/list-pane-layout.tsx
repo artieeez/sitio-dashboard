@@ -37,7 +37,7 @@ export type ListPaneLeadProps = {
   className?: string;
 };
 
-/** Groups `ListPanePageHeader` and `ListPaneFilters` with spacing (non-scroll-isolated header block). */
+/** Groups `ListPanePageHeader` (any variant) and `ListPaneFilters` with spacing (non-scroll-isolated header block). */
 export function ListPaneLead({ children, className }: ListPaneLeadProps) {
   return (
     <div className={cn("flex shrink-0 flex-col gap-4", className)}>
@@ -52,6 +52,10 @@ export type ListPanePageHeaderProps = {
   /** e.g. kebab menu (`DropdownMenu`); rendered at the end of the title row. */
   menu?: ReactNode;
   className?: string;
+  /**
+   * `default`: page title (`text-lg`). `compact`: subsection toolbar (`text-sm`), wraps like trip workspace section rows.
+   */
+  variant?: "default" | "compact";
 };
 
 /** Title + optional subtitle + optional trailing actions on one row. */
@@ -60,7 +64,31 @@ export function ListPanePageHeader({
   subtitle,
   menu,
   className,
+  variant = "default",
 }: ListPanePageHeaderProps) {
+  if (variant === "compact") {
+    return (
+      <div
+        className={cn(
+          "flex min-w-0 flex-wrap items-center justify-between gap-2",
+          className,
+        )}
+      >
+        <div className="min-w-0">
+          <h2 className="text-sm font-medium">{title}</h2>
+          {subtitle != null ? (
+            <p className="mt-0.5 text-muted-foreground text-xs">{subtitle}</p>
+          ) : null}
+        </div>
+        {menu != null ? (
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {menu}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className={cn("flex items-start justify-between gap-3", className)}>
       <div className="min-w-0 flex-1">

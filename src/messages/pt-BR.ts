@@ -129,6 +129,7 @@ export const ptBR = {
   emptyStates: {
     schools: "Nenhuma escola na lista (com os filtros atuais).",
     trips: "Nenhuma viagem para esta escola (com os filtros atuais).",
+    payments: "Nenhum pagamento registrado.",
   },
   /** Passenger detail + payments index shared chrome (tabs under header). */
   passengerWorkspace: {
