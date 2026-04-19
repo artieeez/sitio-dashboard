@@ -1,6 +1,12 @@
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, MoreVertical, Settings2 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { MoreVertical, Settings2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+
+import type { WixPaymentEventListItem } from "@/lib/wix-payment-event-schemas";
+import type { WixPageSize } from "@/components/wix/wix-payment-events-table-toolbar";
+import { cn } from "@/lib/utils";
+import { isUuid } from "@/lib/uuid";
+import { MOCK_WIX_PAYMENT_EVENT_ROWS } from "@/lib/wix-payment-events.fixtures";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
@@ -11,15 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SortableListTable } from "@/components/ui/sortable-list-table";
 import { WIX_CONFIG_SELECTED_KEY } from "@/components/wix/wix-integration-config-context";
-import {
-  type WixPageSize,
-  WixPaymentEventsTableToolbar,
-} from "@/components/wix/wix-payment-events-table-toolbar";
-import { cn } from "@/lib/utils";
-import { isUuid } from "@/lib/uuid";
-import type { WixPaymentEventListItem } from "@/lib/wix-payment-event-schemas";
-import { MOCK_WIX_PAYMENT_EVENT_ROWS } from "@/lib/wix-payment-events.fixtures";
+import { WixPaymentEventsTableToolbar } from "@/components/wix/wix-payment-events-table-toolbar";
 import { ptBR } from "@/messages/pt-BR";
 
 export type WixEventSortColumn = "trip" | "value" | "name" | "email" | "date";
@@ -100,7 +100,7 @@ function compareRows(
 export type WixPaymentEventsListPaneProps = {
   schoolId: string;
   /** Optional fixture override for automated tests (defaults to mock rows). */
-  rowsOverride?: WixPaymentEventListItem[];
+  rowsOverride?: Array<WixPaymentEventListItem>;
 };
 
 export function WixPaymentEventsListPane({
@@ -110,7 +110,6 @@ export function WixPaymentEventsListPane({
   const sourceRows = rowsOverride ?? MOCK_WIX_PAYMENT_EVENT_ROWS;
   const navigate = useNavigate();
   const { selectedKey } = useListDetailLayout();
-  const rowRefs = useRef<Array<HTMLTableRowElement | null>>([]);
 
   const [orphanOnly, setOrphanOnly] = useState(false);
   const [sort, setSort] = useState<SortState>({
@@ -169,15 +168,6 @@ export function WixPaymentEventsListPane({
       return { column, direction: "asc" };
     });
     setPageIndex(0);
-  }
-
-  function sortIcon(column: WixEventSortColumn) {
-    if (sort.column !== column) return null;
-    return sort.direction === "asc" ? (
-      <ArrowUp className="size-3.5 shrink-0 opacity-70" aria-hidden />
-    ) : (
-      <ArrowDown className="size-3.5 shrink-0 opacity-70" aria-hidden />
-    );
   }
 
   if (!schoolIdValid) {
@@ -247,155 +237,61 @@ export function WixPaymentEventsListPane({
           </div>
         </header>
 
-        <div className="max-w-full min-h-0 overflow-x-auto rounded-md">
-          <table className="w-full min-w-[800px] border-collapse text-left text-sm">
-            <thead>
-              <tr>
-                <th className="sticky top-0 z-[1] border-border border-b bg-background px-2 py-1.5 align-middle font-medium whitespace-nowrap">
-                  <button
-                    type="button"
-                    className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    onClick={() => toggleSort("trip")}
-                  >
-                    {ptBR.wixIntegration.columns.trip}
-                    {sortIcon("trip")}
-                  </button>
-                </th>
-                <th className="sticky top-0 z-[1] border-border border-b bg-background px-2 py-1.5 align-middle font-medium whitespace-nowrap">
-                  <button
-                    type="button"
-                    className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    onClick={() => toggleSort("value")}
-                  >
-                    {ptBR.wixIntegration.columns.value}
-                    {sortIcon("value")}
-                  </button>
-                </th>
-                <th className="sticky top-0 z-[1] border-border border-b bg-background px-2 py-1.5 align-middle font-medium whitespace-nowrap">
-                  <button
-                    type="button"
-                    className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    onClick={() => toggleSort("name")}
-                  >
-                    {ptBR.wixIntegration.columns.buyerName}
-                    {sortIcon("name")}
-                  </button>
-                </th>
-                <th className="sticky top-0 z-[1] border-border border-b bg-background px-2 py-1.5 align-middle font-medium whitespace-nowrap">
-                  <button
-                    type="button"
-                    className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    onClick={() => toggleSort("email")}
-                  >
-                    {ptBR.wixIntegration.columns.email}
-                    {sortIcon("email")}
-                  </button>
-                </th>
-                <th className="sticky top-0 z-[1] border-border border-b bg-background px-2 py-1.5 align-middle font-medium whitespace-nowrap">
-                  <button
-                    type="button"
-                    className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    onClick={() => toggleSort("date")}
-                  >
-                    {ptBR.wixIntegration.columns.date}
-                    {sortIcon("date")}
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {pagedRows.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="border-b border-border px-2 py-3 text-muted-foreground whitespace-nowrap"
-                  >
-                    {emptyMessage}
-                  </td>
-                </tr>
-              ) : (
-                pagedRows.map((row, rowIndex) => {
-                  const id = row.event.id;
-                  const selected = selectedKey === id;
-                  return (
-                    <tr
-                      key={id}
-                      ref={(el) => {
-                        rowRefs.current[rowIndex] = el;
-                      }}
-                      tabIndex={0}
-                      className={cn(
-                        "group cursor-pointer border-b border-border/80 outline-none",
-                        selected
-                          ? "bg-muted/50 hover:bg-muted/55"
-                          : "hover:bg-muted/40",
-                      )}
-                      aria-selected={selected ? true : undefined}
-                      aria-label={buyerName(row)}
-                      onClick={() => {
-                        void navigate({
-                          to: "/schools/$schoolId/integrations/wix/$eventId",
-                          params: { schoolId, eventId: id },
-                        });
-                      }}
-                      onKeyDown={(ev) => {
-                        const idx = pagedRows.findIndex(
-                          (r) => r.event.id === id,
-                        );
-                        if (idx < 0) return;
-                        if (ev.key === "ArrowDown") {
-                          ev.preventDefault();
-                          const next = Math.min(idx + 1, pagedRows.length - 1);
-                          rowRefs.current[next]?.focus();
-                        } else if (ev.key === "ArrowUp") {
-                          ev.preventDefault();
-                          const prev = Math.max(idx - 1, 0);
-                          rowRefs.current[prev]?.focus();
-                        } else if (ev.key === "Home") {
-                          ev.preventDefault();
-                          rowRefs.current[0]?.focus();
-                        } else if (ev.key === "End") {
-                          ev.preventDefault();
-                          const last = pagedRows.length - 1;
-                          rowRefs.current[last]?.focus();
-                        } else if (ev.key === "Enter" || ev.key === " ") {
-                          ev.preventDefault();
-                          void navigate({
-                            to: "/schools/$schoolId/integrations/wix/$eventId",
-                            params: { schoolId, eventId: id },
-                          });
-                        }
-                      }}
-                    >
-                      <td className="px-2 py-1.5 align-middle whitespace-nowrap">
-                        <span className="font-medium text-foreground">
-                          {tripCell(row)}
-                        </span>
-                        {row.isOrphan ? (
-                          <span className="ml-2 shrink-0 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-amber-900 text-xs whitespace-nowrap dark:text-amber-100">
-                            {ptBR.wixIntegration.orphanBadge}
-                          </span>
-                        ) : null}
-                      </td>
-                      <td className="px-2 py-1.5 align-middle tabular-nums whitespace-nowrap">
-                        {formatBrl(row.event.orderTotal)}
-                      </td>
-                      <td className="px-2 py-1.5 align-middle whitespace-nowrap">
-                        {buyerName(row)}
-                      </td>
-                      <td className="px-2 py-1.5 align-middle whitespace-nowrap">
-                        {row.event.buyerIndoEmail}
-                      </td>
-                      <td className="px-2 py-1.5 align-middle tabular-nums whitespace-nowrap">
-                        {formatEventDate(row.event.dateCreated)}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+        <SortableListTable<WixPaymentEventListItem, WixEventSortColumn>
+          sort={sort}
+          onSortToggle={toggleSort}
+          rows={pagedRows}
+          getRowKey={(r) => r.event.id}
+          emptyMessage={emptyMessage}
+          selectedKey={selectedKey}
+          rowAriaLabel={buyerName}
+          onRowActivate={(row) => {
+            void navigate({
+              to: "/schools/$schoolId/integrations/wix/$eventId",
+              params: { schoolId, eventId: row.event.id },
+            });
+          }}
+          columns={[
+            {
+              id: "trip",
+              header: ptBR.wixIntegration.columns.trip,
+              render: (row) => (
+                <>
+                  <span className="font-medium text-foreground">
+                    {tripCell(row)}
+                  </span>
+                  {row.isOrphan ? (
+                    <span className="ml-2 shrink-0 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-amber-900 text-xs whitespace-nowrap dark:text-amber-100">
+                      {ptBR.wixIntegration.orphanBadge}
+                    </span>
+                  ) : null}
+                </>
+              ),
+            },
+            {
+              id: "value",
+              header: ptBR.wixIntegration.columns.value,
+              tdClassName: "tabular-nums",
+              render: (row) => formatBrl(row.event.orderTotal),
+            },
+            {
+              id: "name",
+              header: ptBR.wixIntegration.columns.buyerName,
+              render: (row) => buyerName(row),
+            },
+            {
+              id: "email",
+              header: ptBR.wixIntegration.columns.email,
+              render: (row) => row.event.buyerIndoEmail,
+            },
+            {
+              id: "date",
+              header: ptBR.wixIntegration.columns.date,
+              tdClassName: "tabular-nums",
+              render: (row) => formatEventDate(row.event.dateCreated),
+            },
+          ]}
+        />
       </div>
 
       {sorted.length > 0 ? (
