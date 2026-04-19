@@ -56,8 +56,8 @@ function WixIntegrationShell() {
       onSelectedKeyChange={onSelectedKeyChange}
       disableLocalUnsavedGuard
       list={
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <div className="shrink-0 border-b border-border px-4 pt-4">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <div className="shrink-0 px-4 pt-4">
             <WixIntegrationKeyFields
               publicKey={publicKey}
               privateApiKey={privateApiKey}
@@ -65,7 +65,7 @@ function WixIntegrationShell() {
               onPrivateApiKeyChange={setPrivateApiKey}
             />
           </div>
-          <div className="min-h-0 flex-1 overflow-hidden">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col basis-0">
             <WixPaymentEventsListPane schoolId={schoolId} />
           </div>
         </div>
