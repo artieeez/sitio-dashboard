@@ -1,17 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ptBR } from "@/messages/pt-BR";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+/** Legacy `/schools/$schoolId/home` → canonical school root. */
 export const Route = createFileRoute("/schools/$schoolId/home")({
-  component: SchoolHomePage,
+  beforeLoad: ({ params }) => {
+    throw redirect({
+      to: "/schools/$schoolId",
+      params: { schoolId: params.schoolId },
+    });
+  },
 });
-
-function SchoolHomePage() {
-  return (
-    <div className="p-6">
-      <h1 className="text-lg font-medium">{ptBR.nav.home}</h1>
-      <p className="text-muted-foreground text-sm">
-        {ptBR.scope.homePlaceholder}
-      </p>
-    </div>
-  );
-}

@@ -3,10 +3,6 @@ import { render, screen } from "@testing-library/react";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/components/layout/dashboard-breadcrumbs", () => ({
-  DashboardBreadcrumbs: () => <div data-testid="breadcrumbs-stub" />,
-}));
-
 vi.mock("@/components/layout/school-scope-menu", () => ({
   SchoolScopeMenu: () => null,
 }));
@@ -57,7 +53,6 @@ vi.mock("@/components/ui/sidebar", () => {
       <li>{children}</li>
     ),
     SidebarRail: () => null,
-    SidebarSeparator: () => <hr />,
     SidebarTrigger: () => null,
   };
 });
@@ -127,7 +122,7 @@ describe("school scoped sidebar links", () => {
 
     expect(screen.getByRole("link", { name: /início/i })).toHaveAttribute(
       "href",
-      "/schools/550e8400-e29b-41d4-a716-446655440000/home",
+      "/schools/550e8400-e29b-41d4-a716-446655440000",
     );
     expect(screen.getByRole("link", { name: /viagens/i })).toHaveAttribute(
       "href",

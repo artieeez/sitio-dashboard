@@ -8,6 +8,7 @@ import {
   type ComponentProps,
   type CSSProperties,
   createContext,
+  type MouseEvent,
   useCallback,
   useContext,
   useEffect,
@@ -16,7 +17,6 @@ import {
 } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -357,20 +357,6 @@ function SidebarFooter({ className, ...props }: ComponentProps<"div">) {
   );
 }
 
-function SidebarSeparator({
-  className,
-  ...props
-}: ComponentProps<typeof Separator>) {
-  return (
-    <Separator
-      data-slot="sidebar-separator"
-      data-sidebar="separator"
-      className={cn("mx-2 w-auto bg-sidebar-border", className)}
-      {...props}
-    />
-  );
-}
-
 function SidebarContent({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
@@ -506,18 +492,43 @@ function SidebarMenuButton({
   size = "default",
   tooltip,
   className,
+  onClick,
+  closeMobileOnClick,
   ...props
 }: useRender.ComponentProps<"button"> &
   ComponentProps<"button"> & {
     isActive?: boolean;
     tooltip?: string | ComponentProps<typeof TooltipContent>;
+    /**
+     * On small screens the sidebar is a sheet; after a tap, close it.
+     * Defaults to `true` when `render` is set (e.g. TanStack Router `Link`), else `false`.
+     */
+    closeMobileOnClick?: boolean;
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
-  const { isMobile, state } = useSidebar();
+  const { isMobile, state, setOpenMobile } = useSidebar();
+  const dismissMobile =
+    closeMobileOnClick !== undefined ? closeMobileOnClick : render != null;
+
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      onClick?.(event);
+      if (isMobile && dismissMobile) {
+        setOpenMobile(false);
+      }
+    },
+    [dismissMobile, isMobile, onClick, setOpenMobile],
+  );
+
   const comp = useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
       {
-        className: cn(sidebarMenuButtonVariants({ variant, size }), className),
+        className: cn(
+          sidebarMenuButtonVariants({ variant, size }),
+          tooltip && props.disabled && "disabled:!pointer-events-auto",
+          className,
+        ),
+        onClick: handleClick,
       },
       props,
     ),
@@ -714,7 +725,6 @@ export {
   SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
-  SidebarSeparator,
   SidebarTrigger,
   useSidebar,
 };

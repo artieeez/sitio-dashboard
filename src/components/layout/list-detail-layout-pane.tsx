@@ -1,0 +1,221 @@
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import { UnsavedChangesDialog } from "@/components/layout/unsaved-changes-dialog";
+import { useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
+import { cn } from "@/lib/utils";
+import { ptBR } from "@/messages/pt-BR";
+
+export type ListDetailLayoutContextValue = {
+  selectedKey: string | null | undefined;
+  requestSelect: (key: string | null) => void;
+  /** Detail Close (X): runs `onCloseDetail` if provided, else `onSelectedKeyChange(null)`; compact shows list. */
+  requestCloseDetail: () => void;
+  isCompact: boolean;
+};
+
+const ListDetailLayoutContext =
+  createContext<ListDetailLayoutContextValue | null>(null);
+
+export function useListDetailLayout(): ListDetailLayoutContextValue {
+  const ctx = useContext(ListDetailLayoutContext);
+  if (!ctx) {
+    throw new Error(
+      "useListDetailLayout must be used within ListDetailLayoutPane",
+    );
+  }
+  return ctx;
+}
+
+export type ListDetailLayoutPaneProps = {
+  list: ReactNode;
+  detail: ReactNode;
+  selectedKey?: string | null;
+  onSelectedKeyChange?: (key: string | null) => void;
+  /**
+   * When set, the detail **Close** (X) runs this inside the unsaved guard instead of
+   * `onSelectedKeyChange(null)` (e.g. return to passengers list from payment routes).
+   */
+  onCloseDetail?: () => void;
+  /** When true, delegates unsaved blocking to route-level guard (no local dialog). */
+  disableLocalUnsavedGuard?: boolean;
+  isDirty?: boolean;
+  onDiscardDirty?: () => void;
+  isCompact: boolean;
+  /**
+   * Desktop only: detail column stays narrow so the list uses most of the width
+   * (empty detail / placeholder). Ignored in compact mode.
+   */
+  narrowDetailPane?: boolean;
+};
+
+/**
+ * M3 list–detail shell: list + detail regions, compact stack, unsaved dialog.
+ * Desktop: no vertical rule between panes; detail reads as an elevated surface
+ * (rounded leading edge, shadow, ring) over the list. **Detail** content is responsible
+ * for any Close control (e.g. via `useListDetailLayout().requestCloseDetail`).
+ * Compact: switching back to the list still uses that same hook.
+ * Does not call `useIsMobile` — pass `isCompact` from the parent (or from tests).
+ */
+export function ListDetailLayoutPane({
+  list,
+  detail,
+  selectedKey = null,
+  onSelectedKeyChange,
+  onCloseDetail,
+  disableLocalUnsavedGuard = false,
+  isDirty = false,
+  onDiscardDirty = () => {},
+  isCompact,
+  narrowDetailPane = false,
+}: ListDetailLayoutPaneProps) {
+  const [stackTop, setStackTop] = useState<"list" | "detail">("list");
+  const lastSyncedSelectionRef = useRef<string | null | undefined>(undefined);
+  const prevCompactRef = useRef<boolean | undefined>(undefined);
+
+  const { dialogOpen, tryRun, confirmDiscard, cancelDialog } =
+    useUnsavedChangesGuard({
+      isDirty,
+      onDiscard: onDiscardDirty,
+    });
+
+  const guardedRun = useCallback(
+    (run: () => void) => {
+      if (disableLocalUnsavedGuard) {
+        run();
+        return;
+      }
+      tryRun(run);
+    },
+    [disableLocalUnsavedGuard, tryRun],
+  );
+
+  useEffect(() => {
+    const wasCompact = prevCompactRef.current;
+    prevCompactRef.current = isCompact;
+
+    if (!isCompact) {
+      setStackTop("list");
+      lastSyncedSelectionRef.current = selectedKey;
+      return;
+    }
+    if (selectedKey == null) {
+      setStackTop("list");
+      lastSyncedSelectionRef.current = null;
+      return;
+    }
+    if (wasCompact === false) {
+      setStackTop("detail");
+      lastSyncedSelectionRef.current = selectedKey;
+      return;
+    }
+    if (lastSyncedSelectionRef.current !== selectedKey) {
+      setStackTop("detail");
+      lastSyncedSelectionRef.current = selectedKey;
+    }
+  }, [selectedKey, isCompact]);
+
+  const requestSelect = useCallback(
+    (key: string | null) => {
+      guardedRun(() => {
+        onSelectedKeyChange?.(key);
+        if (isCompact) {
+          setStackTop(key != null ? "detail" : "list");
+        }
+      });
+    },
+    [guardedRun, onSelectedKeyChange, isCompact],
+  );
+
+  const requestCloseDetail = useCallback(() => {
+    guardedRun(() => {
+      if (onCloseDetail) {
+        onCloseDetail();
+      } else {
+        onSelectedKeyChange?.(null);
+      }
+      setStackTop("list");
+    });
+  }, [guardedRun, onSelectedKeyChange, onCloseDetail]);
+
+  const contextValue = useMemo<ListDetailLayoutContextValue>(
+    () => ({
+      selectedKey,
+      requestSelect,
+      requestCloseDetail,
+      isCompact,
+    }),
+    [selectedKey, requestSelect, requestCloseDetail, isCompact],
+  );
+
+  const showList = !isCompact || stackTop === "list";
+  const showDetail = !isCompact || stackTop === "detail";
+  const listLabel = ptBR.listDetail.listRegion;
+  const detailLabel = ptBR.listDetail.detailRegion;
+  const desktopNarrowDetail = !isCompact && narrowDetailPane;
+
+  return (
+    <div
+      data-testid="list-detail-layout"
+      className="flex min-h-0 min-w-0 flex-1 flex-col"
+    >
+      <ListDetailLayoutContext.Provider value={contextValue}>
+        <div
+          className={cn(
+            "flex min-h-0 flex-1",
+            isCompact ? "flex-col" : "flex-row gap-3 py-3",
+          )}
+        >
+          {showList ? (
+            <section
+              aria-label={listLabel}
+              data-testid="list-detail-list-pane"
+              className={cn(
+                "flex min-h-0 min-w-0 flex-col overflow-y-auto",
+                !isCompact && "relative z-0 min-w-[18rem] flex-1 basis-0",
+              )}
+            >
+              {list}
+            </section>
+          ) : null}
+          {showDetail ? (
+            <section
+              aria-label={detailLabel}
+              data-testid="list-detail-detail-pane"
+              className={cn(
+                "flex min-h-0 min-w-0 flex-col",
+                isCompact
+                  ? "overflow-y-auto"
+                  : "relative z-[1] overflow-hidden rounded-l-2xl bg-card shadow-[0_1px_2px_rgba(0,0,0,0.06),0_6px_16px_-2px_rgba(0,0,0,0.1)] ring-1 ring-border/60 dark:shadow-[0_1px_3px_rgba(0,0,0,0.35),0_12px_28px_-6px_rgba(0,0,0,0.45)]",
+                desktopNarrowDetail
+                  ? "w-[min(22rem,36vw)] max-w-[24rem] shrink-0 grow-0 basis-auto"
+                  : "min-w-0 flex-1 basis-0",
+              )}
+            >
+              {isCompact ? (
+                detail
+              ) : (
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
+                  {detail}
+                </div>
+              )}
+            </section>
+          ) : null}
+        </div>
+      </ListDetailLayoutContext.Provider>
+      <UnsavedChangesDialog
+        open={dialogOpen}
+        onContinueEditing={cancelDialog}
+        onDiscard={confirmDiscard}
+      />
+    </div>
+  );
+}

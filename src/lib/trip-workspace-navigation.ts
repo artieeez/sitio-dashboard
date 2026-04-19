@@ -1,0 +1,223 @@
+import {
+  isPassengerEditDetailPath,
+  isPassengerPaymentsBranchPath,
+  passengerEditLink,
+  paymentsIndexLink,
+  paymentsNewLink,
+} from "@/lib/trip-payment-links";
+
+export type TripWorkspaceNavigateFn = (opts: {
+  to: string;
+  params?: Record<string, string>;
+}) => void | Promise<void>;
+
+/**
+ * Open another passenger’s detail while preserving edit vs payments (index / new) to match the current panel.
+ */
+export function navigateToTripWorkspacePassengerDetail(opts: {
+  navigate: TripWorkspaceNavigateFn;
+  pathname: string;
+  tripId: string;
+  passengerId: string;
+  /** Set when the URL is under `/schools/.../trips/...` (same as payment links). */
+  scopedSchoolId?: string;
+}): void {
+  const { navigate, pathname, tripId, passengerId, scopedSchoolId } = opts;
+  const routeIds = {
+    tripId,
+    passengerId,
+    ...(scopedSchoolId ? { schoolId: scopedSchoolId } : {}),
+  };
+
+  if (isPassengerEditDetailPath(pathname)) {
+    void navigate(passengerEditLink(routeIds));
+    return;
+  }
+  if (pathname.includes("/payments/new")) {
+    void navigate(paymentsNewLink(routeIds));
+    return;
+  }
+  if (isPassengerPaymentsBranchPath(pathname)) {
+    void navigate(paymentsIndexLink(routeIds));
+    return;
+  }
+  void navigate(paymentsIndexLink(routeIds));
+}
+
+/**
+ * Derives list–detail selection key from the current path under `/trips/$tripId/*`
+ * or `/schools/$schoolId/trips/$tripId/*` (004 M3).
+ */
+function selectionKeyFromPassengersRest(rest: string): string | null {
+  if (rest === "" || rest === "/") {
+    return "trip";
+  }
+  if (rest === "/passengers/new" || rest.startsWith("/passengers/new/")) {
+    return "passengers-new";
+  }
+  if (rest.startsWith("/passengers")) {
+    const editMatch = rest.match(
+      /^\/passengers\/([0-9a-f-]{36})\/edit(?:\/|$)/,
+    );
+    if (editMatch) {
+      return `passenger:${editMatch[1]}`;
+    }
+    const match = rest.match(/^\/passengers\/([0-9a-f-]{36})\/payments/);
+    if (match) {
+      return `passenger:${match[1]}`;
+    }
+    const hub = rest.replace(/\/$/, "") || rest;
+    if (hub === "/passengers") {
+      return null;
+    }
+    return "passengers";
+  }
+  return "trip";
+}
+
+export function tripWorkspaceSelectionKey(
+  pathname: string,
+  tripId: string,
+): string | null {
+  if (!tripId) return null;
+
+  const prefix = `/trips/${tripId}`;
+  if (pathname.startsWith(prefix)) {
+    if (
+      pathname === `${prefix}/summary` ||
+      pathname === prefix ||
+      pathname === `${prefix}/`
+    ) {
+      return "trip";
+    }
+    if (pathname === `${prefix}/passengers/new`) return "passengers-new";
+    if (
+      pathname === `${prefix}/passengers` ||
+      pathname === `${prefix}/passengers/`
+    ) {
+      return null;
+    }
+    const tripRest = pathname.slice(prefix.length);
+    const passengerEditMatch = tripRest.match(
+      /^\/passengers\/([0-9a-f-]{36})\/edit(?:\/|$)/,
+    );
+    if (passengerEditMatch) return `passenger:${passengerEditMatch[1]}`;
+    const tripMatch = tripRest.match(
+      /^\/passengers\/([0-9a-f-]{36})\/payments/,
+    );
+    if (tripMatch) return `passenger:${tripMatch[1]}`;
+    if (tripRest.startsWith("/passengers")) return "passengers";
+  }
+
+  const schoolScoped = pathname.match(
+    /^\/schools\/[^/]+\/trips\/([^/]+)(\/.*)?$/,
+  );
+  if (schoolScoped?.[1] === tripId) {
+    const rest = schoolScoped[2] ?? "";
+    return selectionKeyFromPassengersRest(rest);
+  }
+
+  return "trip";
+}
+
+export function navigateFromTripWorkspaceKey(opts: {
+  navigate: (opts: {
+    to: string;
+    params?: Record<string, string>;
+  }) => void | Promise<void>;
+  tripId: string;
+  key: string | null;
+  /**
+   * When set (school trips list–detail shell), use `/schools/.../trips/...` URLs.
+   * Omit under `/trips/$tripId/*` so bookmarks and deep links stay on trip workspace.
+   */
+  scopedSchoolId?: string | null;
+  /** Under `/trips/*`, used when `key === null` to return to this school's trips hub. */
+  tripSchoolIdForClose?: string | null;
+}): void {
+  const { navigate, tripId, key, scopedSchoolId, tripSchoolIdForClose } = opts;
+  const useSchool = Boolean(scopedSchoolId);
+
+  if (key == null) {
+    const closeSchool = scopedSchoolId ?? tripSchoolIdForClose;
+    if (closeSchool) {
+      void navigate({
+        to: "/schools/$schoolId/trips",
+        params: { schoolId: closeSchool },
+      });
+    } else {
+      void navigate({ to: "/schools" });
+    }
+    return;
+  }
+  if (key === "trip") {
+    if (useSchool) {
+      void navigate({
+        to: "/schools/$schoolId/trips/$tripId",
+        params: { schoolId: scopedSchoolId as string, tripId },
+      });
+    } else {
+      void navigate({ to: "/trips/$tripId/summary", params: { tripId } });
+    }
+    return;
+  }
+  if (key === "passengers") {
+    if (useSchool) {
+      void navigate({
+        to: "/schools/$schoolId/trips/$tripId/passengers",
+        params: { schoolId: scopedSchoolId as string, tripId },
+      });
+    } else {
+      void navigate({ to: "/trips/$tripId/passengers", params: { tripId } });
+    }
+    return;
+  }
+  if (key === "passengers-new") {
+    if (useSchool) {
+      void navigate({
+        to: "/schools/$schoolId/trips/$tripId/passengers/new",
+        params: { schoolId: scopedSchoolId as string, tripId },
+      });
+    } else {
+      void navigate({
+        to: "/trips/$tripId/passengers/new",
+        params: { tripId },
+      });
+    }
+    return;
+  }
+  if (key.startsWith("passenger:")) {
+    const passengerId = key.slice("passenger:".length);
+    if (useSchool) {
+      void navigate({
+        to: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments",
+        params: {
+          schoolId: scopedSchoolId as string,
+          tripId,
+          passengerId,
+        },
+      });
+    } else {
+      void navigate({
+        to: "/trips/$tripId/passengers/$passengerId/payments",
+        params: { tripId, passengerId },
+      });
+    }
+  }
+}
+
+function stripTrailingSlash(path: string): string {
+  if (path === "/" || path.length <= 1) return path;
+  return path.endsWith("/") ? path.slice(0, -1) : path;
+}
+
+/** Trip edit detail only: `/trips/:id/summary` or `/schools/.../trips/:id` (no passengers segment). */
+export function isTripSummaryEditDetailPath(
+  pathname: string,
+  tripId: string,
+): boolean {
+  const p = stripTrailingSlash(pathname);
+  if (p === `/trips/${tripId}/summary`) return true;
+  const schoolTrip = p.match(/^\/schools\/[^/]+\/trips\/([0-9a-f-]{36})$/i);
+  return schoolTrip?.[1] === tripId;
+}

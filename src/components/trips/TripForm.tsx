@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import {
   fetchPageRequestSchema,
@@ -7,10 +8,42 @@ import {
 } from "@/lib/schemas/metadata";
 import type { Trip } from "@/lib/schemas/trip";
 import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
-import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
 type Mode = "create" | "edit";
+
+type TripFormSnapshot = {
+  defaultExpectedAmountMinor: string;
+  url: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  faviconUrl: string;
+};
+
+function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
+  if (mode === "create" || !trip) {
+    return {
+      defaultExpectedAmountMinor: "",
+      url: "",
+      title: "",
+      description: "",
+      imageUrl: "",
+      faviconUrl: "",
+    };
+  }
+  return {
+    defaultExpectedAmountMinor:
+      trip.defaultExpectedAmountMinor != null
+        ? String(trip.defaultExpectedAmountMinor)
+        : "",
+    url: trip.url ?? "",
+    title: trip.title ?? "",
+    description: trip.description ?? "",
+    imageUrl: trip.imageUrl ?? "",
+    faviconUrl: trip.faviconUrl ?? "",
+  };
+}
 
 export function TripForm(props: {
   mode: Mode;
@@ -29,9 +62,42 @@ export function TripForm(props: {
   const [description, setDescription] = useState(trip?.description ?? "");
   const [imageUrl, setImageUrl] = useState(trip?.imageUrl ?? "");
   const [faviconUrl, setFaviconUrl] = useState(trip?.faviconUrl ?? "");
-  const [active, setActive] = useState(trip?.active ?? true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const baseline = useMemo(() => tripBaseline(trip, mode), [trip, mode]);
+
+  useEffect(() => {
+    setDefaultExpectedAmountMinor(baseline.defaultExpectedAmountMinor);
+    setUrl(baseline.url);
+    setTitle(baseline.title);
+    setDescription(baseline.description);
+    setImageUrl(baseline.imageUrl);
+    setFaviconUrl(baseline.faviconUrl);
+    setError(null);
+  }, [baseline]);
+
+  const isDirty = useMemo(() => {
+    const current: TripFormSnapshot = {
+      defaultExpectedAmountMinor,
+      url,
+      title,
+      description,
+      imageUrl,
+      faviconUrl,
+    };
+    return JSON.stringify(current) !== JSON.stringify(baseline);
+  }, [
+    baseline,
+    defaultExpectedAmountMinor,
+    url,
+    title,
+    description,
+    imageUrl,
+    faviconUrl,
+  ]);
+
+  useReportWorkspaceDirty(isDirty);
 
   async function fetchMetadata() {
     setError(null);
@@ -94,7 +160,7 @@ export function TripForm(props: {
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
           faviconUrl: faviconUrl.trim() || null,
-          active,
+          active: true,
         });
         await apiPostJson(`/schools/${schoolId}/trips`, body);
       } else if (trip) {
@@ -105,7 +171,7 @@ export function TripForm(props: {
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
           faviconUrl: faviconUrl.trim() || null,
-          active,
+          active: trip?.active ?? true,
         });
         await apiPatchJson(`/trips/${trip.id}`, body);
       }
@@ -124,98 +190,90 @@ export function TripForm(props: {
     }
   }
 
+  const fieldClass =
+    "w-full min-w-0 rounded border border-input bg-background px-2 py-1";
+
   return (
     <form
       onSubmit={submit}
-      className="flex max-w-xl flex-col gap-3 rounded-md border border-border p-4"
+      className="mx-auto w-full max-w-2xl rounded-md md:max-w-3xl"
     >
-      {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <label className="flex flex-col gap-1 text-sm">
-        <span>{ptBR.fields.defaultExpectedAmount}</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          inputMode="numeric"
-          value={defaultExpectedAmountMinor}
-          onChange={(ev) => setDefaultExpectedAmountMinor(ev.target.value)}
-          placeholder="ex.: 15000 (= R$ 150,00)"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>{ptBR.fields.url}</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          value={url}
-          onChange={(ev) => setUrl(ev.target.value)}
-          placeholder="https://"
-        />
-      </label>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={busy}
-          onClick={fetchMetadata}
-        >
-          {ptBR.actions.fetchMetadata}
-        </Button>
-        {url.trim() ? (
-          <a
-            href={url.trim()}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(buttonVariants({ variant: "outline" }))}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-x-4 md:gap-y-3">
+        {error ? (
+          <p
+            className="text-sm text-red-600 md:col-span-2 dark:text-red-400"
+            role="alert"
           >
-            {ptBR.actions.openLanding}
-          </a>
+            {error}
+          </p>
         ) : null}
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
+          <span>{ptBR.fields.defaultExpectedAmount}</span>
+          <input
+            className={fieldClass}
+            inputMode="numeric"
+            value={defaultExpectedAmountMinor}
+            onChange={(ev) => setDefaultExpectedAmountMinor(ev.target.value)}
+            placeholder="ex.: 15000 (= R$ 150,00)"
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
+          <span>Título</span>
+          <input
+            className={fieldClass}
+            value={title}
+            onChange={(ev) => setTitle(ev.target.value)}
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+          <span>{ptBR.fields.url}</span>
+          <input
+            className={fieldClass}
+            value={url}
+            onChange={(ev) => setUrl(ev.target.value)}
+            placeholder="https://"
+          />
+        </label>
+        <div className="md:col-span-2">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={busy}
+            onClick={fetchMetadata}
+          >
+            {ptBR.actions.fetchMetadata}
+          </Button>
+        </div>
+        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+          <span>Descrição</span>
+          <textarea
+            className={`min-h-[4rem] ${fieldClass}`}
+            value={description}
+            onChange={(ev) => setDescription(ev.target.value)}
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
+          <span>URL da imagem</span>
+          <input
+            className={fieldClass}
+            value={imageUrl}
+            onChange={(ev) => setImageUrl(ev.target.value)}
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
+          <span>Favicon</span>
+          <input
+            className={fieldClass}
+            value={faviconUrl}
+            onChange={(ev) => setFaviconUrl(ev.target.value)}
+          />
+        </label>
+        <div className="flex justify-end pt-1 md:col-span-2">
+          <Button type="submit" disabled={busy}>
+            {ptBR.actions.save}
+          </Button>
+        </div>
       </div>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>Título</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          value={title}
-          onChange={(ev) => setTitle(ev.target.value)}
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>Descrição</span>
-        <textarea
-          className="min-h-[4rem] rounded border border-input bg-background px-2 py-1"
-          value={description}
-          onChange={(ev) => setDescription(ev.target.value)}
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>URL da imagem</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          value={imageUrl}
-          onChange={(ev) => setImageUrl(ev.target.value)}
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span>Favicon</span>
-        <input
-          className="rounded border border-input bg-background px-2 py-1"
-          value={faviconUrl}
-          onChange={(ev) => setFaviconUrl(ev.target.value)}
-        />
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={active}
-          onChange={(ev) => setActive(ev.target.checked)}
-        />
-        {ptBR.fields.active}
-      </label>
-      <Button type="submit" disabled={busy}>
-        {ptBR.actions.save}
-      </Button>
     </form>
   );
 }

@@ -16,6 +16,8 @@ describe("school scope header", () => {
         school={{
           id: "550e8400-e29b-41d4-a716-446655440000",
           title: "Escola Aurora",
+          description: null,
+          imageUrl: null,
           faviconUrl: null,
           url: null,
           active: true,

@@ -1,26 +1,107 @@
-import { MoreVertical } from "lucide-react";
-import type { ReactNode } from "react";
+import { MoreHorizontal, MoreVertical } from "lucide-react";
+import {
+  type ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 
-/** Disclosure-based row menu (vertical kebab icon). */
+/** Disclosure-based row menu (⋮ or ⋯ trigger). */
 export function RowKebabMenu(props: {
   ariaLabel: string;
   children: ReactNode;
+  /** Default vertical (⋮); use horizontal (⋯) in dense tables. */
+  iconOrientation?: "vertical" | "horizontal";
 }) {
-  const { ariaLabel, children } = props;
+  const { ariaLabel, children, iconOrientation = "vertical" } = props;
+  const Icon = iconOrientation === "horizontal" ? MoreHorizontal : MoreVertical;
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [open, setOpen] = useState(false);
+  const [menuStyle, setMenuStyle] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current || !menuRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const menuRect = menuRef.current.getBoundingClientRect();
+    const margin = 8;
+    const top = Math.min(
+      window.innerHeight - menuRect.height - margin,
+      rect.bottom + margin,
+    );
+    const left = Math.max(
+      margin,
+      Math.min(
+        window.innerWidth - menuRect.width - margin,
+        rect.right - menuRect.width,
+      ),
+    );
+    setMenuStyle({ top, left });
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDocClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (triggerRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    const onWindowChange = () => setOpen(false);
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onEscape);
+    window.addEventListener("scroll", onWindowChange, true);
+    window.addEventListener("resize", onWindowChange);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onEscape);
+      window.removeEventListener("scroll", onWindowChange, true);
+      window.removeEventListener("resize", onWindowChange);
+    };
+  }, [open]);
+
   return (
-    <details className="group relative">
-      <summary
-        className="flex h-8 w-8 cursor-pointer list-none items-center justify-center rounded-md hover:bg-muted [&::-webkit-details-marker]:hidden"
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md hover:bg-muted"
         aria-label={ariaLabel}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
       >
-        <MoreVertical className="h-4 w-4" aria-hidden />
-      </summary>
-      <div
-        className="absolute right-0 z-20 mt-1 flex min-w-[12rem] flex-col gap-1 rounded-md border border-border bg-background p-1 text-left shadow-md"
-        role="menu"
-      >
-        {children}
-      </div>
-    </details>
+        <Icon className="pointer-events-none h-4 w-4" aria-hidden />
+      </button>
+      {open
+        ? createPortal(
+            <>
+              {/* biome-ignore lint/a11y/useKeyWithClickEvents: closes after menu item activation; items handle keyboard */}
+              <div
+                ref={menuRef}
+                className="fixed z-50 flex min-w-[12rem] flex-col gap-1 rounded-md border border-border bg-background p-1 text-left shadow-md"
+                style={
+                  menuStyle
+                    ? { top: menuStyle.top, left: menuStyle.left }
+                    : { visibility: "hidden" }
+                }
+                role="menu"
+                onClick={() => setOpen(false)}
+              >
+                {children}
+              </div>
+            </>,
+            document.body,
+          )
+        : null}
+    </>
   );
 }

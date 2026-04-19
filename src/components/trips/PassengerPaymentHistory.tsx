@@ -1,10 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import { z } from "zod";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { paymentSchema } from "@/lib/schemas/payment";
+import { tableStickyActionUnselected } from "@/lib/table-sticky-action-surface";
+import { paymentEditLink, paymentsNewLink } from "@/lib/trip-payment-links";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
@@ -20,8 +24,11 @@ export function PassengerPaymentHistory(props: {
   passengerId: string;
   /** When set, new payments are blocked server-side; show context copy. */
   removedAt?: string | null;
+  /** When under the school trips shell, links stay on `/schools/.../trips/...`. */
+  schoolId?: string;
 }) {
-  const { tripId, passengerId, removedAt } = props;
+  const { tripId, passengerId, removedAt, schoolId } = props;
+  const pay = { tripId, passengerId, schoolId };
   const qc = useQueryClient();
 
   const list = useQuery({
@@ -61,26 +68,17 @@ export function PassengerPaymentHistory(props: {
         <div className="flex flex-wrap items-center gap-2">
           {!removedAt ? (
             <Link
-              to="/trips/$tripId/passengers/$passengerId/payments/new"
-              params={{ tripId, passengerId }}
+              {...paymentsNewLink(pay)}
+              aria-label={ptBR.actions.newPayment}
               className={cn(
-                buttonVariants({ variant: "default", size: "sm" }),
-                "no-underline",
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "w-fit no-underline",
               )}
             >
+              <Plus className="size-4 shrink-0" aria-hidden />
               {ptBR.actions.newPayment}
             </Link>
           ) : null}
-          <Link
-            to="/trips/$tripId/passengers"
-            params={{ tripId }}
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "no-underline",
-            )}
-          >
-            ← {ptBR.entities.passengers}
-          </Link>
         </div>
       </div>
       {removedAt ? (
@@ -96,66 +94,93 @@ export function PassengerPaymentHistory(props: {
           Não foi possível carregar os pagamentos.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-md border border-border">
+        <div className="overflow-x-auto rounded-md">
           <table className="w-full min-w-[560px] border-collapse text-left text-sm">
-            <thead className="border-b border-border bg-muted/40">
-              <tr>
-                <th className="p-2 font-medium">{ptBR.fields.paidOn}</th>
-                <th className="p-2 font-medium">{ptBR.fields.amount}</th>
-                <th className="p-2 font-medium">{ptBR.fields.location}</th>
-                <th className="p-2 font-medium">{ptBR.fields.payerIdentity}</th>
-                <th className="p-2 font-medium">⋯</th>
+            <thead>
+              <tr className="border-b border-border">
+                <th className="px-2 py-1.5 font-medium whitespace-normal">
+                  {ptBR.fields.paidOn}
+                </th>
+                <th className="px-2 py-1.5 font-medium whitespace-normal">
+                  {ptBR.fields.amount}
+                </th>
+                <th className="px-2 py-1.5 font-medium whitespace-normal">
+                  {ptBR.fields.location}
+                </th>
+                <th className="px-2 py-1.5 font-medium whitespace-normal">
+                  {ptBR.fields.payerIdentity}
+                </th>
+                <th className="sticky right-0 z-[3] w-11 min-w-11 bg-background px-2 py-1.5 text-right font-medium whitespace-normal">
+                  <span className="sr-only">{ptBR.aria.rowMenu}</span>
+                </th>
               </tr>
             </thead>
             <tbody>
               {list.data?.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-4 text-muted-foreground">
+                  <td
+                    colSpan={5}
+                    className="border-b border-border px-2 py-3 text-muted-foreground whitespace-nowrap"
+                  >
                     Nenhum pagamento registrado.
                   </td>
                 </tr>
               ) : (
                 list.data?.map((p) => (
-                  <tr key={p.id} className="border-b border-border/80">
-                    <td className="p-2 tabular-nums">{p.paidOn}</td>
-                    <td className="p-2 tabular-nums">
+                  <tr
+                    key={p.id}
+                    className="group border-b border-border/80 hover:bg-muted/40"
+                  >
+                    <td className="px-2 py-1.5 tabular-nums whitespace-nowrap">
+                      {p.paidOn}
+                    </td>
+                    <td className="px-2 py-1.5 tabular-nums whitespace-nowrap">
                       {brlMinor(p.amountMinor)}
                     </td>
-                    <td className="p-2">{p.location}</td>
-                    <td className="p-2">{p.payerIdentity}</td>
-                    <td className="p-2">
-                      <div className="flex flex-wrap gap-1">
-                        <Link
-                          to="/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit"
-                          params={{
-                            tripId,
-                            passengerId,
-                            paymentId: p.id,
-                          }}
-                          className={cn(
-                            buttonVariants({ variant: "outline", size: "sm" }),
-                            "inline-flex no-underline",
-                          )}
+                    <td className="px-2 py-1.5 align-middle">{p.location}</td>
+                    <td className="px-2 py-1.5 align-middle">
+                      {p.payerIdentity}
+                    </td>
+                    <td
+                      className={cn(
+                        "sticky right-0 z-[2] w-11 min-w-11 cursor-default px-2 py-1.5 align-middle whitespace-nowrap",
+                        tableStickyActionUnselected,
+                      )}
+                    >
+                      <div className="flex justify-end">
+                        <RowKebabMenu
+                          ariaLabel={ptBR.aria.rowMenu}
+                          iconOrientation="horizontal"
                         >
-                          {ptBR.actions.edit}
-                        </Link>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          disabled={remove.isPending}
-                          onClick={() => {
-                            if (
-                              globalThis.confirm("Excluir este pagamento?") !==
-                              true
-                            ) {
-                              return;
-                            }
-                            remove.mutate(p.id);
-                          }}
-                        >
-                          {ptBR.actions.delete}
-                        </Button>
+                          <Link
+                            role="menuitem"
+                            {...paymentEditLink({
+                              ...pay,
+                              paymentId: p.id,
+                            })}
+                            className="block rounded px-2 py-1.5 text-left text-sm no-underline hover:bg-muted"
+                          >
+                            {ptBR.actions.edit}
+                          </Link>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            className="w-full rounded px-2 py-1.5 text-left text-sm text-destructive hover:bg-muted disabled:opacity-50"
+                            disabled={remove.isPending}
+                            onClick={() => {
+                              if (
+                                globalThis.confirm(
+                                  "Excluir este pagamento?",
+                                ) !== true
+                              ) {
+                                return;
+                              }
+                              remove.mutate(p.id);
+                            }}
+                          >
+                            {ptBR.actions.delete}
+                          </button>
+                        </RowKebabMenu>
                       </div>
                     </td>
                   </tr>

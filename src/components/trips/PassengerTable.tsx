@@ -1,118 +1,120 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { PassengerRowActions } from "@/components/trips/PassengerRowActions";
-import { Button } from "@/components/ui/button";
-import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
-import { ApiError, apiPatchJson } from "@/lib/api-client";
-import { queryKeys } from "@/lib/query-keys";
+import { useRef } from "react";
+import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import {
-  type PassengerWithStatus,
-  type PaymentStatus,
-  passengerWithStatusSchema,
-} from "@/lib/schemas/passenger";
+  passengerPaymentStatusLabel,
+  passengerPaymentStatusToneClass,
+} from "@/lib/passenger-payment-status";
+import type { PassengerWithStatus } from "@/lib/schemas/passenger";
+import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
 
-function statusLabel(s: PaymentStatus): string {
-  switch (s) {
-    case "pending":
-      return ptBR.status.pending;
-    case "settled_payments":
-      return ptBR.status.settledPayments;
-    case "settled_manual":
-      return ptBR.status.settledManual;
-    case "unavailable":
-      return ptBR.status.unavailable;
-    default:
-      return s;
-  }
-}
-
-function statusToneClass(s: PaymentStatus): string {
-  switch (s) {
-    case "settled_payments":
-      return "text-blue-800 dark:text-blue-200";
-    case "settled_manual":
-      return "text-emerald-800 dark:text-emerald-200";
-    case "pending":
-      return "text-amber-800 dark:text-amber-200";
-    default:
-      return "text-muted-foreground";
-  }
-}
-
 export function PassengerTable(props: {
-  tripId: string;
   rows: PassengerWithStatus[];
   includeRemoved: boolean;
   onIncludeRemovedChange: (value: boolean) => void;
+  /** When set, highlights the row for the passenger payments context (M3 list pane). */
+  selectedPassengerId?: string | null;
+  /** When set, row click and arrow keys move the detail pane (same pattern as school trips list). */
+  onPassengerRowNavigate?: (passengerId: string) => void;
 }) {
-  const { tripId, rows, includeRemoved, onIncludeRemovedChange } = props;
-  const qc = useQueryClient();
-
-  const patchPassenger = useMutation({
-    mutationFn: async (input: {
-      passengerId: string;
-      body: Record<string, unknown>;
-    }) => {
-      const raw = await apiPatchJson<unknown>(
-        `/passengers/${input.passengerId}`,
-        input.body,
-      );
-      return passengerWithStatusSchema.parse(raw);
-    },
-    onSuccess: async (_, vars) => {
-      await qc.invalidateQueries({
-        queryKey: queryKeys.passengers(tripId, false),
-      });
-      await qc.invalidateQueries({
-        queryKey: queryKeys.passengers(tripId, true),
-      });
-      await qc.invalidateQueries({
-        queryKey: queryKeys.payments(vars.passengerId),
-      });
-      await qc.invalidateQueries({
-        queryKey: ["passengerAggregates", tripId],
-      });
-    },
-  });
+  const {
+    rows,
+    includeRemoved,
+    onIncludeRemovedChange,
+    selectedPassengerId = null,
+    onPassengerRowNavigate,
+  } = props;
+  const rowRefs = useRef<Array<HTMLTableRowElement | null>>([]);
+  const rowNav = onPassengerRowNavigate;
 
   return (
     <div className="flex flex-col gap-3">
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
+      <div className="flex flex-wrap items-center gap-2">
+        <BooleanFilterChip
           checked={includeRemoved}
-          onChange={(ev) => onIncludeRemovedChange(ev.target.checked)}
-        />
-        {ptBR.toggles.includeRemovedPassengers}
-      </label>
-      <div className="overflow-x-auto rounded-md border border-border">
-        <table className="w-full min-w-[640px] border-collapse text-left text-sm">
-          <thead className="border-b border-border bg-muted/40">
-            <tr>
-              <th className="p-2 font-medium">{ptBR.fields.fullName}</th>
-              <th className="p-2 font-medium">{ptBR.fields.cpf}</th>
-              <th className="p-2 font-medium">{ptBR.fields.paymentStatus}</th>
-              <th className="p-2 font-medium">
-                {ptBR.fields.manualPaidWithoutInfo}
+          onCheckedChange={onIncludeRemovedChange}
+        >
+          {ptBR.toggles.includeRemovedPassengers}
+        </BooleanFilterChip>
+      </div>
+      <div className="overflow-x-auto rounded-md">
+        <table className="w-full min-w-[24rem] border-collapse text-left text-sm">
+          <thead>
+            <tr className="border-b border-border">
+              <th className="px-2 py-1.5 font-medium whitespace-normal">
+                {ptBR.fields.name}
               </th>
-              <th className="p-2 font-medium">
-                <span className="sr-only">{ptBR.aria.rowMenu}</span>
+              <th className="px-2 py-1.5 font-medium whitespace-normal">
+                {ptBR.fields.cpf}
               </th>
-              <th className="p-2 font-medium">{ptBR.actions.restore}</th>
+              <th className="px-2 py-1.5 font-medium whitespace-normal">
+                {ptBR.fields.paymentStatus}
+              </th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="p-4 text-muted-foreground">
+                <td
+                  colSpan={3}
+                  className="border-b border-border px-2 py-3 text-muted-foreground whitespace-nowrap"
+                >
                   {ptBR.entities.passengers} — nenhum registro.
                 </td>
               </tr>
             ) : (
-              rows.map((p) => (
-                <tr key={p.id} className="border-b border-border/80">
-                  <td className="p-2">
+              rows.map((p, rowIndex) => (
+                <tr
+                  key={p.id}
+                  ref={(el) => {
+                    rowRefs.current[rowIndex] = el;
+                  }}
+                  tabIndex={rowNav ? 0 : undefined}
+                  className={cn(
+                    "group border-b border-border/80",
+                    selectedPassengerId === p.id
+                      ? "bg-muted/50 hover:bg-muted/55"
+                      : "hover:bg-muted/40",
+                    rowNav && "cursor-pointer outline-none",
+                  )}
+                  aria-selected={
+                    selectedPassengerId === p.id ? true : undefined
+                  }
+                  aria-label={rowNav ? p.fullName : undefined}
+                  onClick={rowNav ? () => rowNav(p.id) : undefined}
+                  onKeyDown={
+                    rowNav
+                      ? (ev) => {
+                          const idx = rows.findIndex((r) => r.id === p.id);
+                          if (idx < 0) return;
+                          if (ev.key === "ArrowDown") {
+                            ev.preventDefault();
+                            const next = Math.min(idx + 1, rows.length - 1);
+                            rowRefs.current[next]?.focus();
+                            rowNav(rows[next].id);
+                          } else if (ev.key === "ArrowUp") {
+                            ev.preventDefault();
+                            const prev = Math.max(idx - 1, 0);
+                            rowRefs.current[prev]?.focus();
+                            rowNav(rows[prev].id);
+                          } else if (ev.key === "Home") {
+                            ev.preventDefault();
+                            rowRefs.current[0]?.focus();
+                            rowNav(rows[0].id);
+                          } else if (ev.key === "End") {
+                            ev.preventDefault();
+                            const last = rows.length - 1;
+                            rowRefs.current[last]?.focus();
+                            rowNav(rows[last].id);
+                          } else if (ev.key === "Enter" || ev.key === " ") {
+                            ev.preventDefault();
+                            rowNav(p.id);
+                          }
+                        }
+                      : undefined
+                  }
+                >
+                  <td className="px-2 py-1.5 whitespace-nowrap">
                     {p.fullName}
                     {p.removedAt ? (
                       <span className="ml-2 text-xs text-muted-foreground">
@@ -120,67 +122,13 @@ export function PassengerTable(props: {
                       </span>
                     ) : null}
                   </td>
-                  <td className="p-2 tabular-nums">{p.cpf ?? "—"}</td>
-                  <td className={`p-2 ${statusToneClass(p.status)}`}>
-                    {statusLabel(p.status)}
+                  <td className="px-2 py-1.5 tabular-nums whitespace-nowrap">
+                    {p.cpf ?? "—"}
                   </td>
-                  <td className="p-2 align-top">
-                    <PassengerRowActions tripId={tripId} passenger={p} />
-                  </td>
-                  <td className="p-2">
-                    <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
-                      <Link
-                        role="menuitem"
-                        to="/trips/$tripId/passengers/$passengerId/payments"
-                        params={{ tripId, passengerId: p.id }}
-                        className="rounded px-2 py-1.5 text-sm hover:bg-muted"
-                      >
-                        {ptBR.actions.paymentHistory}
-                      </Link>
-                      {!p.removedAt ? (
-                        <Link
-                          role="menuitem"
-                          to="/trips/$tripId/passengers/$passengerId/payments/new"
-                          params={{ tripId, passengerId: p.id }}
-                          className="rounded px-2 py-1.5 text-sm hover:bg-muted"
-                        >
-                          {ptBR.actions.newPayment}
-                        </Link>
-                      ) : null}
-                    </RowKebabMenu>
-                  </td>
-                  <td className="p-2">
-                    {p.removedAt ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={patchPassenger.isPending}
-                        onClick={() =>
-                          patchPassenger.mutate({
-                            passengerId: p.id,
-                            body: { removed: false },
-                          })
-                        }
-                      >
-                        {ptBR.actions.restore}
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        disabled={patchPassenger.isPending}
-                        onClick={() =>
-                          patchPassenger.mutate({
-                            passengerId: p.id,
-                            body: { removed: true },
-                          })
-                        }
-                      >
-                        {ptBR.actions.delete}
-                      </Button>
-                    )}
+                  <td
+                    className={`px-2 py-1.5 whitespace-nowrap ${passengerPaymentStatusToneClass(p.status)}`}
+                  >
+                    {passengerPaymentStatusLabel(p.status)}
                   </td>
                 </tr>
               ))
@@ -188,11 +136,6 @@ export function PassengerTable(props: {
           </tbody>
         </table>
       </div>
-      {patchPassenger.error instanceof ApiError ? (
-        <p className="text-sm text-red-600" role="alert">
-          Falha ao atualizar passageiro.
-        </p>
-      ) : null}
     </div>
   );
 }

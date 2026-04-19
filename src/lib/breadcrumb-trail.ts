@@ -17,11 +17,17 @@ export function extractPathIds(pathname: string): {
 } {
   const schoolMatch = pathname.match(/^\/schools\/([^/]+)/);
   const tripMatch = pathname.match(/^\/trips\/([^/]+)/);
+  const schoolScopedTripMatch = pathname.match(
+    /^\/schools\/[^/]+\/trips\/([^/]+)/,
+  );
   const passengerMatch = pathname.match(/\/passengers\/([^/]+)/);
   const paymentMatch = pathname.match(/\/payments\/([^/]+)/);
+  const tail = schoolScopedTripMatch?.[1];
+  const tripFromSchoolTrips =
+    tail && tail !== "new" && /^[0-9a-f-]{36}$/i.test(tail) ? tail : undefined;
   return {
     schoolId: schoolMatch?.[1],
-    tripId: tripMatch?.[1],
+    tripId: tripMatch?.[1] ?? tripFromSchoolTrips,
     passengerId: passengerMatch?.[1],
     paymentId: paymentMatch?.[1],
   };
@@ -48,23 +54,9 @@ function scopedHomeLink(schoolId: string): BreadcrumbSegment {
   return {
     key: "home",
     label: ptBR.nav.home,
-    to: "/schools/$schoolId/home",
+    to: "/schools/$schoolId",
     params: { schoolId },
   };
-}
-
-/** Sidebar “Viagens” is the breadcrumb root for trip flows (not “Início → Viagens”). */
-function scopedTripsLink(schoolId: string): BreadcrumbSegment {
-  return {
-    key: "trips",
-    label: ptBR.entities.trips,
-    to: "/schools/$schoolId/trips",
-    params: { schoolId },
-  };
-}
-
-function scopedTripsRootCurrent(): BreadcrumbSegment {
-  return { key: "trips", label: ptBR.entities.trips };
 }
 
 function appendTripUnderPassengers(
@@ -79,17 +71,14 @@ function appendTripUnderPassengers(
     pathname === `/trips/${tripId}/passengers/`;
 
   if (passengersList) {
-    items.push({ key: "passengers", label: ptBR.entities.passengers });
+    const tripSeg = items[0];
+    if (tripSeg?.key === "trip") {
+      return [{ key: "trip", label: tripSeg.label }];
+    }
     return items;
   }
 
   if (pathname === `/trips/${tripId}/passengers/new`) {
-    items.push({
-      key: "passengers",
-      label: ptBR.entities.passengers,
-      to: "/trips/$tripId/passengers",
-      params: { tripId },
-    });
     items.push({
       key: "new-passenger",
       label: `${ptBR.actions.create} ${ptBR.entities.passenger}`,
@@ -97,49 +86,74 @@ function appendTripUnderPassengers(
     return items;
   }
 
-  if (passengerId && pathname.includes("/payments")) {
-    items.push({
-      key: "passengers",
-      label: ptBR.entities.passengers,
-      to: "/trips/$tripId/passengers",
-      params: { tripId },
-    });
+  if (
+    passengerId &&
+    pathname === `/trips/${tripId}/passengers/${passengerId}/edit`
+  ) {
     items.push({
       key: "passenger",
       label: passengerLabel,
-      to: "/trips/$tripId/passengers/$passengerId/payments",
-      params: { tripId, passengerId },
     });
+    return items;
+  }
 
-    if (pathname.endsWith("/payments/new")) {
-      items.push({
-        key: "payments",
-        label: ptBR.entities.payments,
-        to: "/trips/$tripId/passengers/$passengerId/payments",
-        params: { tripId, passengerId },
-      });
-      items.push({
-        key: "new-payment",
-        label: ptBR.actions.newPayment,
-      });
-      return items;
+  if (passengerId && pathname.includes("/payments")) {
+    items.push({
+      key: "passenger",
+      label: passengerLabel,
+    });
+    return items;
+  }
+
+  return items;
+}
+
+function appendSchoolTripUnderPassengers(
+  items: BreadcrumbSegment[],
+  pathname: string,
+  schoolId: string,
+  tripId: string,
+  passengerId: string,
+  passengerLabel: string,
+): BreadcrumbSegment[] {
+  const passengersList =
+    pathname === `/schools/${schoolId}/trips/${tripId}/passengers` ||
+    pathname === `/schools/${schoolId}/trips/${tripId}/passengers/`;
+
+  if (passengersList) {
+    const tripSeg = items[0];
+    if (tripSeg?.key === "trip") {
+      return [{ key: "trip", label: tripSeg.label }];
     }
+    return items;
+  }
 
-    if (/\/payments\/[^/]+\/edit\/?$/.test(pathname)) {
-      items.push({
-        key: "payments",
-        label: ptBR.entities.payments,
-        to: "/trips/$tripId/passengers/$passengerId/payments",
-        params: { tripId, passengerId },
-      });
-      items.push({
-        key: "edit-payment",
-        label: ptBR.actions.editPayment,
-      });
-      return items;
-    }
+  if (pathname === `/schools/${schoolId}/trips/${tripId}/passengers/new`) {
+    items.push({
+      key: "new-passenger",
+      label: `${ptBR.actions.create} ${ptBR.entities.passenger}`,
+    });
+    return items;
+  }
 
-    items.push({ key: "payments", label: ptBR.entities.payments });
+  if (
+    passengerId &&
+    pathname ===
+      `/schools/${schoolId}/trips/${tripId}/passengers/${passengerId}/edit`
+  ) {
+    items.push({
+      key: "passenger",
+      label: passengerLabel,
+    });
+    return items;
+  }
+
+  if (passengerId && pathname.includes("/payments")) {
+    items.push({
+      key: "passenger",
+      label: passengerLabel,
+    });
+    return items;
   }
 
   return items;
@@ -183,11 +197,11 @@ export function buildBreadcrumbTrail(
   }
 
   if (pathname.startsWith("/schools/") && sidPath) {
-    if (pathname === `/schools/${sidPath}/home`) {
+    if (pathname === `/schools/${sidPath}`) {
       return [{ key: "home", label: ptBR.nav.home }];
     }
 
-    if (pathname === `/schools/${sidPath}`) {
+    if (pathname === `/schools/${sidPath}/edit`) {
       return [
         scopedHomeLink(sidPath),
         { key: "edit-school", label: ptBR.scope.editSchool },
@@ -198,17 +212,90 @@ export function buildBreadcrumbTrail(
       pathname === `/schools/${sidPath}/trips` ||
       pathname === `/schools/${sidPath}/trips/`
     ) {
-      return [scopedTripsRootCurrent()];
+      return [];
     }
 
     if (pathname === `/schools/${sidPath}/trips/new`) {
       return [
-        scopedTripsLink(sidPath),
         {
           key: "new-trip",
           label: `${ptBR.actions.create} ${ptBR.entities.trip}`,
         },
       ];
+    }
+
+    const schoolTripDetail = pathname.match(
+      new RegExp(`^/schools/${sidPath}/trips/([0-9a-f-]{36})/?$`, "i"),
+    );
+    if (schoolTripDetail) {
+      return [{ key: "trip", label: tripLabel }];
+    }
+
+    if (
+      tId &&
+      (pathname === `/schools/${sidPath}/trips/${tId}/passengers` ||
+        pathname === `/schools/${sidPath}/trips/${tId}/passengers/`)
+    ) {
+      return [{ key: "trip", label: tripLabel }];
+    }
+
+    if (tId && pathname === `/schools/${sidPath}/trips/${tId}/passengers/new`) {
+      return [
+        {
+          key: "trip",
+          label: tripLabel,
+          to: "/schools/$schoolId/trips/$tripId/passengers",
+          params: { schoolId: sidPath, tripId: tId },
+        },
+        {
+          key: "new-passenger",
+          label: `${ptBR.actions.create} ${ptBR.entities.passenger}`,
+        },
+      ];
+    }
+
+    if (
+      tId &&
+      pId &&
+      pathname === `/schools/${sidPath}/trips/${tId}/passengers/${pId}/edit`
+    ) {
+      return [
+        {
+          key: "trip",
+          label: tripLabel,
+          to: "/schools/$schoolId/trips/$tripId/passengers",
+          params: { schoolId: sidPath, tripId: tId },
+        },
+        {
+          key: "passenger",
+          label: passengerLabel,
+        },
+      ];
+    }
+
+    if (
+      tId &&
+      pId &&
+      pathname.startsWith(
+        `/schools/${sidPath}/trips/${tId}/passengers/${pId}/payments`,
+      )
+    ) {
+      const items: BreadcrumbSegment[] = [
+        {
+          key: "trip",
+          label: tripLabel,
+          to: "/schools/$schoolId/trips/$tripId/passengers",
+          params: { schoolId: sidPath, tripId: tId },
+        },
+      ];
+      return appendSchoolTripUnderPassengers(
+        items,
+        pathname,
+        sidPath,
+        tId,
+        pId,
+        passengerLabel,
+      );
     }
 
     return [scopedHomeLink(sidPath), { key: "fallback", label: "\u2026" }];
@@ -217,27 +304,23 @@ export function buildBreadcrumbTrail(
   if (pathname.startsWith("/trips/") && tId) {
     const sid = sidLinks;
     const tripOnly =
-      pathname === `/trips/${tId}` || pathname === `/trips/${tId}/`;
+      pathname === `/trips/${tId}` ||
+      pathname === `/trips/${tId}/` ||
+      pathname === `/trips/${tId}/summary`;
 
     if (!sid) {
-      const items: BreadcrumbSegment[] = [
-        {
-          key: "trips",
-          label: ptBR.entities.trips,
-        },
-      ];
-
       if (tripOnly) {
-        items.push({ key: "trip", label: tripLabel });
-        return items;
+        return [{ key: "trip", label: tripLabel }];
       }
 
-      items.push({
-        key: "trip",
-        label: tripLabel,
-        to: "/trips/$tripId",
-        params: { tripId: tId },
-      });
+      const items: BreadcrumbSegment[] = [
+        {
+          key: "trip",
+          label: tripLabel,
+          to: "/trips/$tripId/passengers",
+          params: { tripId: tId },
+        },
+      ];
       return appendTripUnderPassengers(
         items,
         pathname,
@@ -247,7 +330,7 @@ export function buildBreadcrumbTrail(
       );
     }
 
-    const items: BreadcrumbSegment[] = [scopedTripsLink(sid)];
+    const items: BreadcrumbSegment[] = [];
 
     if (tripOnly) {
       items.push({ key: "trip", label: tripLabel });
@@ -257,7 +340,7 @@ export function buildBreadcrumbTrail(
     items.push({
       key: "trip",
       label: tripLabel,
-      to: "/trips/$tripId",
+      to: "/trips/$tripId/passengers",
       params: { tripId: tId },
     });
     return appendTripUnderPassengers(items, pathname, tId, pId, passengerLabel);

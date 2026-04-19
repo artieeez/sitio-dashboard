@@ -34,6 +34,10 @@ pnpm run format      # Biome format only
 ## Stack
 
 - TanStack Start (template + shadcn preset `b1Fk0lmym`, base **base**), client-rendered SPA
+
+### Wix payment events (mock)
+
+The school-scoped **Integração Wix** screen (`/schools/:schoolId/integrations/wix`) uses the same `ListDetailLayout` list–detail shell as Trips: list column (keys + table) and detail column (selected event payload). Narrow detail when nothing is selected matches the M3 list–detail pattern used elsewhere in the app.
 - TanStack Query (`QueryClientProvider` in `src/routes/__root.tsx`), Zustand (theme + UI toggles), Zod (DTOs in `src/lib/schemas/`)
 - TypeScript **strict** (`tsconfig.json`)
 - Tailwind CSS v4, Biome for lint/format

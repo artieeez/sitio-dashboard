@@ -1,6 +1,5 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
@@ -47,12 +46,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <ThemeSync />
             <DashboardShell>{children}</DashboardShell>
           </TooltipProvider>
-          {import.meta.env.DEV ? (
+          {/* {import.meta.env.DEV ? (
             <ReactQueryDevtools
               buttonPosition="bottom-left"
               initialIsOpen={false}
             />
-          ) : null}
+          ) : null} */}
         </QueryClientProvider>
         <TanStackDevtools
           config={{

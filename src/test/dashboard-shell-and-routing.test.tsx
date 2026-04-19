@@ -11,10 +11,6 @@ import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/components/layout/dashboard-breadcrumbs", () => ({
-  DashboardBreadcrumbs: () => <div data-testid="breadcrumbs-stub" />,
-}));
-
 vi.mock("@/components/layout/school-scope-menu", () => ({
   SchoolScopeMenu: () => null,
 }));
@@ -83,7 +79,6 @@ vi.mock("@/components/ui/sidebar", () => {
       <li>{children}</li>
     ),
     SidebarRail: () => null,
-    SidebarSeparator: () => <hr />,
     SidebarTrigger: () => (
       <button type="button" aria-label="Toggle sidebar">
         menu

@@ -1,8 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, Pencil, Plus, Route } from "lucide-react";
-import type { ReactNode } from "react";
-import { DashboardBreadcrumbs } from "@/components/layout/dashboard-breadcrumbs";
+import { CreditCard, Home, Route, School } from "lucide-react";
+import { type ReactNode, useMemo } from "react";
 import { SchoolScopeAvatar } from "@/components/layout/school-scope-header";
 import { SchoolScopeMenu } from "@/components/layout/school-scope-menu";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -22,7 +21,6 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
-  SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,6 +28,7 @@ import { useSchoolsForScope } from "@/hooks/use-schools-for-scope";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { schoolSchema } from "@/lib/schemas/school";
+import { schoolIdFromPathname } from "@/lib/school-scope-path";
 import { getRecentSchools, touchRecentSchool } from "@/lib/scope-persistence";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
@@ -39,14 +38,21 @@ function mobileSchoolTitle(title: string | null | undefined) {
 }
 
 /**
- * US5 shell: shadcn sidebar + scrollable main (UI-FR-001), route-aware breadcrumbs.
- * School-scoped nav per specs/002-sidebar-school-scope: Home + Trips (trip list hub per 001).
+ * US5 shell: shadcn sidebar + scrollable main (UI-FR-001).
+ * Main nav: Início, Viagens, Escolas (directory); scope menu above for switching school.
  */
 export function DashboardShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const activeSchoolId = pathname.match(/^\/schools\/([^/]+)/)?.[1] ?? "";
+  const activeSchoolId = schoolIdFromPathname(pathname);
+  const onSchoolsDirectory = useMemo(
+    () =>
+      pathname === "/schools" ||
+      pathname === "/schools/" ||
+      pathname === "/schools/new",
+    [pathname],
+  );
   const schoolsQuery = useSchoolsForScope();
   const activeSchoolQuery = useQuery({
     queryKey: queryKeys.school(activeSchoolId || "skip"),
@@ -58,13 +64,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   });
 
   const activeSchool = activeSchoolQuery.data ?? null;
-  const editCurrentSchool = () => {
-    if (!activeSchoolId) return;
-    navigate({
-      to: "/schools/$schoolId",
-      params: { schoolId: activeSchoolId },
-    });
-  };
 
   return (
     <SidebarProvider className="flex h-[100dvh] min-h-0 w-full flex-row overflow-hidden">
@@ -86,7 +85,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     queryKey: queryKeys.school(schoolId),
                   });
                   navigate({
-                    to: "/schools/$schoolId",
+                    to: "/schools/$schoolId/trips",
                     params: { schoolId },
                   });
                 }}
@@ -101,76 +100,102 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton
-                      render={
-                        <Link
-                          to={activeSchoolId ? "/schools/$schoolId/home" : "/"}
-                          params={
-                            activeSchoolId
-                              ? { schoolId: activeSchoolId }
-                              : undefined
-                          }
-                          aria-label={ptBR.nav.home}
-                        />
-                      }
-                    >
-                      <Home className="size-4" />
-                      <span>{ptBR.nav.home}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      render={
-                        <Link
-                          to={
-                            activeSchoolId
-                              ? "/schools/$schoolId/trips"
-                              : "/schools"
-                          }
-                          params={
-                            activeSchoolId
-                              ? { schoolId: activeSchoolId }
-                              : undefined
-                          }
-                          aria-label={ptBR.entities.trips}
-                        />
-                      }
-                    >
-                      <Route className="size-4" />
-                      <span>{ptBR.entities.trips}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-            <SidebarSeparator className="mx-0" />
-            <SidebarGroup>
-              <SidebarGroupLabel>{ptBR.shell.schoolGroup}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {activeSchoolId ? (
-                    <SidebarMenuItem>
+                    {activeSchoolId ? (
+                      <SidebarMenuButton
+                        tooltip={ptBR.nav.home}
+                        render={
+                          <Link
+                            to="/schools/$schoolId"
+                            params={{ schoolId: activeSchoolId }}
+                            aria-label={ptBR.nav.home}
+                          />
+                        }
+                      >
+                        <Home className="size-4" />
+                        <span>{ptBR.nav.home}</span>
+                      </SidebarMenuButton>
+                    ) : (
                       <SidebarMenuButton
                         type="button"
-                        onClick={editCurrentSchool}
-                        aria-label={ptBR.scope.editSchool}
+                        disabled
+                        tooltip={ptBR.scope.selectSchoolForSidebarNav}
+                        aria-label={ptBR.nav.home}
+                        title={ptBR.scope.selectSchoolForSidebarNav}
                       >
-                        <Pencil className="size-4" />
-                        <span>{ptBR.scope.editSchool}</span>
+                        <Home className="size-4" />
+                        <span>{ptBR.nav.home}</span>
                       </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ) : null}
+                    )}
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    {activeSchoolId ? (
+                      <SidebarMenuButton
+                        tooltip={ptBR.entities.trips}
+                        render={
+                          <Link
+                            to="/schools/$schoolId/trips"
+                            params={{ schoolId: activeSchoolId }}
+                            aria-label={ptBR.entities.trips}
+                          />
+                        }
+                      >
+                        <Route className="size-4" />
+                        <span>{ptBR.entities.trips}</span>
+                      </SidebarMenuButton>
+                    ) : (
+                      <SidebarMenuButton
+                        type="button"
+                        disabled
+                        tooltip={ptBR.scope.selectSchoolForSidebarNav}
+                        aria-label={ptBR.entities.trips}
+                        title={ptBR.scope.selectSchoolForSidebarNav}
+                      >
+                        <Route className="size-4" />
+                        <span>{ptBR.entities.trips}</span>
+                      </SidebarMenuButton>
+                    )}
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    {activeSchoolId ? (
+                      <SidebarMenuButton
+                        tooltip={ptBR.entities.wixIntegration}
+                        render={
+                          <Link
+                            to="/schools/$schoolId/integrations/wix"
+                            params={{ schoolId: activeSchoolId }}
+                            aria-label={ptBR.entities.wixIntegration}
+                          />
+                        }
+                      >
+                        <CreditCard className="size-4" />
+                        <span>{ptBR.entities.wixIntegration}</span>
+                      </SidebarMenuButton>
+                    ) : (
+                      <SidebarMenuButton
+                        type="button"
+                        disabled
+                        tooltip={ptBR.scope.selectSchoolForSidebarNav}
+                        aria-label={ptBR.entities.wixIntegration}
+                        title={ptBR.scope.selectSchoolForSidebarNav}
+                      >
+                        <CreditCard className="size-4" />
+                        <span>{ptBR.entities.wixIntegration}</span>
+                      </SidebarMenuButton>
+                    )}
+                  </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton
+                      tooltip={ptBR.entities.schools}
                       render={
                         <Link
-                          to="/schools/new"
-                          aria-label={ptBR.scope.addSchool}
+                          to="/schools"
+                          aria-label={ptBR.entities.schools}
+                          aria-current={onSchoolsDirectory ? "page" : undefined}
                         />
                       }
                     >
-                      <Plus className="size-4" />
-                      <span>{ptBR.scope.addSchool}</span>
+                      <School className="size-4" />
+                      <span>{ptBR.entities.schools}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -179,7 +204,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           </ScrollArea>
         </SidebarContent>
         <SidebarFooter>
-          <SidebarSeparator className="mx-0" />
           <SidebarMenu>
             <SidebarMenuItem>
               <ModeToggle />
@@ -191,13 +215,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       <SidebarInset
         className={cn("flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden")}
       >
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-3 md:px-4">
+        <header className="flex h-14 shrink-0 items-center gap-2 px-3 md:hidden">
           <SidebarTrigger className="-ml-0.5" />
-          <Separator
-            orientation="vertical"
-            className="mr-1 hidden h-4 md:block"
-          />
-          <div className="flex min-w-0 flex-1 items-center gap-2 md:hidden">
+          <Separator orientation="vertical" className="h-4" />
+          <div className="flex min-w-0 flex-1 items-center gap-2">
             {activeSchoolId ? (
               activeSchoolQuery.isLoading ? (
                 <>
@@ -228,14 +249,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               </Link>
             )}
           </div>
-          <div className="hidden min-w-0 flex-1 md:block">
-            <DashboardBreadcrumbs />
-          </div>
         </header>
-        <div className="shrink-0 border-b px-3 py-2 md:hidden">
-          <DashboardBreadcrumbs />
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          {children}
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
