@@ -57,8 +57,13 @@ export function WixPaymentEventsTableToolbar({
         >
           <ChevronLeft className="size-4" aria-hidden />
         </Button>
-        <span className="min-w-[8rem] text-center text-muted-foreground text-sm tabular-nums">
-          {ptBR.wixIntegration.pagination.pageOf(current, safeTotal)}
+        <span className="min-w-0 shrink text-center text-muted-foreground text-sm tabular-nums">
+          <span className="sr-only">
+            {ptBR.wixIntegration.pagination.pageOfAria(current, safeTotal)}
+          </span>
+          <span aria-hidden="true">
+            {ptBR.wixIntegration.pagination.pageOf(current, safeTotal)}
+          </span>
         </span>
         <Button
           type="button"

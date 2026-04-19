@@ -202,7 +202,9 @@ export const ptBR = {
       pageSize: "Itens por página",
       prev: "Página anterior",
       next: "Próxima página",
-      pageOf: (page: number, totalPages: number) =>
+      /** Compact visible fraction; use `pageOfAria` for accessible name. */
+      pageOf: (page: number, totalPages: number) => `${page} / ${totalPages}`,
+      pageOfAria: (page: number, totalPages: number) =>
         `Página ${page} de ${totalPages}`,
     },
     detailTitle: "Detalhes do evento",
