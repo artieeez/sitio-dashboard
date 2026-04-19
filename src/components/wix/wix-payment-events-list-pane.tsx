@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { MoreVertical, Settings2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { WixPaymentEventListItem } from "@/lib/wix-payment-event-schemas";
 import type { DefaultListTablePageSize } from "@/components/ui/list-table-pagination-toolbar";
@@ -165,6 +165,28 @@ export function WixPaymentEventsListPane({
     }
   }, [filtered, selectedKey, navigate, schoolId]);
 
+  const navigateToWixEvent = useCallback(
+    (row: WixPaymentEventListItem) => {
+      const index = sorted.findIndex((r) => r.event.id === row.event.id);
+      if (index < 0) return;
+      void navigate({
+        to: "/schools/$schoolId/integrations/wix/$eventId",
+        params: { schoolId, eventId: row.event.id },
+      });
+      setPageIndex(Math.floor(index / pageSize));
+    },
+    [navigate, pageSize, schoolId, sorted],
+  );
+
+  const selectionKeyboardNavigation = useMemo(
+    () => ({
+      fullRows: sorted,
+      selectedKey,
+      onNavigateToRow: navigateToWixEvent,
+    }),
+    [navigateToWixEvent, selectedKey, sorted],
+  );
+
   function toggleSort(column: WixEventSortColumn) {
     setSort((prev) => {
       if (prev.column === column) {
@@ -248,13 +270,9 @@ export function WixPaymentEventsListPane({
           getRowKey={(r) => r.event.id}
           emptyMessage={emptyMessage}
           selectedKey={selectedKey}
+          selectionKeyboardNavigation={selectionKeyboardNavigation}
           rowAriaLabel={buyerName}
-          onRowActivate={(row) => {
-            void navigate({
-              to: "/schools/$schoolId/integrations/wix/$eventId",
-              params: { schoolId, eventId: row.event.id },
-            });
-          }}
+          onRowActivate={navigateToWixEvent}
           columns={[
             {
               id: "trip",

@@ -1,7 +1,8 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 
+import { shouldIgnoreForListArrowNavigation } from "@/lib/keyboard-navigation";
 import { cn } from "@/lib/utils";
 
 export type SortDirection = "asc" | "desc";
@@ -27,6 +28,14 @@ const stickyThClass =
 const sortHeaderButtonClass =
   "inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
+export type SelectionKeyboardNavigation<TRow> = {
+  /** Full ordered list (e.g. sorted, filtered). */
+  fullRows: Array<TRow>;
+  /** Active row id (typically from the list–detail shell / URL). */
+  selectedKey: string | null | undefined;
+  onNavigateToRow: (row: TRow) => void;
+};
+
 export type SortableListTableProps<TRow, TSortKey extends string> = {
   columns: Array<SortableListTableColumn<TSortKey, TRow>>;
   rows: Array<TRow>;
@@ -43,6 +52,13 @@ export type SortableListTableProps<TRow, TSortKey extends string> = {
   minWidthClassName?: string;
   className?: string;
   tableClassName?: string;
+  /**
+   * When a row is selected (e.g. detail pane open), ArrowUp/ArrowDown/Home/End
+   * move selection across `fullRows` — works even when focus is outside the table
+   * (window listener). When focus is on a row, the same navigation applies across
+   * pages instead of only moving focus within the current `rows` page.
+   */
+  selectionKeyboardNavigation?: SelectionKeyboardNavigation<TRow>;
 };
 
 function SortIcon({ active, direction }: { active: boolean; direction: SortDirection }) {
@@ -67,9 +83,49 @@ export function SortableListTable<TRow, TSortKey extends string>({
   minWidthClassName = "min-w-[800px]",
   className,
   tableClassName,
+  selectionKeyboardNavigation,
 }: SortableListTableProps<TRow, TSortKey>) {
   const rowRefs = useRef<Array<HTMLTableRowElement | null>>([]);
   const interactive = Boolean(onRowActivate);
+  const nav = selectionKeyboardNavigation;
+  const navRef = useRef(nav);
+  navRef.current = nav;
+
+  useEffect(() => {
+    if (!nav) return;
+    function onWindowKeyDown(ev: KeyboardEvent) {
+      if (ev.defaultPrevented) return;
+      if (shouldIgnoreForListArrowNavigation(ev.target)) return;
+      if (
+        ev.target instanceof HTMLElement &&
+        ev.target.closest("thead") != null
+      ) {
+        return;
+      }
+      if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(ev.key)) return;
+      const n = navRef.current;
+      if (!n) return;
+      const { fullRows, selectedKey: activeRowKey, onNavigateToRow } = n;
+      if (activeRowKey == null || activeRowKey === "") return;
+      const idx = fullRows.findIndex((r) => getRowKey(r) === activeRowKey);
+      if (idx < 0) return;
+      if (ev.key === "ArrowDown" && idx < fullRows.length - 1) {
+        ev.preventDefault();
+        onNavigateToRow(fullRows[idx + 1]);
+      } else if (ev.key === "ArrowUp" && idx > 0) {
+        ev.preventDefault();
+        onNavigateToRow(fullRows[idx - 1]);
+      } else if (ev.key === "Home" && idx > 0) {
+        ev.preventDefault();
+        onNavigateToRow(fullRows[0]);
+      } else if (ev.key === "End" && idx < fullRows.length - 1) {
+        ev.preventDefault();
+        onNavigateToRow(fullRows[fullRows.length - 1]);
+      }
+    }
+    window.addEventListener("keydown", onWindowKeyDown);
+    return () => window.removeEventListener("keydown", onWindowKeyDown);
+  }, [nav, getRowKey]);
 
   return (
     <div className={cn("max-w-full min-h-0 overflow-x-auto rounded-md", className)}>
@@ -149,25 +205,74 @@ export function SortableListTable<TRow, TSortKey extends string>({
                     interactive
                       ? (ev) => {
                           const id = getRowKey(row);
+                          if (shouldIgnoreForListArrowNavigation(ev.target)) {
+                            return;
+                          }
+                          if (nav) {
+                            // Use URL-driven selection when present so arrows stay correct
+                            // even if focus remains on a different `<tr>` than the selected row.
+                            const anchorKey =
+                              selectedKey != null && selectedKey !== ""
+                                ? selectedKey
+                                : id;
+                            const idx = nav.fullRows.findIndex(
+                              (r) => getRowKey(r) === anchorKey,
+                            );
+                            if (idx < 0) return;
+                            const { fullRows, onNavigateToRow } = nav;
+                            if (ev.key === "ArrowDown") {
+                              if (idx >= fullRows.length - 1) return;
+                              ev.preventDefault();
+                              ev.stopPropagation();
+                              onNavigateToRow(fullRows[idx + 1]);
+                            } else if (ev.key === "ArrowUp") {
+                              if (idx <= 0) return;
+                              ev.preventDefault();
+                              ev.stopPropagation();
+                              onNavigateToRow(fullRows[idx - 1]);
+                            } else if (ev.key === "Home") {
+                              if (idx <= 0) return;
+                              ev.preventDefault();
+                              ev.stopPropagation();
+                              onNavigateToRow(fullRows[0]);
+                            } else if (ev.key === "End") {
+                              if (idx >= fullRows.length - 1) return;
+                              ev.preventDefault();
+                              ev.stopPropagation();
+                              onNavigateToRow(
+                                fullRows[fullRows.length - 1],
+                              );
+                            } else if (ev.key === "Enter" || ev.key === " ") {
+                              ev.preventDefault();
+                              ev.stopPropagation();
+                              onRowActivate?.(row);
+                            }
+                            return;
+                          }
                           const idx = rows.findIndex((r) => getRowKey(r) === id);
                           if (idx < 0) return;
                           if (ev.key === "ArrowDown") {
                             ev.preventDefault();
+                            ev.stopPropagation();
                             const next = Math.min(idx + 1, rows.length - 1);
                             rowRefs.current[next]?.focus();
                           } else if (ev.key === "ArrowUp") {
                             ev.preventDefault();
+                            ev.stopPropagation();
                             const prev = Math.max(idx - 1, 0);
                             rowRefs.current[prev]?.focus();
                           } else if (ev.key === "Home") {
                             ev.preventDefault();
+                            ev.stopPropagation();
                             rowRefs.current[0]?.focus();
                           } else if (ev.key === "End") {
                             ev.preventDefault();
+                            ev.stopPropagation();
                             const last = rows.length - 1;
                             rowRefs.current[last]?.focus();
                           } else if (ev.key === "Enter" || ev.key === " ") {
                             ev.preventDefault();
+                            ev.stopPropagation();
                             onRowActivate?.(row);
                           }
                         }
