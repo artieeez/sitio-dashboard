@@ -17,11 +17,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { tripSchema } from "@/lib/schemas/trip";
 import {
   isPassengerEditDetailPath,
-  isPassengerNewFormPath,
-  isPassengerPaymentFormDetailPath,
   isPassengerPaymentsBranchPath,
-  isPassengerPaymentsIndexPath,
-  isTripPassengersListHubPath,
   passengersListLink,
 } from "@/lib/trip-payment-links";
 import {
@@ -90,17 +86,6 @@ function TripWorkspaceShell() {
     return undefined;
   }, [pathname, tripId, navigate, tripIdValid]);
 
-  const hidePaneDetailClose = useMemo(
-    () =>
-      isPassengerEditDetailPath(pathname) ||
-      isPassengerNewFormPath(pathname) ||
-      isPassengerPaymentFormDetailPath(pathname) ||
-      isPassengerPaymentsIndexPath(pathname) ||
-      isTripSummaryEditDetailPath(pathname, tripId) ||
-      isTripPassengersListHubPath(pathname, tripId),
-    [pathname, tripId],
-  );
-
   const [workspaceDirty, setWorkspaceDirty] = useState(false);
   const [outletKey, setOutletKey] = useState(0);
   const handleDiscardDirty = useCallback(() => {
@@ -118,7 +103,6 @@ function TripWorkspaceShell() {
         selectedKey={selectedKey}
         onSelectedKeyChange={onSelectedKeyChange}
         onCloseDetail={onCloseDetail}
-        hidePaneDetailClose={hidePaneDetailClose}
         disableLocalUnsavedGuard
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}

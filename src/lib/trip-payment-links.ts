@@ -50,7 +50,7 @@ export function isPassengerNewFormPath(pathname: string): boolean {
 
 /**
  * Passengers list hub only: `.../trips/:tripId/passengers` (no `/new`, no passenger id).
- * Used to hide the list–detail chrome close control when nothing is selected in the table.
+ * Used for list–detail selection / narrow detail pane when no passenger row is open.
  */
 export function isTripPassengersListHubPath(
   pathname: string,

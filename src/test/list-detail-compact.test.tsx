@@ -1,8 +1,33 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { ListDetailLayout } from "@/components/layout/list-detail-layout";
+import {
+  ListDetailLayout,
+  useListDetailLayout,
+} from "@/components/layout/list-detail-layout";
 import { ptBR } from "@/messages/pt-BR";
+
+function CompactDetailWithClose({
+  testId,
+  label,
+}: {
+  testId: string;
+  label: string;
+}) {
+  const { requestCloseDetail } = useListDetailLayout();
+  return (
+    <div data-testid={testId}>
+      <button
+        type="button"
+        aria-label={ptBR.listDetail.detailClose}
+        onClick={() => requestCloseDetail()}
+      >
+        ×
+      </button>
+      <span>{label}</span>
+    </div>
+  );
+}
 
 /**
  * US2 / T023: compact list↔detail via `isCompactOverride` (no `matchMedia` in unit tests).
@@ -14,7 +39,9 @@ describe("list-detail compact (US2 / T023)", () => {
         isCompactOverride
         selectedKey="row-1"
         list={<span data-testid="compact-list">lista</span>}
-        detail={<span data-testid="compact-detail">detalhe</span>}
+        detail={
+          <CompactDetailWithClose testId="compact-detail" label="detalhe" />
+        }
       />,
     );
 
@@ -57,7 +84,7 @@ describe("list-detail compact (US2 / T023)", () => {
         selectedKey="x"
         onSelectedKeyChange={onSelectedKeyChange}
         list={<span>lista</span>}
-        detail={<span>detalhe</span>}
+        detail={<CompactDetailWithClose testId="d" label="detalhe" />}
       />,
     );
 
@@ -76,7 +103,9 @@ describe("list-detail compact (US2 / T023)", () => {
         isDirty
         onDiscardDirty={vi.fn()}
         list={<span data-testid="compact-list">lista</span>}
-        detail={<span data-testid="compact-detail">detalhe</span>}
+        detail={
+          <CompactDetailWithClose testId="compact-detail" label="detalhe" />
+        }
       />,
     );
 

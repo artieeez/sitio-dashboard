@@ -35,8 +35,6 @@ function SchoolsShell() {
     [pathname],
   );
 
-  const hidePaneDetailClose = pathname === "/schools/new";
-
   const [workspaceDirty, setWorkspaceDirty] = useState(false);
   const [outletKey, setOutletKey] = useState(0);
   const handleDiscardDirty = useCallback(() => {
@@ -72,7 +70,6 @@ function SchoolsShell() {
         <ListDetailLayout
           selectedKey={directorySelectedKey}
           onSelectedKeyChange={onDirectorySelectedKeyChange}
-          hidePaneDetailClose={hidePaneDetailClose}
           disableLocalUnsavedGuard
           isDirty={workspaceDirty}
           onDiscardDirty={handleDiscardDirty}

@@ -1,4 +1,3 @@
-import { XIcon } from "lucide-react";
 import {
   createContext,
   type ReactNode,
@@ -11,7 +10,6 @@ import {
 } from "react";
 
 import { UnsavedChangesDialog } from "@/components/layout/unsaved-changes-dialog";
-import { Button } from "@/components/ui/button";
 import { useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
@@ -47,8 +45,6 @@ export type ListDetailLayoutPaneProps = {
    * `onSelectedKeyChange(null)` (e.g. return to passengers list from payment routes).
    */
   onCloseDetail?: () => void;
-  /** When true, omit the default detail chrome row; embed Close in the detail content (e.g. trip title row). */
-  hidePaneDetailClose?: boolean;
   /** When true, delegates unsaved blocking to route-level guard (no local dialog). */
   disableLocalUnsavedGuard?: boolean;
   isDirty?: boolean;
@@ -64,8 +60,9 @@ export type ListDetailLayoutPaneProps = {
 /**
  * M3 list–detail shell: list + detail regions, compact stack, unsaved dialog.
  * Desktop: no vertical rule between panes; detail reads as an elevated surface
- * (rounded leading edge, shadow, ring) over the list. Compact detail uses **Close**
- * (deselect / clear detail), not “back” wording.
+ * (rounded leading edge, shadow, ring) over the list. **Detail** content is responsible
+ * for any Close control (e.g. via `useListDetailLayout().requestCloseDetail`).
+ * Compact: switching back to the list still uses that same hook.
  * Does not call `useIsMobile` — pass `isCompact` from the parent (or from tests).
  */
 export function ListDetailLayoutPane({
@@ -74,7 +71,6 @@ export function ListDetailLayoutPane({
   selectedKey = null,
   onSelectedKeyChange,
   onCloseDetail,
-  hidePaneDetailClose = false,
   disableLocalUnsavedGuard = false,
   isDirty = false,
   onDiscardDirty = () => {},
@@ -160,30 +156,11 @@ export function ListDetailLayoutPane({
     [selectedKey, requestSelect, requestCloseDetail, isCompact],
   );
 
-  const showDetailClose =
-    selectedKey != null && (!isCompact || stackTop === "detail");
-
   const showList = !isCompact || stackTop === "list";
   const showDetail = !isCompact || stackTop === "detail";
   const listLabel = ptBR.listDetail.listRegion;
   const detailLabel = ptBR.listDetail.detailRegion;
   const desktopNarrowDetail = !isCompact && narrowDetailPane;
-
-  const detailCloseRow =
-    showDetailClose && !hidePaneDetailClose ? (
-      <div className="flex shrink-0 justify-end border-border border-b p-2">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="gap-1 px-2"
-          onClick={() => requestCloseDetail()}
-          aria-label={ptBR.listDetail.detailClose}
-        >
-          <XIcon className="size-4 shrink-0" aria-hidden />
-        </Button>
-      </div>
-    ) : null;
 
   return (
     <div
@@ -224,13 +201,9 @@ export function ListDetailLayoutPane({
               )}
             >
               {isCompact ? (
-                <>
-                  {detailCloseRow}
-                  {detail}
-                </>
+                detail
               ) : (
                 <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
-                  {detailCloseRow}
                   {detail}
                 </div>
               )}

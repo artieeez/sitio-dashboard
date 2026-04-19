@@ -83,7 +83,6 @@ function WixIntegrationShell() {
         narrowDetailPane={narrowDetailPane}
         selectedKey={selectedKey}
         onSelectedKeyChange={onSelectedKeyChange}
-        hidePaneDetailClose={selectedKey != null}
         disableLocalUnsavedGuard
         list={
           <div className="flex min-h-0 min-w-0 flex-1 flex-col basis-0">

@@ -20,6 +20,28 @@ function RowButton({ id, label }: { id: string; label: string }) {
   );
 }
 
+function CompactDetailWithClose({
+  testId,
+  label,
+}: {
+  testId: string;
+  label: string;
+}) {
+  const { requestCloseDetail } = useListDetailLayout();
+  return (
+    <div data-testid={testId}>
+      <button
+        type="button"
+        aria-label={ptBR.listDetail.detailClose}
+        onClick={() => requestCloseDetail()}
+      >
+        ×
+      </button>
+      <span>{label}</span>
+    </div>
+  );
+}
+
 describe("list-detail-layout shell (M3)", () => {
   it("exposes stable test ids and named list/detail regions when expanded", () => {
     render(
@@ -85,7 +107,12 @@ describe("list-detail-layout shell (M3)", () => {
         isCompact
         selectedKey="x"
         list={<span data-testid="compact-list">lista-compacta</span>}
-        detail={<span data-testid="compact-detail">detalhe-compacto</span>}
+        detail={
+          <CompactDetailWithClose
+            testId="compact-detail"
+            label="detalhe-compacto"
+          />
+        }
       />,
     );
 
@@ -179,7 +206,12 @@ describe("list-detail-layout shell (M3)", () => {
         isDirty
         onDiscardDirty={onDiscardDirty}
         list={<span data-testid="compact-list">lista-compacta</span>}
-        detail={<span data-testid="compact-detail">detalhe-compacto</span>}
+        detail={
+          <CompactDetailWithClose
+            testId="compact-detail"
+            label="detalhe-compacto"
+          />
+        }
       />,
     );
 

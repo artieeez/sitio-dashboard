@@ -14,10 +14,7 @@ import { TripWorkspaceListPane } from "@/components/trips/trip-workspace-list-pa
 import { WorkspaceDirtyProvider } from "@/contexts/workspace-dirty-context";
 import {
   isPassengerEditDetailPath,
-  isPassengerNewFormPath,
-  isPassengerPaymentFormDetailPath,
   isPassengerPaymentsBranchPath,
-  isPassengerPaymentsIndexPath,
   isTripPassengersListHubPath,
   passengersListLink,
 } from "@/lib/trip-payment-links";
@@ -119,17 +116,6 @@ function SchoolTripsShell() {
     return undefined;
   }, [pathname, tripIdFromChild, schoolId, navigate]);
 
-  const hidePaneDetailClose = useMemo(() => {
-    if (pathname.includes("/trips/new")) return true;
-    if (isPassengerEditDetailPath(pathname)) return true;
-    if (isPassengerNewFormPath(pathname)) return true;
-    if (isPassengerPaymentFormDetailPath(pathname)) return true;
-    if (isPassengerPaymentsIndexPath(pathname)) return true;
-    if (!tripIdFromChild || !isUuid(tripIdFromChild)) return false;
-    if (isTripPassengersListHubPath(pathname, tripIdFromChild)) return true;
-    return isTripSummaryEditDetailPath(pathname, tripIdFromChild);
-  }, [pathname, tripIdFromChild]);
-
   const [workspaceDirty, setWorkspaceDirty] = useState(false);
   const [outletKey, setOutletKey] = useState(0);
   const handleDiscardDirty = useCallback(() => {
@@ -147,7 +133,6 @@ function SchoolTripsShell() {
         selectedKey={selectedKey}
         onSelectedKeyChange={onSelectedKeyChange}
         onCloseDetail={onCloseDetail}
-        hidePaneDetailClose={hidePaneDetailClose}
         disableLocalUnsavedGuard
         isDirty={workspaceDirty}
         onDiscardDirty={handleDiscardDirty}
