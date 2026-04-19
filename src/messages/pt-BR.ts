@@ -173,6 +173,9 @@ export const ptBR = {
     settingsSheetTitle: "Configuração da integração",
     settingsSheetDescription:
       "Chaves públicas e privadas permanecem apenas nesta sessão do navegador.",
+    /** Primary action: confirm settings for this session and return to the events list. */
+    saveConfigurationAriaLabel:
+      "Salvar configuração da integração Wix e voltar à lista de eventos",
     emptyTable: "Nenhum evento para exibir com os filtros atuais.",
     emptyOrphans: "Nenhum evento órfão com os filtros atuais.",
     orphanBadge: "Órfão",

@@ -46,6 +46,15 @@ function WixConfigurationDetailRoute() {
         onPublicKeyChange={setPublicKey}
         onPrivateApiKeyChange={setPrivateApiKey}
       />
+      <div className="mt-6 flex shrink-0 justify-end">
+        <Button
+          type="button"
+          onClick={() => requestCloseDetail()}
+          aria-label={ptBR.wixIntegration.saveConfigurationAriaLabel}
+        >
+          {ptBR.actions.save}
+        </Button>
+      </div>
     </div>
   );
 }
