@@ -5,6 +5,10 @@ import { useCallback } from "react";
 import { z } from "zod";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
+import {
+  ListPaneScrollArea,
+  ListPaneShell,
+} from "@/components/layout/list-pane-layout";
 import { PassengerTable } from "@/components/trips/PassengerTable";
 import { TripWorkspaceListOptionsMenu } from "@/components/trips/trip-workspace-list-options-menu";
 import { Button } from "@/components/ui/button";
@@ -106,109 +110,111 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
-      <header className="flex min-w-0 items-start gap-3">
-        <div className="mt-0.5 shrink-0">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="shrink-0"
-            aria-label={ptBR.tripWorkspace.goBackAria}
-            onClick={onGoBack}
-          >
-            <ArrowLeft className="size-4 shrink-0" aria-hidden />
-          </Button>
-        </div>
-        {tripQuery.isLoading ? (
-          <span
-            className="size-12 shrink-0 animate-pulse rounded-lg bg-muted"
-            aria-hidden
-          />
-        ) : tripQuery.isError || !tripQuery.data ? (
-          <span
-            className="inline-flex size-12 shrink-0 items-center justify-center rounded-lg border border-dashed border-border bg-muted/40 text-muted-foreground text-xs"
-            aria-hidden
-          >
-            —
+    <ListPaneShell className="pt-4">
+      <ListPaneScrollArea>
+        <header className="flex min-w-0 items-start gap-3">
+          <div className="mt-0.5 shrink-0">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              aria-label={ptBR.tripWorkspace.goBackAria}
+              onClick={onGoBack}
+            >
+              <ArrowLeft className="size-4 shrink-0" aria-hidden />
+            </Button>
+          </div>
+          {tripQuery.isLoading ? (
+            <span
+              className="size-12 shrink-0 animate-pulse rounded-lg bg-muted"
+              aria-hidden
+            />
+          ) : tripQuery.isError || !tripQuery.data ? (
+            <span
+              className="inline-flex size-12 shrink-0 items-center justify-center rounded-lg border border-dashed border-border bg-muted/40 text-muted-foreground text-xs"
+              aria-hidden
+            >
+              —
+            </span>
+          ) : tripQuery.data.imageUrl?.trim() ? (
+            <img
+              src={tripQuery.data.imageUrl}
+              alt=""
+              className="size-12 shrink-0 rounded-lg object-cover"
+            />
+          ) : (
+            <span
+              className="inline-block size-12 shrink-0 rounded-lg border border-dashed border-border bg-muted/40"
+              aria-hidden
+            />
+          )}
+          <div className="min-w-0 flex-1">
+            {tripQuery.isLoading ? (
+              <p className="text-sm text-muted-foreground">Carregando…</p>
+            ) : tripQuery.isError || !tripQuery.data ? (
+              <p className="text-sm text-muted-foreground" role="status">
+                {ptBR.listDetail.tripContextLoadError}
+              </p>
+            ) : (
+              <div className="min-w-0">
+                <h2 className="break-words font-semibold text-base leading-snug tracking-tight">
+                  {tripWorkspaceTitle(tripQuery.data)}
+                </h2>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <p className="text-muted-foreground text-xs">
+                    {ptBR.tripWorkspace.subtitleDateMock}
+                  </p>
+                  {!tripQuery.data.active ? (
+                    <span className="inline-flex rounded-md border border-border bg-muted/50 px-2 py-0.5 font-medium text-muted-foreground text-xs">
+                      {ptBR.fields.inactive}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="mt-0.5 shrink-0">
+            <TripWorkspaceListOptionsMenu
+              tripId={tripId}
+              {...(paymentsSchoolId ? { schoolId: paymentsSchoolId } : {})}
+            />
+          </div>
+        </header>
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
+          <span className="font-medium text-sm">
+            {ptBR.tripWorkspace.passengersTab}
           </span>
-        ) : tripQuery.data.imageUrl?.trim() ? (
-          <img
-            src={tripQuery.data.imageUrl}
-            alt=""
-            className="size-12 shrink-0 rounded-lg object-cover"
-          />
+          <div className="flex shrink-0 items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-label={ptBR.actions.addPassenger}
+              className="w-fit gap-1"
+              onClick={() => requestSelect("passengers-new")}
+            >
+              <Plus className="size-4 shrink-0" aria-hidden />
+              {ptBR.actions.addPassenger}
+            </Button>
+          </div>
+        </div>
+        {passengersQuery.isLoading ? (
+          <p className="text-sm text-muted-foreground">Carregando…</p>
+        ) : passengersQuery.isError ? (
+          <p className="text-sm text-red-600" role="alert">
+            {ptBR.listDetail.passengersLoadError}
+          </p>
         ) : (
-          <span
-            className="inline-block size-12 shrink-0 rounded-lg border border-dashed border-border bg-muted/40"
-            aria-hidden
+          <PassengerTable
+            rows={passengersQuery.data ?? []}
+            includeRemoved={includeRemoved}
+            onIncludeRemovedChange={(v) => setIncludeRemoved(v)}
+            selectedPassengerId={selectedPassengerId}
+            onPassengerRowNavigate={onPassengerRowNavigate}
           />
         )}
-        <div className="min-w-0 flex-1">
-          {tripQuery.isLoading ? (
-            <p className="text-sm text-muted-foreground">Carregando…</p>
-          ) : tripQuery.isError || !tripQuery.data ? (
-            <p className="text-sm text-muted-foreground" role="status">
-              {ptBR.listDetail.tripContextLoadError}
-            </p>
-          ) : (
-            <div className="min-w-0">
-              <h2 className="break-words font-semibold text-base leading-snug tracking-tight">
-                {tripWorkspaceTitle(tripQuery.data)}
-              </h2>
-              <div className="mt-1 flex flex-wrap items-center gap-2">
-                <p className="text-muted-foreground text-xs">
-                  {ptBR.tripWorkspace.subtitleDateMock}
-                </p>
-                {!tripQuery.data.active ? (
-                  <span className="inline-flex rounded-md border border-border bg-muted/50 px-2 py-0.5 font-medium text-muted-foreground text-xs">
-                    {ptBR.fields.inactive}
-                  </span>
-                ) : null}
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="mt-0.5 shrink-0">
-          <TripWorkspaceListOptionsMenu
-            tripId={tripId}
-            {...(paymentsSchoolId ? { schoolId: paymentsSchoolId } : {})}
-          />
-        </div>
-      </header>
-      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
-        <span className="font-medium text-sm">
-          {ptBR.tripWorkspace.passengersTab}
-        </span>
-        <div className="flex shrink-0 items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            aria-label={ptBR.actions.addPassenger}
-            className="w-fit gap-1"
-            onClick={() => requestSelect("passengers-new")}
-          >
-            <Plus className="size-4 shrink-0" aria-hidden />
-            {ptBR.actions.addPassenger}
-          </Button>
-        </div>
-      </div>
-      {passengersQuery.isLoading ? (
-        <p className="text-sm text-muted-foreground">Carregando…</p>
-      ) : passengersQuery.isError ? (
-        <p className="text-sm text-red-600" role="alert">
-          {ptBR.listDetail.passengersLoadError}
-        </p>
-      ) : (
-        <PassengerTable
-          rows={passengersQuery.data ?? []}
-          includeRemoved={includeRemoved}
-          onIncludeRemovedChange={(v) => setIncludeRemoved(v)}
-          selectedPassengerId={selectedPassengerId}
-          onPassengerRowNavigate={onPassengerRowNavigate}
-        />
-      )}
-    </div>
+      </ListPaneScrollArea>
+    </ListPaneShell>
   );
 }

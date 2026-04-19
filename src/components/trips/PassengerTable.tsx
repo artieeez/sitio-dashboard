@@ -1,12 +1,20 @@
-import { useRef } from "react";
+import { useCallback, useMemo } from "react";
+import { ListPaneFilters } from "@/components/layout/list-pane-layout";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
+import type { SortableListTableSortState } from "@/components/ui/sortable-list-table";
+import { SortableListTable } from "@/components/ui/sortable-list-table";
 import {
   passengerPaymentStatusLabel,
   passengerPaymentStatusToneClass,
 } from "@/lib/passenger-payment-status";
 import type { PassengerWithStatus } from "@/lib/schemas/passenger";
-import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
+
+type PassengerTableSortColumn = "name" | "cpf" | "status";
+
+function noopSort(_column: PassengerTableSortColumn) {
+  return;
+}
 
 export function PassengerTable(props: {
   rows: PassengerWithStatus[];
@@ -24,118 +32,105 @@ export function PassengerTable(props: {
     selectedPassengerId = null,
     onPassengerRowNavigate,
   } = props;
-  const rowRefs = useRef<Array<HTMLTableRowElement | null>>([]);
-  const rowNav = onPassengerRowNavigate;
+
+  const sortState = useMemo<
+    SortableListTableSortState<PassengerTableSortColumn>
+  >(() => ({ column: "name", direction: "asc" }), []);
+
+  const navigateToPassengerRow = useCallback(
+    (p: PassengerWithStatus) => {
+      onPassengerRowNavigate?.(p.id);
+    },
+    [onPassengerRowNavigate],
+  );
+
+  const selectionKeyboardNavigation = useMemo(() => {
+    if (!onPassengerRowNavigate) return undefined;
+    if (
+      selectedPassengerId == null ||
+      selectedPassengerId === "" ||
+      rows.length === 0
+    ) {
+      return undefined;
+    }
+    return {
+      fullRows: rows,
+      selectedKey: selectedPassengerId,
+      onNavigateToRow: navigateToPassengerRow,
+    };
+  }, [
+    rows,
+    selectedPassengerId,
+    onPassengerRowNavigate,
+    navigateToPassengerRow,
+  ]);
+
+  const columns = useMemo(
+    () => [
+      {
+        id: "name" as const,
+        header: ptBR.fields.name,
+        sortable: false,
+        thClassName: "whitespace-normal",
+        tdClassName: "whitespace-nowrap",
+        render: (p: PassengerWithStatus) => (
+          <>
+            {p.fullName}
+            {p.removedAt ? (
+              <span className="ml-2 text-xs text-muted-foreground">
+                ({ptBR.fields.removedPassenger})
+              </span>
+            ) : null}
+          </>
+        ),
+      },
+      {
+        id: "cpf" as const,
+        header: ptBR.fields.cpf,
+        sortable: false,
+        tdClassName: "tabular-nums whitespace-nowrap",
+        render: (p: PassengerWithStatus) => p.cpf ?? "—",
+      },
+      {
+        id: "status" as const,
+        header: ptBR.fields.paymentStatus,
+        sortable: false,
+        tdClassName: "whitespace-nowrap",
+        render: (p: PassengerWithStatus) => (
+          <span className={passengerPaymentStatusToneClass(p.status)}>
+            {passengerPaymentStatusLabel(p.status)}
+          </span>
+        ),
+      },
+    ],
+    [],
+  );
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-2">
+      <ListPaneFilters>
         <BooleanFilterChip
           checked={includeRemoved}
           onCheckedChange={onIncludeRemovedChange}
         >
           {ptBR.toggles.includeRemovedPassengers}
         </BooleanFilterChip>
-      </div>
-      <div className="overflow-x-auto rounded-md">
-        <table className="w-full min-w-[24rem] border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="px-2 py-1.5 font-medium whitespace-normal">
-                {ptBR.fields.name}
-              </th>
-              <th className="px-2 py-1.5 font-medium whitespace-normal">
-                {ptBR.fields.cpf}
-              </th>
-              <th className="px-2 py-1.5 font-medium whitespace-normal">
-                {ptBR.fields.paymentStatus}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={3}
-                  className="border-b border-border px-2 py-3 text-muted-foreground whitespace-nowrap"
-                >
-                  {ptBR.entities.passengers} — nenhum registro.
-                </td>
-              </tr>
-            ) : (
-              rows.map((p, rowIndex) => (
-                <tr
-                  key={p.id}
-                  ref={(el) => {
-                    rowRefs.current[rowIndex] = el;
-                  }}
-                  tabIndex={rowNav ? 0 : undefined}
-                  className={cn(
-                    "group border-b border-border/80",
-                    selectedPassengerId === p.id
-                      ? "bg-muted/50 hover:bg-muted/55"
-                      : "hover:bg-muted/40",
-                    rowNav && "cursor-pointer outline-none",
-                  )}
-                  aria-selected={
-                    selectedPassengerId === p.id ? true : undefined
-                  }
-                  aria-label={rowNav ? p.fullName : undefined}
-                  onClick={rowNav ? () => rowNav(p.id) : undefined}
-                  onKeyDown={
-                    rowNav
-                      ? (ev) => {
-                          const idx = rows.findIndex((r) => r.id === p.id);
-                          if (idx < 0) return;
-                          if (ev.key === "ArrowDown") {
-                            ev.preventDefault();
-                            const next = Math.min(idx + 1, rows.length - 1);
-                            rowRefs.current[next]?.focus();
-                            rowNav(rows[next].id);
-                          } else if (ev.key === "ArrowUp") {
-                            ev.preventDefault();
-                            const prev = Math.max(idx - 1, 0);
-                            rowRefs.current[prev]?.focus();
-                            rowNav(rows[prev].id);
-                          } else if (ev.key === "Home") {
-                            ev.preventDefault();
-                            rowRefs.current[0]?.focus();
-                            rowNav(rows[0].id);
-                          } else if (ev.key === "End") {
-                            ev.preventDefault();
-                            const last = rows.length - 1;
-                            rowRefs.current[last]?.focus();
-                            rowNav(rows[last].id);
-                          } else if (ev.key === "Enter" || ev.key === " ") {
-                            ev.preventDefault();
-                            rowNav(p.id);
-                          }
-                        }
-                      : undefined
-                  }
-                >
-                  <td className="px-2 py-1.5 whitespace-nowrap">
-                    {p.fullName}
-                    {p.removedAt ? (
-                      <span className="ml-2 text-xs text-muted-foreground">
-                        ({ptBR.fields.removedPassenger})
-                      </span>
-                    ) : null}
-                  </td>
-                  <td className="px-2 py-1.5 tabular-nums whitespace-nowrap">
-                    {p.cpf ?? "—"}
-                  </td>
-                  <td
-                    className={`px-2 py-1.5 whitespace-nowrap ${passengerPaymentStatusToneClass(p.status)}`}
-                  >
-                    {passengerPaymentStatusLabel(p.status)}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      </ListPaneFilters>
+      <SortableListTable<PassengerWithStatus, PassengerTableSortColumn>
+        sort={sortState}
+        onSortToggle={noopSort}
+        rows={rows}
+        getRowKey={(p) => p.id}
+        emptyMessage={`${ptBR.entities.passengers} — nenhum registro.`}
+        selectedKey={selectedPassengerId}
+        rowAriaLabel={(p) => p.fullName}
+        onRowActivate={
+          onPassengerRowNavigate ? navigateToPassengerRow : undefined
+        }
+        selectionKeyboardNavigation={selectionKeyboardNavigation}
+        minWidthClassName="min-w-[24rem]"
+        columns={columns}
+      />
     </div>
   );
 }
