@@ -9,6 +9,14 @@ import { isUuid } from "@/lib/uuid";
 import { MOCK_WIX_PAYMENT_EVENT_ROWS } from "@/lib/wix-payment-events.fixtures";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
+import {
+  ListPaneFilters,
+  ListPaneFooter,
+  ListPaneLead,
+  ListPanePageHeader,
+  ListPaneScrollArea,
+  ListPaneShell,
+} from "@/components/layout/list-pane-layout";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -183,48 +191,44 @@ export function WixPaymentEventsListPane({
     : ptBR.wixIntegration.emptyTable;
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 basis-0 flex-col gap-4 px-4 pb-4 pt-2">
-      <div className="flex min-h-0 min-w-0 flex-1 basis-0 flex-col gap-4 overflow-y-auto">
-        <header className="flex shrink-0 flex-col gap-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <h1 className="text-lg font-medium">
-                {ptBR.wixIntegration.pageTitle}
-              </h1>
-              <p className="text-muted-foreground text-sm">
-                {ptBR.wixIntegration.pageSubtitle}
-              </p>
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "icon-sm" }),
-                  "shrink-0",
-                )}
-                aria-label={ptBR.wixIntegration.optionsMenuAria}
-              >
-                <MoreVertical className="size-4" aria-hidden />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="min-w-44"
-                sideOffset={4}
-              >
-                <DropdownMenuItem
-                  onClick={() => {
-                    void navigate({
-                      to: "/schools/$schoolId/integrations/wix/configuration",
-                      params: { schoolId },
-                    });
-                  }}
+    <ListPaneShell>
+      <ListPaneScrollArea>
+        <ListPaneLead>
+          <ListPanePageHeader
+            title={ptBR.wixIntegration.pageTitle}
+            subtitle={ptBR.wixIntegration.pageSubtitle}
+            menu={
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "icon-sm" }),
+                    "shrink-0",
+                  )}
+                  aria-label={ptBR.wixIntegration.optionsMenuAria}
                 >
-                  <Settings2 className="size-4" aria-hidden />
-                  {ptBR.wixIntegration.configureKeys}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
+                  <MoreVertical className="size-4" aria-hidden />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="min-w-44"
+                  sideOffset={4}
+                >
+                  <DropdownMenuItem
+                    onClick={() => {
+                      void navigate({
+                        to: "/schools/$schoolId/integrations/wix/configuration",
+                        params: { schoolId },
+                      });
+                    }}
+                  >
+                    <Settings2 className="size-4" aria-hidden />
+                    {ptBR.wixIntegration.configureKeys}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            }
+          />
+          <ListPaneFilters>
             <BooleanFilterChip
               checked={orphanOnly}
               onCheckedChange={(next) => {
@@ -234,8 +238,8 @@ export function WixPaymentEventsListPane({
             >
               {ptBR.wixIntegration.toggles.orphanOnly}
             </BooleanFilterChip>
-          </div>
-        </header>
+          </ListPaneFilters>
+        </ListPaneLead>
 
         <SortableListTable<WixPaymentEventListItem, WixEventSortColumn>
           sort={sort}
@@ -292,10 +296,10 @@ export function WixPaymentEventsListPane({
             },
           ]}
         />
-      </div>
+      </ListPaneScrollArea>
 
       {sorted.length > 0 ? (
-        <div className="shrink-0">
+        <ListPaneFooter>
           <ListTablePaginationToolbar
             labels={ptBR.listTable.pagination}
             pageSize={pageSize}
@@ -307,8 +311,8 @@ export function WixPaymentEventsListPane({
             totalPages={totalPages}
             onPageIndexChange={setPageIndex}
           />
-        </div>
+        </ListPaneFooter>
       ) : null}
-    </div>
+    </ListPaneShell>
   );
 }
