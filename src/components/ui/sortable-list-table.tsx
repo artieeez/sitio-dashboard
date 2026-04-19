@@ -45,6 +45,11 @@ export type SortableListTableProps<TRow, TSortKey extends string> = {
   emptyMessage: ReactNode;
   /** When set, the matching row gets selected styling. */
   selectedKey?: string | null;
+  /**
+   * Extra highlight rule (e.g. parent route scope). Combined with `selectedKey ===
+   * getRowKey(row)` via OR.
+   */
+  isRowHighlighted?: (row: TRow) => boolean;
   /** Enables click + keyboard activation (Enter/Space) and row focus ring. */
   onRowActivate?: (row: TRow) => void;
   rowAriaLabel?: (row: TRow) => string;
@@ -78,6 +83,7 @@ export function SortableListTable<TRow, TSortKey extends string>({
   getRowKey,
   emptyMessage,
   selectedKey,
+  isRowHighlighted,
   onRowActivate,
   rowAriaLabel,
   minWidthClassName = "min-w-[800px]",
@@ -178,7 +184,9 @@ export function SortableListTable<TRow, TSortKey extends string>({
           ) : (
             rows.map((row, rowIndex) => {
               const key = getRowKey(row);
-              const selected = selectedKey === key;
+              const selected =
+                (isRowHighlighted?.(row) ?? false) ||
+                (selectedKey != null && selectedKey !== "" && selectedKey === key);
               const ariaLabel = rowAriaLabel?.(row);
 
               return (

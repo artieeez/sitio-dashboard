@@ -1,16 +1,25 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import { useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { z } from "zod";
-
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
+import {
+  ListPaneFilters,
+  ListPaneLead,
+  ListPanePageHeader,
+  ListPaneScrollArea,
+  ListPaneShell,
+} from "@/components/layout/list-pane-layout";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import { buttonVariants } from "@/components/ui/button";
 import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
+import type { SortableListTableSortState } from "@/components/ui/sortable-list-table";
+import { SortableListTable } from "@/components/ui/sortable-list-table";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
-import { type School, schoolSchema } from "@/lib/schemas/school";
+import type { School } from "@/lib/schemas/school";
+import { schoolSchema } from "@/lib/schemas/school";
 import {
   tableStickyActionSelected,
   tableStickyActionUnselected,
@@ -55,6 +64,12 @@ function navigateFromSchoolTableRowClick(
   navigateToSchoolTrips(navigate, schoolId);
 }
 
+type SchoolTableSortColumn = "thumb" | "title" | "created" | "actions";
+
+function noopSort(_column: SchoolTableSortColumn) {
+  return;
+}
+
 export type SchoolsDirectorySchoolsTablePaneProps = {
   /**
    * When set, marks the current school row and makes **row click / Enter / Space**
@@ -67,7 +82,7 @@ export type SchoolsDirectorySchoolsTablePaneProps = {
 /**
  * Schools table in the **left** list pane for the schools directory (`/schools`,
  * `/schools/`, `/schools/new`) and for **school edit** under `/schools/$schoolId/edit`.
- * Layout matches `SchoolTripsListPane` (image, title, created date, sticky kebab).
+ * Layout matches list-pane primitives + `SortableListTable` (image, title, created, sticky kebab).
  */
 export function SchoolsDirectorySchoolsTablePane({
   highlightSchoolId,
@@ -75,7 +90,6 @@ export function SchoolsDirectorySchoolsTablePane({
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { selectedKey, requestSelect } = useListDetailLayout();
-  const rowRefs = useRef<Array<HTMLTableRowElement | null>>([]);
   const includeInactive = useUiPreferencesStore(
     (s) => s.includeInactiveSchools,
   );
@@ -95,216 +109,217 @@ export function SchoolsDirectorySchoolsTablePane({
   const rows = schoolsQuery.data ?? [];
   const rowClickKeepsSchoolEdit = highlightSchoolId !== undefined;
 
-  return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
-      <header className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h1 className="text-lg font-medium">{ptBR.entities.schools}</h1>
-          <Link
-            to="/schools/new"
-            aria-label={`${ptBR.actions.create} ${ptBR.entities.school}`}
-            aria-current={selectedKey === "__new__" ? true : undefined}
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "w-fit gap-1 no-underline",
-              selectedKey === "__new__" && "ring-2 ring-ring ring-offset-2",
-            )}
-          >
-            <Plus className="size-4 shrink-0" aria-hidden />
-            {ptBR.actions.create} {ptBR.entities.school}
-          </Link>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <BooleanFilterChip
-            checked={includeInactive}
-            onCheckedChange={setIncludeInactive}
-          >
-            {ptBR.toggles.includeInactiveSchools}
-          </BooleanFilterChip>
-        </div>
-      </header>
+  const sortState = useMemo<SortableListTableSortState<SchoolTableSortColumn>>(
+    () => ({ column: "title", direction: "asc" }),
+    [],
+  );
 
-      {schoolsQuery.isLoading ? (
-        <p className="text-sm text-muted-foreground">Carregando…</p>
-      ) : schoolsQuery.isError ? (
-        <p className="text-sm text-red-600" role="alert">
-          Não foi possível carregar as escolas.
-        </p>
-      ) : (
-        <div className="overflow-x-auto rounded-md">
-          <table className="w-full min-w-[480px] border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="w-14 min-w-14 px-2 py-1.5" aria-hidden />
-                <th className="px-2 py-1.5 font-medium whitespace-normal">
-                  {ptBR.fields.title}
-                </th>
-                <th className="px-2 py-1.5 font-medium whitespace-normal">
-                  {ptBR.fields.createdAt}
-                </th>
-                <th className="sticky right-0 z-[3] w-11 min-w-11 bg-background px-2 py-1.5 text-right font-medium whitespace-normal">
-                  <span className="sr-only">{ptBR.aria.rowMenu}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="border-b border-border px-2 py-3 text-muted-foreground whitespace-nowrap"
+  const navigateToSchoolRow = useCallback(
+    (s: School) => {
+      navigateFromSchoolTableRowClick(navigate, s.id, rowClickKeepsSchoolEdit);
+    },
+    [navigate, rowClickKeepsSchoolEdit],
+  );
+
+  const selectionKeyboardNavigation = useMemo(() => {
+    if (highlightSchoolId == null || rows.length === 0) return undefined;
+    return {
+      fullRows: rows,
+      selectedKey: highlightSchoolId,
+      onNavigateToRow: navigateToSchoolRow,
+    };
+  }, [highlightSchoolId, navigateToSchoolRow, rows]);
+
+  const columns = useMemo(
+    () => [
+      {
+        id: "thumb" as const,
+        header: null,
+        sortable: false,
+        thClassName: "w-14 min-w-14 pl-2",
+        tdClassName: "whitespace-nowrap pr-2",
+        render: (s: School) =>
+          s.imageUrl?.trim() ? (
+            <img
+              src={s.imageUrl}
+              alt=""
+              className="size-10 shrink-0 rounded-md object-cover"
+            />
+          ) : (
+            <span
+              className="inline-block size-10 shrink-0 rounded-md border border-dashed border-border bg-muted/40"
+              aria-hidden
+            />
+          ),
+      },
+      {
+        id: "title" as const,
+        header: ptBR.fields.title,
+        sortable: false,
+        tdClassName: "whitespace-normal",
+        render: (s: School) => (
+          <>
+            <span className="font-medium text-foreground">
+              {schoolTitle(s)}
+            </span>
+            {!s.active ? (
+              <span className="ml-2 text-xs font-normal text-muted-foreground">
+                ({ptBR.fields.inactive})
+              </span>
+            ) : null}
+          </>
+        ),
+      },
+      {
+        id: "created" as const,
+        header: ptBR.fields.createdAt,
+        sortable: false,
+        tdClassName: "tabular-nums whitespace-nowrap",
+        render: (s: School) => formatSchoolCreatedAt(s.createdAt),
+      },
+      {
+        id: "actions" as const,
+        header: <span className="sr-only">{ptBR.aria.rowMenu}</span>,
+        sortable: false,
+        thClassName:
+          "sticky right-0 top-0 z-[3] w-11 min-w-11 bg-background text-right font-medium",
+        tdClassName:
+          "sticky right-0 z-[2] w-11 min-w-11 !p-0 whitespace-nowrap align-middle",
+        render: (s: School) => {
+          const rowHighlighted =
+            (highlightSchoolId !== undefined && s.id === highlightSchoolId) ||
+            s.id === selectedKey;
+          return (
+            <div
+              className="flex h-full justify-end px-2 py-1.5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                className={cn(
+                  rowHighlighted
+                    ? tableStickyActionSelected
+                    : tableStickyActionUnselected,
+                  "pointer-events-auto rounded-sm py-0.5",
+                )}
+              >
+                <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                    onClick={() => requestSelect(s.id)}
                   >
-                    {ptBR.emptyStates.schools}
-                  </td>
-                </tr>
-              ) : (
-                rows.map((s, rowIndex) => {
-                  const rowHighlighted =
-                    highlightSchoolId === s.id || selectedKey === s.id;
-                  return (
-                    <tr
-                      key={s.id}
-                      ref={(el) => {
-                        rowRefs.current[rowIndex] = el;
-                      }}
-                      tabIndex={0}
-                      className={cn(
-                        "group cursor-pointer border-b border-border/80 outline-none",
-                        rowHighlighted
-                          ? "bg-muted/50 hover:bg-muted/55"
-                          : "hover:bg-muted/40",
-                      )}
-                      aria-selected={rowHighlighted ? true : undefined}
-                      aria-label={schoolTitle(s)}
-                      onClick={() =>
-                        navigateFromSchoolTableRowClick(
-                          navigate,
-                          s.id,
-                          rowClickKeepsSchoolEdit,
-                        )
-                      }
-                      onKeyDown={(ev) => {
-                        const idx = rows.findIndex((row) => row.id === s.id);
-                        if (idx < 0) return;
-                        if (ev.key === "ArrowDown") {
-                          ev.preventDefault();
-                          const next = Math.min(idx + 1, rows.length - 1);
-                          rowRefs.current[next]?.focus();
-                        } else if (ev.key === "ArrowUp") {
-                          ev.preventDefault();
-                          const prev = Math.max(idx - 1, 0);
-                          rowRefs.current[prev]?.focus();
-                        } else if (ev.key === "Home") {
-                          ev.preventDefault();
-                          rowRefs.current[0]?.focus();
-                        } else if (ev.key === "End") {
-                          ev.preventDefault();
-                          const last = rows.length - 1;
-                          rowRefs.current[last]?.focus();
-                        } else if (ev.key === "Enter" || ev.key === " ") {
-                          ev.preventDefault();
-                          navigateFromSchoolTableRowClick(
-                            navigate,
-                            s.id,
-                            rowClickKeepsSchoolEdit,
-                          );
-                        }
-                      }}
-                    >
-                      <td className="px-2 py-1.5 align-middle whitespace-nowrap">
-                        {s.imageUrl?.trim() ? (
-                          <img
-                            src={s.imageUrl}
-                            alt=""
-                            className="size-10 shrink-0 rounded-md object-cover"
-                          />
-                        ) : (
-                          <span
-                            className="inline-block size-10 shrink-0 rounded-md border border-dashed border-border bg-muted/40"
-                            aria-hidden
-                          />
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5 align-middle">
-                        <span className="font-medium text-foreground">
-                          {schoolTitle(s)}
-                        </span>
-                        {!s.active ? (
-                          <span className="ml-2 text-xs font-normal text-muted-foreground">
-                            ({ptBR.fields.inactive})
-                          </span>
-                        ) : null}
-                      </td>
-                      <td className="px-2 py-1.5 align-middle tabular-nums whitespace-nowrap">
-                        {formatSchoolCreatedAt(s.createdAt)}
-                      </td>
-                      {/* biome-ignore lint/a11y/useKeyWithClickEvents: stopPropagation only; menu handles keyboard */}
-                      <td
-                        className={cn(
-                          "sticky right-0 z-[2] w-11 min-w-11 cursor-default px-2 py-1.5 align-middle whitespace-nowrap",
-                          rowHighlighted
-                            ? tableStickyActionSelected
-                            : tableStickyActionUnselected,
-                        )}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex justify-end">
-                          <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
-                            <button
-                              type="button"
-                              role="menuitem"
-                              className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                              onClick={() => requestSelect(s.id)}
-                            >
-                              {ptBR.actions.viewSchool}
-                            </button>
-                            <button
-                              type="button"
-                              role="menuitem"
-                              className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                              onClick={() => {
-                                void navigate({
-                                  to: "/schools/$schoolId/edit",
-                                  params: { schoolId: s.id },
-                                });
-                              }}
-                            >
-                              {ptBR.actions.edit}
-                            </button>
-                            <button
-                              type="button"
-                              role="menuitem"
-                              className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                              onClick={() =>
-                                navigateToSchoolTrips(navigate, s.id)
-                              }
-                            >
-                              {ptBR.actions.viewTrips}
-                            </button>
-                            <button
-                              type="button"
-                              role="menuitem"
-                              className="rounded px-2 py-1.5 text-left text-sm text-destructive hover:bg-muted"
-                              onClick={async () => {
-                                await apiDelete(`/schools/${s.id}`);
-                                await qc.invalidateQueries({
-                                  queryKey: queryKeys.schools(includeInactive),
-                                });
-                              }}
-                            >
-                              {ptBR.actions.delete}
-                            </button>
-                          </RowKebabMenu>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+                    {ptBR.actions.viewSchool}
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                    onClick={() => {
+                      void navigate({
+                        to: "/schools/$schoolId/edit",
+                        params: { schoolId: s.id },
+                      });
+                    }}
+                  >
+                    {ptBR.actions.edit}
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                    onClick={() => navigateToSchoolTrips(navigate, s.id)}
+                  >
+                    {ptBR.actions.viewTrips}
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="rounded px-2 py-1.5 text-left text-sm text-destructive hover:bg-muted"
+                    onClick={async () => {
+                      await apiDelete(`/schools/${s.id}`);
+                      await qc.invalidateQueries({
+                        queryKey: queryKeys.schools(includeInactive),
+                      });
+                    }}
+                  >
+                    {ptBR.actions.delete}
+                  </button>
+                </RowKebabMenu>
+              </div>
+            </div>
+          );
+        },
+      },
+    ],
+    [
+      highlightSchoolId,
+      includeInactive,
+      navigate,
+      qc,
+      requestSelect,
+      selectedKey,
+    ],
+  );
+
+  return (
+    <ListPaneShell>
+      <ListPaneScrollArea>
+        <ListPaneLead>
+          <ListPanePageHeader
+            title={ptBR.entities.schools}
+            menu={
+              <Link
+                to="/schools/new"
+                aria-label={`${ptBR.actions.create} ${ptBR.entities.school}`}
+                aria-current={selectedKey === "__new__" ? true : undefined}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "w-fit gap-1 no-underline",
+                  selectedKey === "__new__" && "ring-2 ring-ring ring-offset-2",
+                )}
+              >
+                <Plus className="size-4 shrink-0" aria-hidden />
+                {ptBR.actions.create} {ptBR.entities.school}
+              </Link>
+            }
+          />
+          <ListPaneFilters>
+            <BooleanFilterChip
+              checked={includeInactive}
+              onCheckedChange={setIncludeInactive}
+            >
+              {ptBR.toggles.includeInactiveSchools}
+            </BooleanFilterChip>
+          </ListPaneFilters>
+        </ListPaneLead>
+
+        {schoolsQuery.isLoading ? (
+          <p className="text-sm text-muted-foreground">Carregando…</p>
+        ) : schoolsQuery.isError ? (
+          <p className="text-sm text-red-600" role="alert">
+            Não foi possível carregar as escolas.
+          </p>
+        ) : (
+          <SortableListTable<School, SchoolTableSortColumn>
+            sort={sortState}
+            onSortToggle={noopSort}
+            rows={rows}
+            getRowKey={(s) => s.id}
+            emptyMessage={ptBR.emptyStates.schools}
+            selectedKey={highlightSchoolId ?? null}
+            isRowHighlighted={(s) =>
+              (highlightSchoolId !== undefined && s.id === highlightSchoolId) ||
+              s.id === selectedKey
+            }
+            rowAriaLabel={schoolTitle}
+            onRowActivate={navigateToSchoolRow}
+            selectionKeyboardNavigation={selectionKeyboardNavigation}
+            minWidthClassName="min-w-[480px]"
+            columns={columns}
+          />
+        )}
+      </ListPaneScrollArea>
+    </ListPaneShell>
   );
 }

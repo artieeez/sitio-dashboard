@@ -2,8 +2,9 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
+/** Outer shell: `overflow-hidden` keeps scrolling inside `ListPaneScrollArea` (flex + min-height chain). */
 const shellClass =
-  "flex min-h-0 min-w-0 flex-1 basis-0 flex-col gap-4 px-4 pb-4 pt-2";
+  "flex min-h-0 min-w-0 flex-1 basis-0 flex-col gap-4 overflow-hidden px-4 pb-4 pt-2";
 
 const scrollAreaClass =
   "flex min-h-0 min-w-0 flex-1 basis-0 flex-col gap-4 overflow-y-auto";
@@ -24,7 +25,10 @@ export type ListPaneScrollAreaProps = {
 };
 
 /** Scrollable column for lead content (header, filters) + main content (e.g. table). */
-export function ListPaneScrollArea({ children, className }: ListPaneScrollAreaProps) {
+export function ListPaneScrollArea({
+  children,
+  className,
+}: ListPaneScrollAreaProps) {
   return <div className={cn(scrollAreaClass, className)}>{children}</div>;
 }
 
@@ -58,12 +62,7 @@ export function ListPanePageHeader({
   className,
 }: ListPanePageHeaderProps) {
   return (
-    <div
-      className={cn(
-        "flex items-start justify-between gap-3",
-        className,
-      )}
-    >
+    <div className={cn("flex items-start justify-between gap-3", className)}>
       <div className="min-w-0 flex-1">
         <h1 className="text-lg font-medium">{title}</h1>
         {subtitle != null ? (
@@ -83,9 +82,7 @@ export type ListPaneFiltersProps = {
 /** Horizontal row for filter chips / controls above the main list. */
 export function ListPaneFilters({ children, className }: ListPaneFiltersProps) {
   return (
-    <div
-      className={cn("flex flex-wrap items-center gap-2", className)}
-    >
+    <div className={cn("flex flex-wrap items-center gap-2", className)}>
       {children}
     </div>
   );
