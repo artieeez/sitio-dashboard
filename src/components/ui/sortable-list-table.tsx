@@ -26,7 +26,7 @@ const stickyThClass =
   "sticky top-0 z-[1] border-border border-b bg-background px-2 py-1.5 align-middle font-medium whitespace-nowrap";
 
 const sortHeaderButtonClass =
-  "inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "inline-flex w-full max-w-full cursor-pointer items-center justify-start gap-1 whitespace-nowrap rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export type SelectionKeyboardNavigation<TRow> = {
   /** Full ordered list (e.g. sorted, filtered). */
