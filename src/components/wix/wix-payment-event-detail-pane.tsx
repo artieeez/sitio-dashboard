@@ -1,3 +1,7 @@
+import { XIcon } from "lucide-react";
+
+import { useListDetailLayout } from "@/components/layout/list-detail-layout";
+import { Button } from "@/components/ui/button";
 import type { WixPaymentEvent } from "@/lib/wix-payment-event-schemas";
 import { ptBR } from "@/messages/pt-BR";
 
@@ -44,11 +48,25 @@ export type WixPaymentEventDetailPaneProps = {
 export function WixPaymentEventDetailPane({
   event,
 }: WixPaymentEventDetailPaneProps) {
+  const { requestCloseDetail } = useListDetailLayout();
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
-      <h2 className="font-medium text-base">
-        {ptBR.wixIntegration.detailTitle}
-      </h2>
+      <div className="flex items-start justify-between gap-3">
+        <h2 className="min-w-0 font-medium text-base">
+          {ptBR.wixIntegration.detailTitle}
+        </h2>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="shrink-0 gap-1 px-2"
+          onClick={() => requestCloseDetail()}
+          aria-label={ptBR.listDetail.detailClose}
+        >
+          <XIcon className="size-4 shrink-0" aria-hidden />
+        </Button>
+      </div>
       <dl className="grid min-w-0 gap-x-4 gap-y-3 text-sm sm:grid-cols-[minmax(0,14rem)_1fr]">
         {DETAIL_FIELD_ORDER.map((key) => {
           const value = event[key];

@@ -26,7 +26,7 @@ export function WixPaymentEventsTableToolbar({
   const current = Math.min(pageIndex + 1, safeTotal);
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-border border-t pt-3">
+    <div className="flex flex-wrap items-center justify-between gap-3">
       <label className="flex items-center gap-2 text-sm">
         <span className="text-muted-foreground">
           {ptBR.wixIntegration.pagination.pageSize}

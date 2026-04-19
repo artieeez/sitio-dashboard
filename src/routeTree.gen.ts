@@ -30,6 +30,7 @@ import { Route as SchoolsSchoolIdIntegrationsWixRouteRouteImport } from './route
 import { Route as SchoolsSchoolIdTripsTripIdIndexRouteImport } from './routes/schools/$schoolId/trips/$tripId/index'
 import { Route as SchoolsSchoolIdIntegrationsWixIndexRouteImport } from './routes/schools/$schoolId/integrations/wix/index'
 import { Route as TripsTripIdPassengersPassengerIdEditRouteImport } from './routes/trips/$tripId/passengers/$passengerId/edit'
+import { Route as SchoolsSchoolIdIntegrationsWixConfigurationRouteImport } from './routes/schools/$schoolId/integrations/wix/configuration'
 import { Route as SchoolsSchoolIdIntegrationsWixEventIdRouteImport } from './routes/schools/$schoolId/integrations/wix/$eventId'
 import { Route as TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport } from './routes/trips/$tripId/passengers/$passengerId/payments/index'
 import { Route as SchoolsSchoolIdTripsTripIdPassengersIndexRouteImport } from './routes/schools/$schoolId/trips/$tripId/passengers/index'
@@ -156,6 +157,12 @@ const TripsTripIdPassengersPassengerIdEditRoute =
     path: '/passengers/$passengerId/edit',
     getParentRoute: () => TripsTripIdRouteRoute,
   } as any)
+const SchoolsSchoolIdIntegrationsWixConfigurationRoute =
+  SchoolsSchoolIdIntegrationsWixConfigurationRouteImport.update({
+    id: '/configuration',
+    path: '/configuration',
+    getParentRoute: () => SchoolsSchoolIdIntegrationsWixRouteRoute,
+  } as any)
 const SchoolsSchoolIdIntegrationsWixEventIdRoute =
   SchoolsSchoolIdIntegrationsWixEventIdRouteImport.update({
     id: '/$eventId',
@@ -241,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/schools/$schoolId/trips/': typeof SchoolsSchoolIdTripsIndexRoute
   '/trips/$tripId/passengers/': typeof TripsTripIdPassengersIndexRoute
   '/schools/$schoolId/integrations/wix/$eventId': typeof SchoolsSchoolIdIntegrationsWixEventIdRoute
+  '/schools/$schoolId/integrations/wix/configuration': typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute
   '/trips/$tripId/passengers/$passengerId/edit': typeof TripsTripIdPassengersPassengerIdEditRoute
   '/schools/$schoolId/integrations/wix/': typeof SchoolsSchoolIdIntegrationsWixIndexRoute
   '/schools/$schoolId/trips/$tripId/': typeof SchoolsSchoolIdTripsTripIdIndexRoute
@@ -269,6 +277,7 @@ export interface FileRoutesByTo {
   '/schools/$schoolId/trips': typeof SchoolsSchoolIdTripsIndexRoute
   '/trips/$tripId/passengers': typeof TripsTripIdPassengersIndexRoute
   '/schools/$schoolId/integrations/wix/$eventId': typeof SchoolsSchoolIdIntegrationsWixEventIdRoute
+  '/schools/$schoolId/integrations/wix/configuration': typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute
   '/trips/$tripId/passengers/$passengerId/edit': typeof TripsTripIdPassengersPassengerIdEditRoute
   '/schools/$schoolId/integrations/wix': typeof SchoolsSchoolIdIntegrationsWixIndexRoute
   '/schools/$schoolId/trips/$tripId': typeof SchoolsSchoolIdTripsTripIdIndexRoute
@@ -303,6 +312,7 @@ export interface FileRoutesById {
   '/schools/$schoolId/trips/': typeof SchoolsSchoolIdTripsIndexRoute
   '/trips/$tripId/passengers/': typeof TripsTripIdPassengersIndexRoute
   '/schools/$schoolId/integrations/wix/$eventId': typeof SchoolsSchoolIdIntegrationsWixEventIdRoute
+  '/schools/$schoolId/integrations/wix/configuration': typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute
   '/trips/$tripId/passengers/$passengerId/edit': typeof TripsTripIdPassengersPassengerIdEditRoute
   '/schools/$schoolId/integrations/wix/': typeof SchoolsSchoolIdIntegrationsWixIndexRoute
   '/schools/$schoolId/trips/$tripId/': typeof SchoolsSchoolIdTripsTripIdIndexRoute
@@ -338,6 +348,7 @@ export interface FileRouteTypes {
     | '/schools/$schoolId/trips/'
     | '/trips/$tripId/passengers/'
     | '/schools/$schoolId/integrations/wix/$eventId'
+    | '/schools/$schoolId/integrations/wix/configuration'
     | '/trips/$tripId/passengers/$passengerId/edit'
     | '/schools/$schoolId/integrations/wix/'
     | '/schools/$schoolId/trips/$tripId/'
@@ -366,6 +377,7 @@ export interface FileRouteTypes {
     | '/schools/$schoolId/trips'
     | '/trips/$tripId/passengers'
     | '/schools/$schoolId/integrations/wix/$eventId'
+    | '/schools/$schoolId/integrations/wix/configuration'
     | '/trips/$tripId/passengers/$passengerId/edit'
     | '/schools/$schoolId/integrations/wix'
     | '/schools/$schoolId/trips/$tripId'
@@ -399,6 +411,7 @@ export interface FileRouteTypes {
     | '/schools/$schoolId/trips/'
     | '/trips/$tripId/passengers/'
     | '/schools/$schoolId/integrations/wix/$eventId'
+    | '/schools/$schoolId/integrations/wix/configuration'
     | '/trips/$tripId/passengers/$passengerId/edit'
     | '/schools/$schoolId/integrations/wix/'
     | '/schools/$schoolId/trips/$tripId/'
@@ -568,6 +581,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TripsTripIdPassengersPassengerIdEditRouteImport
       parentRoute: typeof TripsTripIdRouteRoute
     }
+    '/schools/$schoolId/integrations/wix/configuration': {
+      id: '/schools/$schoolId/integrations/wix/configuration'
+      path: '/configuration'
+      fullPath: '/schools/$schoolId/integrations/wix/configuration'
+      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsWixConfigurationRouteImport
+      parentRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRoute
+    }
     '/schools/$schoolId/integrations/wix/$eventId': {
       id: '/schools/$schoolId/integrations/wix/$eventId'
       path: '/$eventId'
@@ -643,6 +663,7 @@ declare module '@tanstack/react-router' {
 
 interface SchoolsSchoolIdIntegrationsWixRouteRouteChildren {
   SchoolsSchoolIdIntegrationsWixEventIdRoute: typeof SchoolsSchoolIdIntegrationsWixEventIdRoute
+  SchoolsSchoolIdIntegrationsWixConfigurationRoute: typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute
   SchoolsSchoolIdIntegrationsWixIndexRoute: typeof SchoolsSchoolIdIntegrationsWixIndexRoute
 }
 
@@ -650,6 +671,8 @@ const SchoolsSchoolIdIntegrationsWixRouteRouteChildren: SchoolsSchoolIdIntegrati
   {
     SchoolsSchoolIdIntegrationsWixEventIdRoute:
       SchoolsSchoolIdIntegrationsWixEventIdRoute,
+    SchoolsSchoolIdIntegrationsWixConfigurationRoute:
+      SchoolsSchoolIdIntegrationsWixConfigurationRoute,
     SchoolsSchoolIdIntegrationsWixIndexRoute:
       SchoolsSchoolIdIntegrationsWixIndexRoute,
   }

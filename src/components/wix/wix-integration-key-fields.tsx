@@ -24,7 +24,7 @@ export function WixIntegrationKeyFields({
   const [privateVisible, setPrivateVisible] = useState(false);
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-border bg-muted/20 p-4">
+    <div className="flex flex-col gap-4">
       <div className="grid gap-2">
         <label htmlFor={publicId} className="font-medium text-sm">
           {ptBR.wixIntegration.keys.publicKey}

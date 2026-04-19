@@ -168,6 +168,11 @@ export const ptBR = {
     pageTitle: "Pagamentos Wix",
     pageSubtitle:
       "Eventos recebidos do gateway (dados simulados nesta versão).",
+    optionsMenuAria: "Menu de opções da integração Wix",
+    configureKeys: "Configurar chaves",
+    settingsSheetTitle: "Configuração da integração",
+    settingsSheetDescription:
+      "Chaves públicas e privadas permanecem apenas nesta sessão do navegador.",
     emptyTable: "Nenhum evento para exibir com os filtros atuais.",
     emptyOrphans: "Nenhum evento órfão com os filtros atuais.",
     orphanBadge: "Órfão",
