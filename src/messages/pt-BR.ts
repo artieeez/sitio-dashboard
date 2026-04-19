@@ -2,6 +2,18 @@
  * Centralized pt-BR copy for 001-school-trip-payments (FR-024).
  * Specs and code comments remain English.
  */
+
+/** Shared list/table pagination toolbar (page size + prev/next). */
+const listTablePagination = {
+  pageSize: "Itens por página",
+  prev: "Página anterior",
+  next: "Próxima página",
+  /** Compact visible fraction; use `pageOfAria` for accessible name. */
+  pageOf: (page: number, totalPages: number) => `${page} / ${totalPages}`,
+  pageOfAria: (page: number, totalPages: number) =>
+    `Página ${page} de ${totalPages}`,
+};
+
 export const ptBR = {
   entities: {
     school: "Escola",
@@ -162,6 +174,10 @@ export const ptBR = {
     /** Detail pane on `/trips/$tripId/passengers` when no passenger row is selected. */
     selectPassengerPrompt: "Comece escolhendo um passageiro na lista ao lado.",
   },
+  /** List views: pagination labels for `ListTablePaginationToolbar`. */
+  listTable: {
+    pagination: listTablePagination,
+  },
   /** FR-012 unsaved changes Alert Dialog (004). */
   /** Wix payment gateway event console (005); UI strings only. */
   wixIntegration: {
@@ -198,15 +214,7 @@ export const ptBR = {
     toggles: {
       orphanOnly: "Somente órfãos",
     },
-    pagination: {
-      pageSize: "Itens por página",
-      prev: "Página anterior",
-      next: "Próxima página",
-      /** Compact visible fraction; use `pageOfAria` for accessible name. */
-      pageOf: (page: number, totalPages: number) => `${page} / ${totalPages}`,
-      pageOfAria: (page: number, totalPages: number) =>
-        `Página ${page} de ${totalPages}`,
-    },
+    pagination: listTablePagination,
     detailTitle: "Detalhes do evento",
     detailFields: {
       id: "ID do evento",

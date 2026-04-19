@@ -3,7 +3,7 @@ import { MoreVertical, Settings2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import type { WixPaymentEventListItem } from "@/lib/wix-payment-event-schemas";
-import type { WixPageSize } from "@/components/wix/wix-payment-events-table-toolbar";
+import type { DefaultListTablePageSize } from "@/components/ui/list-table-pagination-toolbar";
 import { cn } from "@/lib/utils";
 import { isUuid } from "@/lib/uuid";
 import { MOCK_WIX_PAYMENT_EVENT_ROWS } from "@/lib/wix-payment-events.fixtures";
@@ -17,9 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ListTablePaginationToolbar } from "@/components/ui/list-table-pagination-toolbar";
 import { SortableListTable } from "@/components/ui/sortable-list-table";
 import { WIX_CONFIG_SELECTED_KEY } from "@/components/wix/wix-integration-config-context";
-import { WixPaymentEventsTableToolbar } from "@/components/wix/wix-payment-events-table-toolbar";
 import { ptBR } from "@/messages/pt-BR";
 
 export type WixEventSortColumn = "trip" | "value" | "name" | "email" | "date";
@@ -116,7 +116,7 @@ export function WixPaymentEventsListPane({
     column: "date",
     direction: "desc",
   });
-  const [pageSize, setPageSize] = useState<WixPageSize>(10);
+  const [pageSize, setPageSize] = useState<DefaultListTablePageSize>(10);
   const [pageIndex, setPageIndex] = useState(0);
 
   const schoolIdValid = isUuid(schoolId);
@@ -296,10 +296,11 @@ export function WixPaymentEventsListPane({
 
       {sorted.length > 0 ? (
         <div className="shrink-0">
-          <WixPaymentEventsTableToolbar
+          <ListTablePaginationToolbar
+            labels={ptBR.listTable.pagination}
             pageSize={pageSize}
             onPageSizeChange={(size) => {
-              setPageSize(size);
+              setPageSize(size as DefaultListTablePageSize);
               setPageIndex(0);
             }}
             pageIndex={pageIndex}
