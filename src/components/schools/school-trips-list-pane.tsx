@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import { useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { z } from "zod";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
@@ -15,6 +15,8 @@ import {
 import { TripWorkspaceListOptionsMenu } from "@/components/trips/trip-workspace-list-options-menu";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import { buttonVariants } from "@/components/ui/button";
+import type { SortableListTableSortState } from "@/components/ui/sortable-list-table";
+import { SortableListTable } from "@/components/ui/sortable-list-table";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { type Trip, tripSchema } from "@/lib/schemas/trip";
@@ -41,9 +43,15 @@ function tripTitle(t: Trip): string {
   return t.title?.trim() || `${ptBR.entities.trip} ${t.id.slice(0, 8)}…`;
 }
 
+type TripTableSortColumn = "thumb" | "title" | "created" | "actions";
+
+function noopSort(_column: TripTableSortColumn) {
+  return;
+}
+
 /**
  * Trips collection for the M3 list pane under `/schools/$schoolId/trips` (004).
- * Table layout aligned with `PassengerTable` (image, title, created date).
+ * Table via `SortableListTable` (image, title, created, sticky kebab)—aligned with schools directory.
  */
 function navigateToSchoolTripPassengers(
   navigate: ReturnType<typeof useNavigate>,
@@ -59,7 +67,6 @@ function navigateToSchoolTripPassengers(
 export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
   const navigate = useNavigate();
   const { selectedKey } = useListDetailLayout();
-  const rowRefs = useRef<Array<HTMLTableRowElement | null>>([]);
   const includeInactive = useUiPreferencesStore((s) => s.includeInactiveTrips);
   const setIncludeInactive = useUiPreferencesStore(
     (s) => s.setIncludeInactiveTrips,
@@ -77,6 +84,115 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
   });
 
   const rows = tripsQuery.data ?? [];
+
+  const sortState = useMemo<SortableListTableSortState<TripTableSortColumn>>(
+    () => ({ column: "title", direction: "asc" }),
+    [],
+  );
+
+  const navigateToTripRow = useCallback(
+    (t: Trip) => {
+      navigateToSchoolTripPassengers(navigate, schoolId, t.id);
+    },
+    [navigate, schoolId],
+  );
+
+  const selectionKeyboardNavigation = useMemo(() => {
+    if (
+      selectedKey == null ||
+      selectedKey === "" ||
+      selectedKey === "__new__" ||
+      rows.length === 0
+    ) {
+      return undefined;
+    }
+    return {
+      fullRows: rows,
+      selectedKey,
+      onNavigateToRow: navigateToTripRow,
+    };
+  }, [rows, selectedKey, navigateToTripRow]);
+
+  const columns = useMemo(
+    () => [
+      {
+        id: "thumb" as const,
+        header: null,
+        sortable: false,
+        thClassName: "w-14 min-w-14 pl-2",
+        tdClassName: "whitespace-nowrap pr-2",
+        render: (t: Trip) =>
+          t.imageUrl?.trim() ? (
+            <img
+              src={t.imageUrl}
+              alt=""
+              className="size-10 shrink-0 rounded-md object-cover"
+            />
+          ) : (
+            <span
+              className="inline-block size-10 shrink-0 rounded-md border border-dashed border-border bg-muted/40"
+              aria-hidden
+            />
+          ),
+      },
+      {
+        id: "title" as const,
+        header: ptBR.fields.title,
+        sortable: false,
+        tdClassName: "whitespace-normal",
+        render: (t: Trip) => (
+          <>
+            <span className="font-medium text-foreground">{tripTitle(t)}</span>
+            {!t.active ? (
+              <span className="ml-2 text-xs font-normal text-muted-foreground">
+                ({ptBR.fields.inactive})
+              </span>
+            ) : null}
+          </>
+        ),
+      },
+      {
+        id: "created" as const,
+        header: ptBR.fields.createdAt,
+        sortable: false,
+        tdClassName: "tabular-nums whitespace-nowrap",
+        render: (t: Trip) => formatTripCreatedAt(t.createdAt),
+      },
+      {
+        id: "actions" as const,
+        header: <span className="sr-only">{ptBR.aria.rowMenu}</span>,
+        sortable: false,
+        thClassName:
+          "sticky right-0 top-0 z-[3] w-11 min-w-11 bg-background text-right font-medium",
+        tdClassName:
+          "sticky right-0 z-[2] w-11 min-w-11 !p-0 whitespace-nowrap align-middle",
+        render: (t: Trip) => (
+          // biome-ignore lint/a11y/noStaticElementInteractions: absorbs pointer events so row <tr> does not activate
+          // biome-ignore lint/a11y/useKeyWithClickEvents: stopPropagation only; menu items handle keyboard
+          <div
+            className="flex h-full justify-end px-2 py-1.5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className={cn(
+                selectedKey === t.id
+                  ? tableStickyActionSelected
+                  : tableStickyActionUnselected,
+                "pointer-events-auto rounded-sm py-0.5",
+              )}
+            >
+              <TripWorkspaceListOptionsMenu
+                tripId={t.id}
+                schoolId={schoolId}
+                showViewPassengers
+              />
+            </div>
+          </div>
+        ),
+      },
+    ],
+    [schoolId, selectedKey],
+  );
 
   if (!schoolIdValid) {
     return (
@@ -126,130 +242,19 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
             Não foi possível carregar as viagens.
           </p>
         ) : (
-          <div className="overflow-x-auto rounded-md">
-            <table className="w-full min-w-[480px] border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="w-14 min-w-14 px-2 py-1.5" aria-hidden />
-                  <th className="px-2 py-1.5 font-medium whitespace-normal">
-                    {ptBR.fields.title}
-                  </th>
-                  <th className="px-2 py-1.5 font-medium whitespace-normal">
-                    {ptBR.fields.createdAt}
-                  </th>
-                  <th className="sticky right-0 z-[3] w-11 min-w-11 bg-background px-2 py-1.5 text-right font-medium whitespace-normal">
-                    <span className="sr-only">{ptBR.aria.rowMenu}</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="border-b border-border px-2 py-3 text-muted-foreground whitespace-nowrap"
-                    >
-                      {ptBR.emptyStates.trips}
-                    </td>
-                  </tr>
-                ) : (
-                  rows.map((t, rowIndex) => (
-                    <tr
-                      key={t.id}
-                      ref={(el) => {
-                        rowRefs.current[rowIndex] = el;
-                      }}
-                      tabIndex={0}
-                      className={cn(
-                        "group cursor-pointer border-b border-border/80 outline-none",
-                        selectedKey === t.id
-                          ? "bg-muted/50 hover:bg-muted/55"
-                          : "hover:bg-muted/40",
-                      )}
-                      aria-selected={selectedKey === t.id ? true : undefined}
-                      aria-label={tripTitle(t)}
-                      onClick={() =>
-                        navigateToSchoolTripPassengers(navigate, schoolId, t.id)
-                      }
-                      onKeyDown={(ev) => {
-                        const idx = rows.findIndex((trip) => trip.id === t.id);
-                        if (idx < 0) return;
-                        if (ev.key === "ArrowDown") {
-                          ev.preventDefault();
-                          const next = Math.min(idx + 1, rows.length - 1);
-                          rowRefs.current[next]?.focus();
-                        } else if (ev.key === "ArrowUp") {
-                          ev.preventDefault();
-                          const prev = Math.max(idx - 1, 0);
-                          rowRefs.current[prev]?.focus();
-                        } else if (ev.key === "Home") {
-                          ev.preventDefault();
-                          rowRefs.current[0]?.focus();
-                        } else if (ev.key === "End") {
-                          ev.preventDefault();
-                          const last = rows.length - 1;
-                          rowRefs.current[last]?.focus();
-                        } else if (ev.key === "Enter" || ev.key === " ") {
-                          ev.preventDefault();
-                          navigateToSchoolTripPassengers(
-                            navigate,
-                            schoolId,
-                            t.id,
-                          );
-                        }
-                      }}
-                    >
-                      <td className="px-2 py-1.5 align-middle whitespace-nowrap">
-                        {t.imageUrl?.trim() ? (
-                          <img
-                            src={t.imageUrl}
-                            alt=""
-                            className="size-10 shrink-0 rounded-md object-cover"
-                          />
-                        ) : (
-                          <span
-                            className="inline-block size-10 shrink-0 rounded-md border border-dashed border-border bg-muted/40"
-                            aria-hidden
-                          />
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5 align-middle">
-                        <span className="font-medium text-foreground">
-                          {tripTitle(t)}
-                        </span>
-                        {!t.active ? (
-                          <span className="ml-2 text-xs font-normal text-muted-foreground">
-                            ({ptBR.fields.inactive})
-                          </span>
-                        ) : null}
-                      </td>
-                      <td className="px-2 py-1.5 align-middle tabular-nums whitespace-nowrap">
-                        {formatTripCreatedAt(t.createdAt)}
-                      </td>
-                      {/* biome-ignore lint/a11y/useKeyWithClickEvents: stopPropagation only; menu items handle their own keyboard activation */}
-                      <td
-                        className={cn(
-                          "sticky right-0 z-[2] w-11 min-w-11 cursor-default px-2 py-1.5 align-middle whitespace-nowrap",
-                          selectedKey === t.id
-                            ? tableStickyActionSelected
-                            : tableStickyActionUnselected,
-                        )}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex justify-end">
-                          <TripWorkspaceListOptionsMenu
-                            tripId={t.id}
-                            schoolId={schoolId}
-                            showViewPassengers
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <SortableListTable<Trip, TripTableSortColumn>
+            sort={sortState}
+            onSortToggle={noopSort}
+            rows={rows}
+            getRowKey={(t) => t.id}
+            emptyMessage={ptBR.emptyStates.trips}
+            selectedKey={selectedKey}
+            rowAriaLabel={tripTitle}
+            onRowActivate={navigateToTripRow}
+            selectionKeyboardNavigation={selectionKeyboardNavigation}
+            minWidthClassName="min-w-[480px]"
+            columns={columns}
+          />
         )}
       </ListPaneScrollArea>
     </ListPaneShell>
