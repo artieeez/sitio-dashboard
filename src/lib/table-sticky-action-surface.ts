@@ -22,5 +22,5 @@ export const tableStickyActionCellBackdropSelected =
 export const tableStickyActionCellBackdropStatic =
   "min-h-full w-full bg-background";
 
-/** Left edge on sticky action column (`th` / `td`) to separate from scrolling cells. */
-export const tableStickyActionEdge = "border-border/70 border-l";
+/** Sticky action column: no vertical rule (data tables use horizontal rules only). */
+export const tableStickyActionEdge = "";
