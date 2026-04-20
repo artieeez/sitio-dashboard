@@ -13,4 +13,6 @@ export const queryKeys = {
   /** Prefix with `tripId` invalidates all `includeRemoved` variants. */
   passengerAggregates: (tripId: string, includeRemoved: boolean) =>
     ["passengerAggregates", tripId, { includeRemoved }] as const,
+  /** Tenant-wide Wix keys (prefixes only in API responses). */
+  wixIntegration: () => ["wix-integration"] as const,
 };

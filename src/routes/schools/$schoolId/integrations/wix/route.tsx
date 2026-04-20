@@ -5,7 +5,8 @@ import {
   useParams,
   useRouterState,
 } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
 
 import { ListDetailLayout } from "@/components/layout/list-detail-layout";
 import {
@@ -13,6 +14,9 @@ import {
   WixIntegrationConfigProvider,
 } from "@/components/wix/wix-integration-config-context";
 import { WixPaymentEventsListPane } from "@/components/wix/wix-payment-events-list-pane";
+import { apiJson, apiPatchJson } from "@/lib/api-client";
+import { queryKeys } from "@/lib/query-keys";
+import { wixIntegrationSettingsSchema } from "@/lib/schemas/wix-integration";
 import { isUuid } from "@/lib/uuid";
 
 export const Route = createFileRoute("/schools/$schoolId/integrations/wix")({
@@ -21,9 +25,28 @@ export const Route = createFileRoute("/schools/$schoolId/integrations/wix")({
 
 function WixIntegrationShell() {
   const { schoolId } = Route.useParams();
+  const qc = useQueryClient();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { eventId } = useParams({ strict: false }) as { eventId?: string };
+
+  const wixQuery = useQuery({
+    queryKey: queryKeys.wixIntegration(),
+    queryFn: async () => {
+      const raw = await apiJson<unknown>("/integrations/wix");
+      return wixIntegrationSettingsSchema.parse(raw);
+    },
+  });
+
+  const { mutate: patchWix } = useMutation({
+    mutationFn: async (body: { publicKey?: string; privateApiKey?: string }) => {
+      const raw = await apiPatchJson<unknown>("/integrations/wix", body);
+      return wixIntegrationSettingsSchema.parse(raw);
+    },
+    onSuccess: (data) => {
+      qc.setQueryData(queryKeys.wixIntegration(), data);
+    },
+  });
 
   const isConfigurationRoute = useMemo(() => {
     const base = `/schools/${schoolId}/integrations/wix/configuration`;
@@ -64,17 +87,19 @@ function WixIntegrationShell() {
     [navigate, schoolId],
   );
 
-  const [publicKey, setPublicKey] = useState("");
-  const [privateApiKey, setPrivateApiKey] = useState("");
-
   const configValue = useMemo(
     () => ({
-      publicKey,
-      privateApiKey,
-      setPublicKey,
-      setPrivateApiKey,
+      publicKeyPrefix: wixQuery.data?.publicKeyPrefix ?? null,
+      privateApiKeyPrefix: wixQuery.data?.privateApiKeyPrefix ?? null,
+      isLoading: wixQuery.isPending,
+      setPublicKey: (value: string) => {
+        patchWix({ publicKey: value });
+      },
+      setPrivateApiKey: (value: string) => {
+        patchWix({ privateApiKey: value });
+      },
     }),
-    [publicKey, privateApiKey],
+    [wixQuery.data, wixQuery.isPending, patchWix],
   );
 
   return (

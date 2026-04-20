@@ -25,6 +25,12 @@ vi.mock("@tanstack/react-router-devtools", () => ({
 
 vi.mock("@/lib/api-client", () => ({
   apiJson: vi.fn((path: string) => {
+    if (path === "/integrations/wix") {
+      return Promise.resolve({
+        publicKeyPrefix: null,
+        privateApiKeyPrefix: null,
+      });
+    }
     if (path === "/schools") {
       return Promise.resolve([]);
     }

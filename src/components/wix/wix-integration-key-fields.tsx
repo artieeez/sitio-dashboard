@@ -6,23 +6,25 @@ import { Input } from "@/components/ui/input";
 import { ptBR } from "@/messages/pt-BR";
 
 export type WixIntegrationKeyFieldsProps = {
-  publicKey: string;
-  privateApiKey: string;
+  /** Up to four characters; full key is never sent to the client. */
+  publicKeyPrefix: string | null;
+  privateApiKeyPrefix: string | null;
+  isLoading?: boolean;
   onPublicKeyChange: (value: string) => void;
   onPrivateApiKeyChange: (value: string) => void;
 };
 
-/** First four characters plus a censored tail (does not reveal length precisely). */
-function formatMaskedKey(key: string): string {
-  if (!key) return "";
-  const prefix = key.slice(0, 4);
-  const tailDots = Math.max(6, Math.min(16, key.length));
-  return `${prefix}${"•".repeat(tailDots)}`;
+/** Renders stored prefix plus a censored tail (API only exposes the prefix). */
+function formatMaskedFromPrefix(prefix: string | null): string {
+  if (!prefix) return "";
+  const p = prefix.slice(0, 4);
+  return `${p}${"•".repeat(10)}`;
 }
 
 export function WixIntegrationKeyFields({
-  publicKey,
-  privateApiKey,
+  publicKeyPrefix,
+  privateApiKeyPrefix,
+  isLoading = false,
   onPublicKeyChange,
   onPrivateApiKeyChange,
 }: WixIntegrationKeyFieldsProps) {
@@ -94,9 +96,12 @@ export function WixIntegrationKeyFields({
             <div
               className="border-input bg-muted/40 min-h-9 min-w-0 flex-1 rounded-md border px-3 py-2 font-mono text-sm break-all"
               aria-label={ptBR.wixIntegration.keys.publicKey}
+              aria-busy={isLoading}
             >
-              {publicKey ? (
-                formatMaskedKey(publicKey)
+              {isLoading ? (
+                <div className="bg-muted h-4 max-w-48 animate-pulse rounded" />
+              ) : publicKeyPrefix ? (
+                formatMaskedFromPrefix(publicKeyPrefix)
               ) : (
                 <span className="text-muted-foreground">
                   {ptBR.wixIntegration.keys.keyNotSet}
@@ -108,6 +113,7 @@ export function WixIntegrationKeyFields({
               variant="outline"
               size="sm"
               className="shrink-0"
+              disabled={isLoading}
               onClick={() => setEditingPublic(true)}
             >
               {ptBR.wixIntegration.keys.editKey}
@@ -173,9 +179,12 @@ export function WixIntegrationKeyFields({
             <div
               className="border-input bg-muted/40 min-h-9 min-w-0 flex-1 rounded-md border px-3 py-2 font-mono text-sm break-all"
               aria-label={ptBR.wixIntegration.keys.privateKey}
+              aria-busy={isLoading}
             >
-              {privateApiKey ? (
-                formatMaskedKey(privateApiKey)
+              {isLoading ? (
+                <div className="bg-muted h-4 max-w-48 animate-pulse rounded" />
+              ) : privateApiKeyPrefix ? (
+                formatMaskedFromPrefix(privateApiKeyPrefix)
               ) : (
                 <span className="text-muted-foreground">
                   {ptBR.wixIntegration.keys.keyNotSet}
@@ -187,6 +196,7 @@ export function WixIntegrationKeyFields({
               variant="outline"
               size="sm"
               className="shrink-0"
+              disabled={isLoading}
               onClick={() => setEditingPrivate(true)}
             >
               {ptBR.wixIntegration.keys.editKey}

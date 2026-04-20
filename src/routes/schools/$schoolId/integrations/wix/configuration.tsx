@@ -14,8 +14,13 @@ export const Route = createFileRoute(
 
 function WixConfigurationDetailRoute() {
   const { requestCloseDetail } = useListDetailLayout();
-  const { publicKey, privateApiKey, setPublicKey, setPrivateApiKey } =
-    useWixIntegrationConfig();
+  const {
+    publicKeyPrefix,
+    privateApiKeyPrefix,
+    isLoading,
+    setPublicKey,
+    setPrivateApiKey,
+  } = useWixIntegrationConfig();
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
@@ -31,8 +36,9 @@ function WixConfigurationDetailRoute() {
         </p>
       </div>
       <WixIntegrationKeyFields
-        publicKey={publicKey}
-        privateApiKey={privateApiKey}
+        publicKeyPrefix={publicKeyPrefix}
+        privateApiKeyPrefix={privateApiKeyPrefix}
+        isLoading={isLoading}
         onPublicKeyChange={setPublicKey}
         onPrivateApiKeyChange={setPrivateApiKey}
       />
