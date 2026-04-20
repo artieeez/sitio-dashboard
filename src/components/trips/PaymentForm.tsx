@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { flushSync } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
@@ -80,20 +81,28 @@ export function PaymentForm(props: {
     () => payment?.payerIdentity ?? "",
   );
   const [error, setError] = useState<string | null>(null);
+  const [saveCommitted, setSaveCommitted] = useState(false);
 
   const baseline = useMemo(
     () => paymentFormBaseline({ mode, payment, defaultAmountMinor }),
     [mode, payment, defaultAmountMinor],
   );
 
+  useEffect(() => {
+    setSaveCommitted(false);
+  }, [baseline]);
+
   const isDirty = useMemo(() => {
+    if (saveCommitted) {
+      return false;
+    }
     return (
       amountMinor !== baseline.amountMinor ||
       paidOn !== baseline.paidOn ||
       location.trim() !== baseline.location ||
       payerIdentity.trim() !== baseline.payerIdentity
     );
-  }, [amountMinor, paidOn, location, payerIdentity, baseline]);
+  }, [saveCommitted, amountMinor, paidOn, location, payerIdentity, baseline]);
 
   useReportWorkspaceDirty(isDirty);
 
@@ -130,6 +139,9 @@ export function PaymentForm(props: {
     },
     onSuccess: async () => {
       setError(null);
+      flushSync(() => {
+        setSaveCommitted(true);
+      });
       await qc.invalidateQueries({
         queryKey: queryKeys.payments(passengerId),
       });
