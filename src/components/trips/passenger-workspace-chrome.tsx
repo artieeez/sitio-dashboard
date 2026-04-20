@@ -1,23 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import {
-  BadgeCheck,
-  CircleOff,
-  Clock,
-  CreditCard,
-  User,
-  XIcon,
-} from "lucide-react";
+import { BadgeCheck, CircleOff, Clock, CreditCard, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { z } from "zod";
 
+import { DetailPaneCloseButton } from "@/components/layout/detail-pane-page-header";
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { PassengerAdjustToPaidChip } from "@/components/trips/passenger-adjust-to-paid-chip";
 import { PassengerClearManualPaidControl } from "@/components/trips/passenger-clear-manual-paid-control";
 import { PassengerWorkspaceOptionsMenu } from "@/components/trips/passenger-workspace-options-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { apiJson } from "@/lib/api-client";
 import {
   passengerPaymentStatusBadgeClass,
@@ -76,16 +69,7 @@ function PassengerWorkspacePaneHeader(props: {
         </h1>
         <p className="truncate text-muted-foreground text-sm">{cpfLine}</p>
       </div>
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        className="shrink-0 gap-1 px-2"
-        onClick={() => requestCloseDetail()}
-        aria-label={ptBR.listDetail.detailClose}
-      >
-        <XIcon className="size-4 shrink-0" aria-hidden />
-      </Button>
+      <DetailPaneCloseButton onClose={requestCloseDetail} />
       <div className="min-w-full shrink-0 basis-full">
         <div className="flex flex-wrap items-start gap-2">
           <span

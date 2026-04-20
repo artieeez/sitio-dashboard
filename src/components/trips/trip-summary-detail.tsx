@@ -1,11 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { XIcon } from "lucide-react";
 
+import { DetailPanePageHeader } from "@/components/layout/detail-pane-page-header";
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { TripForm } from "@/components/trips/TripForm";
-import { Button } from "@/components/ui/button";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { tripSchema } from "@/lib/schemas/trip";
@@ -123,21 +122,12 @@ export function TripSummaryDetail({
 
   return (
     <div className="min-w-0 p-6">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-lg font-medium">
-          {`${ptBR.actions.edit} ${ptBR.entities.trip}`}
-        </h1>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="shrink-0 gap-1 px-2"
-          onClick={() => requestCloseDetail()}
-          aria-label={ptBR.listDetail.detailClose}
-        >
-          <XIcon className="size-4 shrink-0" aria-hidden />
-        </Button>
-      </div>
+      <DetailPanePageHeader
+        className="mb-6"
+        rowLayout="loose"
+        title={`${ptBR.actions.edit} ${ptBR.entities.trip}`}
+        onClose={requestCloseDetail}
+      />
       <TripForm
         mode="edit"
         schoolId={schoolId}

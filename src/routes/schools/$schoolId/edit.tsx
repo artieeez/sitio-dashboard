@@ -1,12 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { XIcon } from "lucide-react";
 import { useEffect } from "react";
 
+import { DetailPanePageHeader } from "@/components/layout/detail-pane-page-header";
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
 import { SchoolForm } from "@/components/schools/SchoolForm";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { schoolSchema } from "@/lib/schemas/school";
@@ -89,22 +89,12 @@ function SchoolEditPage() {
 
   return (
     <div className="flex flex-col gap-6 p-6">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-lg font-medium">
-          {s.title?.trim() ||
-            `${ptBR.entities.school} ${schoolId.slice(0, 8)}…`}
-        </h1>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="shrink-0 gap-1 px-2"
-          onClick={() => requestCloseDetail()}
-          aria-label={ptBR.listDetail.detailClose}
-        >
-          <XIcon className="size-4 shrink-0" aria-hidden />
-        </Button>
-      </div>
+      <DetailPanePageHeader
+        title={
+          s.title?.trim() || `${ptBR.entities.school} ${schoolId.slice(0, 8)}…`
+        }
+        onClose={requestCloseDetail}
+      />
 
       <SchoolForm
         mode="edit"
