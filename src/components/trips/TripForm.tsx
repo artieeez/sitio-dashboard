@@ -18,7 +18,6 @@ type TripFormSnapshot = {
   title: string;
   description: string;
   imageUrl: string;
-  faviconUrl: string;
 };
 
 function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
@@ -29,7 +28,6 @@ function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
       title: "",
       description: "",
       imageUrl: "",
-      faviconUrl: "",
     };
   }
   return {
@@ -41,7 +39,6 @@ function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
     title: trip.title ?? "",
     description: trip.description ?? "",
     imageUrl: trip.imageUrl ?? "",
-    faviconUrl: trip.faviconUrl ?? "",
   };
 }
 
@@ -61,7 +58,6 @@ export function TripForm(props: {
   const [title, setTitle] = useState(trip?.title ?? "");
   const [description, setDescription] = useState(trip?.description ?? "");
   const [imageUrl, setImageUrl] = useState(trip?.imageUrl ?? "");
-  const [faviconUrl, setFaviconUrl] = useState(trip?.faviconUrl ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,7 +69,6 @@ export function TripForm(props: {
     setTitle(baseline.title);
     setDescription(baseline.description);
     setImageUrl(baseline.imageUrl);
-    setFaviconUrl(baseline.faviconUrl);
     setError(null);
   }, [baseline]);
 
@@ -84,7 +79,6 @@ export function TripForm(props: {
       title,
       description,
       imageUrl,
-      faviconUrl,
     };
     return JSON.stringify(current) !== JSON.stringify(baseline);
   }, [
@@ -94,7 +88,6 @@ export function TripForm(props: {
     title,
     description,
     imageUrl,
-    faviconUrl,
   ]);
 
   useReportWorkspaceDirty(isDirty);
@@ -121,9 +114,6 @@ export function TripForm(props: {
       }
       if (meta.imageUrl) {
         setImageUrl(meta.imageUrl);
-      }
-      if (meta.faviconUrl) {
-        setFaviconUrl(meta.faviconUrl);
       }
     } catch (e) {
       if (e instanceof ApiError && e.status === 502) {
@@ -159,7 +149,6 @@ export function TripForm(props: {
           title: title.trim() || null,
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
-          faviconUrl: faviconUrl.trim() || null,
           active: true,
         });
         await apiPostJson(`/schools/${schoolId}/trips`, body);
@@ -170,7 +159,6 @@ export function TripForm(props: {
           title: title.trim() || null,
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
-          faviconUrl: faviconUrl.trim() || null,
           active: trip?.active ?? true,
         });
         await apiPatchJson(`/trips/${trip.id}`, body);
@@ -258,14 +246,6 @@ export function TripForm(props: {
             className={fieldClass}
             value={imageUrl}
             onChange={(ev) => setImageUrl(ev.target.value)}
-          />
-        </label>
-        <label className="flex min-w-0 flex-col gap-1 text-sm">
-          <span>Favicon</span>
-          <input
-            className={fieldClass}
-            value={faviconUrl}
-            onChange={(ev) => setFaviconUrl(ev.target.value)}
           />
         </label>
         <div className="flex justify-end pt-1 md:col-span-2">

@@ -14,7 +14,6 @@ export const tripSchema = z.object({
   title: z.string().nullable(),
   description: z.string().nullable(),
   imageUrl: z.string().nullable(),
-  faviconUrl: z.string().nullable(),
   createdAt: dateTimeStringSchema,
   updatedAt: dateTimeStringSchema,
 });
@@ -25,7 +24,6 @@ export const tripCreateSchema = z.object({
   title: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
-  faviconUrl: z.string().nullable().optional(),
   active: z.boolean().optional(),
 });
 
