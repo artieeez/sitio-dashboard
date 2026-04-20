@@ -141,19 +141,34 @@ export function SchoolsDirectorySchoolsTablePane({
         sortable: false,
         thClassName: "w-14 min-w-14 pl-2",
         tdClassName: "whitespace-nowrap pr-2",
-        render: (s: School) =>
-          s.imageUrl?.trim() ? (
-            <img
-              src={s.imageUrl}
-              alt=""
-              className="size-10 shrink-0 rounded-md object-cover"
-            />
-          ) : (
+        render: (s: School) => {
+          const image = s.imageUrl?.trim();
+          const favicon = s.faviconUrl?.trim();
+          if (image) {
+            return (
+              <img
+                src={image}
+                alt=""
+                className="size-10 shrink-0 rounded-md object-cover"
+              />
+            );
+          }
+          if (favicon) {
+            return (
+              <img
+                src={favicon}
+                alt=""
+                className="size-10 shrink-0 rounded-md bg-muted/40 object-contain p-1.5"
+              />
+            );
+          }
+          return (
             <span
               className="inline-block size-10 shrink-0 rounded-md border border-dashed border-border bg-muted/40"
               aria-hidden
             />
-          ),
+          );
+        },
       },
       {
         id: "title" as const,
