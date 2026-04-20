@@ -21,6 +21,9 @@ import { queryKeys } from "@/lib/query-keys";
 import type { School } from "@/lib/schemas/school";
 import { schoolSchema } from "@/lib/schemas/school";
 import {
+  tableStickyActionCellBackdropSelected,
+  tableStickyActionCellBackdropUnselected,
+  tableStickyActionEdge,
   tableStickyActionSelected,
   tableStickyActionUnselected,
 } from "@/lib/table-sticky-action-surface";
@@ -181,17 +184,28 @@ export function SchoolsDirectorySchoolsTablePane({
         id: "actions" as const,
         header: <span className="sr-only">{ptBR.aria.rowMenu}</span>,
         sortable: false,
-        thClassName:
+        thClassName: cn(
           "sticky right-0 top-0 z-[3] w-11 min-w-11 bg-background text-right font-medium",
-        tdClassName:
+          tableStickyActionEdge,
+        ),
+        tdClassName: cn(
           "sticky right-0 z-[2] w-11 min-w-11 !p-0 whitespace-nowrap align-middle",
+          tableStickyActionEdge,
+        ),
         render: (s: School) => {
           const rowHighlighted =
             (highlightSchoolId !== undefined && s.id === highlightSchoolId) ||
             s.id === selectedKey;
           return (
+            // biome-ignore lint/a11y/noStaticElementInteractions: absorbs pointer events so row <tr> does not activate
+            // biome-ignore lint/a11y/useKeyWithClickEvents: stopPropagation only; menu items handle keyboard
             <div
-              className="flex h-full justify-end px-2 py-1.5"
+              className={cn(
+                "flex justify-end px-2 py-1.5",
+                rowHighlighted
+                  ? tableStickyActionCellBackdropSelected
+                  : tableStickyActionCellBackdropUnselected,
+              )}
               onClick={(e) => e.stopPropagation()}
             >
               <div

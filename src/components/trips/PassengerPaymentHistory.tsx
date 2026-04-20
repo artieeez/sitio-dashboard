@@ -11,7 +11,11 @@ import { SortableListTable } from "@/components/ui/sortable-list-table";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { type Payment, paymentSchema } from "@/lib/schemas/payment";
-import { tableStickyActionUnselected } from "@/lib/table-sticky-action-surface";
+import {
+  tableStickyActionCellBackdropStatic,
+  tableStickyActionEdge,
+  tableStickyActionUnselected,
+} from "@/lib/table-sticky-action-surface";
 import { paymentEditLink, paymentsNewLink } from "@/lib/trip-payment-links";
 import { cn } from "@/lib/utils";
 import { ptBR } from "@/messages/pt-BR";
@@ -115,12 +119,21 @@ export function PassengerPaymentHistory(props: {
         id: "actions" as const,
         header: <span className="sr-only">{ptBR.aria.rowMenu}</span>,
         sortable: false,
-        thClassName:
+        thClassName: cn(
           "sticky right-0 top-0 z-[3] w-11 min-w-11 bg-background text-right font-medium",
-        tdClassName:
+          tableStickyActionEdge,
+        ),
+        tdClassName: cn(
           "sticky right-0 z-[2] w-11 min-w-11 !p-0 whitespace-nowrap align-middle",
+          tableStickyActionEdge,
+        ),
         render: (p: Payment) => (
-          <div className="flex h-full justify-end px-2 py-1.5">
+          <div
+            className={cn(
+              "flex justify-end px-2 py-1.5",
+              tableStickyActionCellBackdropStatic,
+            )}
+          >
             <div
               className={cn(
                 tableStickyActionUnselected,
