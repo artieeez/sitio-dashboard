@@ -42,7 +42,8 @@ function SchoolIdLayout() {
   const onSelectedKeyChange = useCallback(
     (key: string | null) => {
       if (key == null) {
-        void navigate({ to: "/schools/$schoolId", params: { schoolId } });
+        /** Hub index + list pane are placeholders; return to the directory table. */
+        void navigate({ to: "/schools" });
         return;
       }
       if (key === "edit") {

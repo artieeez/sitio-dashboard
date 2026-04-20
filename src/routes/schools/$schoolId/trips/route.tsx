@@ -14,6 +14,7 @@ import { TripWorkspaceListPane } from "@/components/trips/trip-workspace-list-pa
 import { WorkspaceDirtyProvider } from "@/contexts/workspace-dirty-context";
 import {
   isPassengerEditDetailPath,
+  isPassengerNewFormPath,
   isPassengerPaymentsBranchPath,
   isTripPassengersListHubPath,
   passengersListLink,
@@ -105,6 +106,7 @@ function SchoolTripsShell() {
     }
     const tid = tripIdFromChild;
     if (
+      isPassengerNewFormPath(pathname) ||
       isPassengerEditDetailPath(pathname) ||
       isPassengerPaymentsBranchPath(pathname) ||
       isTripSummaryEditDetailPath(pathname, tid)

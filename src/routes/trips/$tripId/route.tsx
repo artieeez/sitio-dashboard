@@ -17,6 +17,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { tripSchema } from "@/lib/schemas/trip";
 import {
   isPassengerEditDetailPath,
+  isPassengerNewFormPath,
   isPassengerPaymentsBranchPath,
   passengersListLink,
 } from "@/lib/trip-payment-links";
@@ -75,6 +76,7 @@ function TripWorkspaceShell() {
   const onCloseDetail = useMemo(() => {
     if (!tripIdValid) return undefined;
     if (
+      isPassengerNewFormPath(pathname) ||
       isPassengerEditDetailPath(pathname) ||
       isPassengerPaymentsBranchPath(pathname) ||
       isTripSummaryEditDetailPath(pathname, tripId)
