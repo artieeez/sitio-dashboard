@@ -1,5 +1,5 @@
 import { useBlocker } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 import { UnsavedChangesDialog } from "@/components/layout/unsaved-changes-dialog";
 
@@ -13,9 +13,7 @@ export function NavigationUnsavedGuard(props: {
 }) {
   const { isDirty, onDiscard } = props;
   const isDirtyRef = useRef(isDirty);
-  useEffect(() => {
-    isDirtyRef.current = isDirty;
-  }, [isDirty]);
+  isDirtyRef.current = isDirty;
 
   const blocker = useBlocker({
     shouldBlockFn: () => isDirtyRef.current,

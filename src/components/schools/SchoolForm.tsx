@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
@@ -62,12 +63,14 @@ export function SchoolForm(props: {
   const [submitting, setSubmitting] = useState(false);
   const [metadataLoading, setMetadataLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saveCommitted, setSaveCommitted] = useState(false);
   const metadataAbortRef = useRef<AbortController | null>(null);
   const metadataGenerationRef = useRef(0);
 
   const baseline = useMemo(() => schoolBaseline(school, mode), [school, mode]);
 
   useEffect(() => {
+    setSaveCommitted(false);
     setUrl(baseline.url);
     setTitle(baseline.title);
     setDescription(baseline.description);
@@ -77,6 +80,9 @@ export function SchoolForm(props: {
   }, [baseline]);
 
   const isDirty = useMemo(() => {
+    if (saveCommitted) {
+      return false;
+    }
     const current: SchoolFormSnapshot = {
       url,
       title,
@@ -85,7 +91,7 @@ export function SchoolForm(props: {
       faviconUrl,
     };
     return JSON.stringify(current) !== JSON.stringify(baseline);
-  }, [baseline, url, title, description, imageUrl, faviconUrl]);
+  }, [saveCommitted, baseline, url, title, description, imageUrl, faviconUrl]);
 
   useReportWorkspaceDirty(isDirty);
 
@@ -195,6 +201,9 @@ export function SchoolForm(props: {
         });
         await apiPatchJson(`/schools/${school.id}`, body);
       }
+      flushSync(() => {
+        setSaveCommitted(true);
+      });
       onSuccess();
     } catch (e) {
       if (e instanceof ApiError) {

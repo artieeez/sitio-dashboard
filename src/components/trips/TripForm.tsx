@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import type { Trip } from "@/lib/schemas/trip";
 import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
 import { Button } from "@/components/ui/button";
@@ -64,12 +65,14 @@ export function TripForm(props: {
   const [submitting, setSubmitting] = useState(false);
   const [metadataLoading, setMetadataLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saveCommitted, setSaveCommitted] = useState(false);
   const metadataAbortRef = useRef<AbortController | null>(null);
   const metadataGenerationRef = useRef(0);
 
   const baseline = useMemo(() => tripBaseline(trip, mode), [trip, mode]);
 
   useEffect(() => {
+    setSaveCommitted(false);
     setDefaultExpectedAmountMinor(baseline.defaultExpectedAmountMinor);
     setUrl(baseline.url);
     setTitle(baseline.title);
@@ -79,6 +82,9 @@ export function TripForm(props: {
   }, [baseline]);
 
   const isDirty = useMemo(() => {
+    if (saveCommitted) {
+      return false;
+    }
     const current: TripFormSnapshot = {
       defaultExpectedAmountMinor,
       url,
@@ -88,6 +94,7 @@ export function TripForm(props: {
     };
     return JSON.stringify(current) !== JSON.stringify(baseline);
   }, [
+    saveCommitted,
     baseline,
     defaultExpectedAmountMinor,
     url,
@@ -211,6 +218,9 @@ export function TripForm(props: {
         });
         await apiPatchJson(`/trips/${trip.id}`, body);
       }
+      flushSync(() => {
+        setSaveCommitted(true);
+      });
       onSuccess();
     } catch (err) {
       if (err instanceof ApiError) {

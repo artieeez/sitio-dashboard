@@ -1,4 +1,9 @@
-import { createContext, type ReactNode, useContext, useEffect } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useLayoutEffect,
+} from "react";
 
 export type WorkspaceDirtySetter = (dirty: boolean) => void;
 
@@ -21,7 +26,7 @@ export function WorkspaceDirtyProvider(props: {
  */
 export function useReportWorkspaceDirty(isDirty: boolean): void {
   const set = useContext(WorkspaceDirtyContext);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!set) return;
     set(isDirty);
     return () => set(false);
