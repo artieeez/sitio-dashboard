@@ -103,6 +103,7 @@ const nonOrphanOnly = [
     },
     isOrphan: false,
     tripTitle: "Viagem única",
+    integrationEventType: "order_paid",
   }),
 ];
 

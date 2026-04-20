@@ -1,9 +1,16 @@
 import { z } from "zod";
-
+import type { PaymentConsoleEventType } from "@/lib/wix-console-schemas";
 import {
   type WixPaymentEventListItem,
   wixPaymentEventListItemSchema,
 } from "@/lib/wix-payment-event-schemas";
+
+const PAYMENT_EVENT_CYCLE: PaymentConsoleEventType[] = [
+  "order_paid",
+  "order_updated",
+  "refund",
+  "payment_failed",
+];
 
 function uuidFromIndex(i: number): string {
   const hex = i.toString(16).padStart(12, "0");
@@ -26,6 +33,7 @@ function buildEvent(i: number): WixPaymentEventListItem {
   const dateCreated = baseDate.toISOString();
 
   return wixPaymentEventListItemSchema.parse({
+    integrationEventType: PAYMENT_EVENT_CYCLE[i % PAYMENT_EVENT_CYCLE.length],
     event: {
       id,
       dateCreated,

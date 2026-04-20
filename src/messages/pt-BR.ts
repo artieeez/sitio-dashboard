@@ -191,6 +191,8 @@ export const ptBR = {
     settingsSheetDescription:
       "Integração única para todo o ambiente. A chave pública é usada nos webhooks do Wix para recebermos eventos e atualizarmos a base de dados. A chave da API (privada) autentica o acesso programático à API do Wix. Apenas um prefixo de cada chave é exibido aqui; os valores completos ficam no servidor.",
     emptyTable: "Nenhum evento para exibir com os filtros atuais.",
+    emptySchoolConsole: "Nenhum evento de escola com os filtros atuais.",
+    emptyTripConsole: "Nenhum evento de viagem com os filtros atuais.",
     emptyOrphans: "Nenhum evento órfão com os filtros atuais.",
     orphanBadge: "Órfão",
     noTripLabel: "—",
@@ -200,6 +202,11 @@ export const ptBR = {
       buyerName: "Nome do comprador",
       email: "E-mail",
       date: "Data",
+      eventType: "Tipo",
+      categoryName: "Categoria",
+      tripName: "Nome da viagem",
+      id: "ID",
+      integrationEventType: "Tipo de evento",
     },
     keys: {
       publicKey: "Chave pública",
@@ -212,6 +219,30 @@ export const ptBR = {
       editKey: "Editar",
       applyKey: "Aplicar",
       cancelEdit: "Cancelar",
+    },
+    tabs: {
+      schools: "Escolas",
+      trips: "Viagens",
+      payments: "Pagamentos",
+    },
+    eventTypeFilterHint: "Tipos de evento",
+    schoolEventTypes: {
+      create: "create",
+      updated: "updated",
+      deleted: "deleted",
+      removedTrip: "removedTrip",
+      addedTrip: "addedTrip",
+    },
+    tripEventTypes: {
+      create: "create",
+      updated: "updated",
+      deleted: "deleted",
+    },
+    paymentEventTypes: {
+      order_paid: "order_paid",
+      order_updated: "order_updated",
+      refund: "refund",
+      payment_failed: "payment_failed",
     },
     toggles: {
       orphanOnly: "Somente órfãos",

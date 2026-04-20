@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { paymentConsoleEventTypeSchema } from "@/lib/wix-console-schemas";
+
 /**
  * Zod models aligned with design-notes contracts:
  * `wix-payment-event.ui.schema.json` and `wix-payment-event-list-item.ui.schema.json`.
@@ -36,6 +38,8 @@ export const wixPaymentEventListItemSchema = z.object({
   event: wixPaymentEventSchema,
   isOrphan: z.boolean(),
   tripTitle: z.string().nullable(),
+  /** Console / webhook event classification (UI + filters). */
+  integrationEventType: paymentConsoleEventTypeSchema,
 });
 
 export type WixPaymentEvent = z.infer<typeof wixPaymentEventSchema>;
