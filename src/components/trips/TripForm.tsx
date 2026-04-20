@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import type { Trip } from "@/lib/schemas/trip";
+import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
 import { Button } from "@/components/ui/button";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
@@ -6,8 +8,6 @@ import {
   fetchPageRequestSchema,
   landingMetadataSchema,
 } from "@/lib/schemas/metadata";
-import type { Trip } from "@/lib/schemas/trip";
-import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
 import { ptBR } from "@/messages/pt-BR";
 
 type Mode = "create" | "edit";
@@ -109,6 +109,9 @@ export function TripForm(props: {
       if (meta.title) {
         setTitle(meta.title);
       }
+      if (meta.defaultExpectedAmountMinor != null) {
+        setDefaultExpectedAmountMinor(String(meta.defaultExpectedAmountMinor));
+      }
       if (meta.description) {
         setDescription(meta.description);
       }
@@ -154,19 +157,17 @@ export function TripForm(props: {
         await apiPostJson(`/schools/${schoolId}/trips`, body);
       } else if (trip) {
         const body = tripUpdateSchema.parse({
-          defaultExpectedAmountMinor: minor,
           url: url.trim() || null,
-          title: title.trim() || null,
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
-          active: trip?.active ?? true,
+          active: trip.active,
         });
         await apiPatchJson(`/trips/${trip.id}`, body);
       }
       onSuccess();
-    } catch (e) {
-      if (e instanceof ApiError) {
-        const b = e.body as { message?: string } | null;
+    } catch (err) {
+      if (err instanceof ApiError) {
+        const b = err.body as { message?: string } | null;
         setError(
           typeof b?.message === "string" ? b.message : "Erro ao salvar.",
         );
@@ -180,6 +181,7 @@ export function TripForm(props: {
 
   const fieldClass =
     "w-full min-w-0 rounded border border-input bg-background px-2 py-1";
+  const readOnlyFieldClass = `${fieldClass} cursor-not-allowed bg-muted/60 text-muted-foreground`;
 
   return (
     <form
@@ -195,24 +197,6 @@ export function TripForm(props: {
             {error}
           </p>
         ) : null}
-        <label className="flex min-w-0 flex-col gap-1 text-sm">
-          <span>{ptBR.fields.defaultExpectedAmount}</span>
-          <input
-            className={fieldClass}
-            inputMode="numeric"
-            value={defaultExpectedAmountMinor}
-            onChange={(ev) => setDefaultExpectedAmountMinor(ev.target.value)}
-            placeholder="ex.: 15000 (= R$ 150,00)"
-          />
-        </label>
-        <label className="flex min-w-0 flex-col gap-1 text-sm">
-          <span>Título</span>
-          <input
-            className={fieldClass}
-            value={title}
-            onChange={(ev) => setTitle(ev.target.value)}
-          />
-        </label>
         <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
           <span>{ptBR.fields.url}</span>
           <input
@@ -232,6 +216,26 @@ export function TripForm(props: {
             {ptBR.actions.fetchMetadata}
           </Button>
         </div>
+        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+          <span>{ptBR.fields.defaultExpectedAmount}</span>
+          <input
+            className={readOnlyFieldClass}
+            readOnly
+            aria-readonly="true"
+            inputMode="numeric"
+            value={defaultExpectedAmountMinor}
+            placeholder="ex.: 15000 (= R$ 150,00)"
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+          <span>Título</span>
+          <input
+            className={readOnlyFieldClass}
+            readOnly
+            aria-readonly="true"
+            value={title}
+          />
+        </label>
         <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
           <span>Descrição</span>
           <textarea

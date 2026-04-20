@@ -27,7 +27,13 @@ export const tripCreateSchema = z.object({
   active: z.boolean().optional(),
 });
 
-export const tripUpdateSchema = tripCreateSchema.partial();
+/** PATCH does not accept title or defaultExpectedAmountMinor (sourced from landing URL). */
+export const tripUpdateSchema = z.object({
+  url: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  imageUrl: z.string().nullable().optional(),
+  active: z.boolean().optional(),
+});
 
 export const passengerStatusAggregatesSchema = z.object({
   pendingCount: z.number().int().min(0),

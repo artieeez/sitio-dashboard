@@ -9,6 +9,7 @@ export const landingMetadataSchema = z.object({
   description: z.string().nullable(),
   imageUrl: z.string().nullable(),
   faviconUrl: z.string().nullable(),
+  defaultExpectedAmountMinor: z.number().int().nullable(),
 });
 
 export type FetchPageRequest = z.infer<typeof fetchPageRequestSchema>;
