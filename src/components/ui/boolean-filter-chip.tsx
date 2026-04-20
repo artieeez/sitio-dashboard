@@ -29,7 +29,7 @@ export function BooleanFilterChip({
       disabled={disabled}
       onClick={() => onCheckedChange(!checked)}
       className={cn(
-        "inline-flex h-6 shrink-0 items-center gap-1 rounded-full border px-2 text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "inline-flex h-6 shrink-0 cursor-pointer items-center gap-1 rounded-full border px-2 text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         checked
           ? "border-primary border-solid bg-primary/15 text-foreground"
           : "border-border border-dashed bg-muted/40 text-muted-foreground hover:bg-muted/60 hover:text-foreground",
