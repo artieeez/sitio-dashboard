@@ -276,7 +276,6 @@ export function SchoolsDirectorySchoolsTablePane({
                 className={cn(
                   buttonVariants({ variant: "outline", size: "sm" }),
                   "w-fit gap-1 no-underline",
-                  selectedKey === "__new__" && "ring-2 ring-ring ring-offset-2",
                 )}
               >
                 <Plus className="size-4 shrink-0" aria-hidden />
