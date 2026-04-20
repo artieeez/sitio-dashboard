@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { flushSync } from "react-dom";
-import { Button } from "@/components/ui/button";
+import { FormFooter } from "@/components/ui/form-footer";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPostJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -187,11 +187,9 @@ export function PassengerCreateForm(props: {
         />
         Confirmar nome duplicado na viagem
       </label>
-      <div className="flex justify-end">
-        <Button type="submit" disabled={create.isPending}>
-          {ptBR.actions.save}
-        </Button>
-      </div>
+      <FormFooter primaryProps={{ disabled: create.isPending }}>
+        {ptBR.actions.save}
+      </FormFooter>
     </form>
   );
 }

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
-import { Button } from "@/components/ui/button";
+import { FormFooter } from "@/components/ui/form-footer";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -234,21 +234,13 @@ export function PaymentForm(props: {
           required
         />
       </label>
-      <div className="flex flex-wrap gap-2">
-        <Button type="submit" disabled={save.isPending}>
-          {ptBR.actions.save}
-        </Button>
-        {onCancel ? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={save.isPending}
-          >
-            {ptBR.actions.cancel}
-          </Button>
-        ) : null}
-      </div>
+      <FormFooter
+        primaryProps={{ disabled: save.isPending }}
+        cancelProps={onCancel ? { disabled: save.isPending } : undefined}
+        onCancel={onCancel}
+      >
+        {ptBR.actions.save}
+      </FormFooter>
     </form>
   );
 }

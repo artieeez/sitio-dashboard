@@ -1,7 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { Button } from "@/components/ui/button";
+import { FormFooter } from "@/components/ui/form-footer";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import {
@@ -279,9 +279,9 @@ export function SchoolForm(props: {
           onChange={(ev) => setFaviconUrl(ev.target.value)}
         />
       </label>
-      <Button type="submit" disabled={submitting} className="self-end">
+      <FormFooter primaryProps={{ disabled: submitting }}>
         {ptBR.actions.save}
-      </Button>
+      </FormFooter>
     </form>
   );
 }

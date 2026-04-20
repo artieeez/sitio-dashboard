@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { FormFooter } from "@/components/ui/form-footer";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiJson, apiPatchJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -247,9 +247,9 @@ export function PassengerEditForm(props: {
         />
         Confirmar nome duplicado na viagem
       </label>
-      <Button type="submit" disabled={update.isPending}>
+      <FormFooter primaryProps={{ disabled: update.isPending }}>
         {ptBR.actions.save}
-      </Button>
+      </FormFooter>
     </form>
   );
 }

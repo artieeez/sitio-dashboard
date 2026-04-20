@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import type { Trip } from "@/lib/schemas/trip";
 import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
-import { Button } from "@/components/ui/button";
+import { FormFooter } from "@/components/ui/form-footer";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import {
@@ -311,11 +311,9 @@ export function TripForm(props: {
             onChange={(ev) => setImageUrl(ev.target.value)}
           />
         </label>
-        <div className="flex justify-end pt-1 md:col-span-2">
-          <Button type="submit" disabled={submitting}>
-            {ptBR.actions.save}
-          </Button>
-        </div>
+        <FormFooter className="pt-1 md:col-span-2" primaryProps={{ disabled: submitting }}>
+          {ptBR.actions.save}
+        </FormFooter>
       </div>
     </form>
   );
