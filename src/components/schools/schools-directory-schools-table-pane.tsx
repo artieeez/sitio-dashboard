@@ -231,50 +231,42 @@ export function SchoolsDirectorySchoolsTablePane({
                   "pointer-events-auto rounded-sm py-0.5",
                 )}
               >
-                <RowKebabMenu ariaLabel={ptBR.aria.rowMenu}>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                    onClick={() => requestSelect(s.id)}
-                  >
-                    {ptBR.actions.viewSchool}
-                  </button>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                    onClick={() => {
-                      void navigate({
-                        to: "/schools/$schoolId/edit",
-                        params: { schoolId: s.id },
-                      });
-                    }}
-                  >
-                    {ptBR.actions.edit}
-                  </button>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
-                    onClick={() => navigateToSchoolTrips(navigate, s.id)}
-                  >
-                    {ptBR.actions.viewTrips}
-                  </button>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="rounded px-2 py-1.5 text-left text-sm text-destructive hover:bg-muted"
-                    onClick={async () => {
-                      await apiDelete(`/schools/${s.id}`);
-                      await qc.invalidateQueries({
-                        queryKey: queryKeys.schools(includeInactive),
-                      });
-                    }}
-                  >
-                    {ptBR.actions.delete}
-                  </button>
-                </RowKebabMenu>
+                <RowKebabMenu
+                  ariaLabel={ptBR.aria.rowMenu}
+                  items={[
+                    {
+                      id: "view",
+                      label: ptBR.actions.viewSchool,
+                      onClick: () => requestSelect(s.id),
+                    },
+                    {
+                      id: "edit",
+                      label: ptBR.actions.edit,
+                      onClick: () => {
+                        void navigate({
+                          to: "/schools/$schoolId/edit",
+                          params: { schoolId: s.id },
+                        });
+                      },
+                    },
+                    {
+                      id: "trips",
+                      label: ptBR.actions.viewTrips,
+                      onClick: () => navigateToSchoolTrips(navigate, s.id),
+                    },
+                    {
+                      id: "delete",
+                      label: ptBR.actions.delete,
+                      destructive: true,
+                      onClick: async () => {
+                        await apiDelete(`/schools/${s.id}`);
+                        await qc.invalidateQueries({
+                          queryKey: queryKeys.schools(includeInactive),
+                        });
+                      },
+                    },
+                  ]}
+                />
               </div>
             </div>
           );

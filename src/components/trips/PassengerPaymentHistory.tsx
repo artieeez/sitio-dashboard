@@ -143,36 +143,33 @@ export function PassengerPaymentHistory(props: {
               <RowKebabMenu
                 ariaLabel={ptBR.aria.rowMenu}
                 iconOrientation="horizontal"
-              >
-                <Link
-                  role="menuitem"
-                  {...paymentEditLink({
-                    tripId,
-                    passengerId,
-                    schoolId,
-                    paymentId: p.id,
-                  })}
-                  className="block rounded px-2 py-1.5 text-left text-sm no-underline hover:bg-muted"
-                >
-                  {ptBR.actions.edit}
-                </Link>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="w-full rounded px-2 py-1.5 text-left text-sm text-destructive hover:bg-muted disabled:opacity-50"
-                  disabled={remove.isPending}
-                  onClick={() => {
-                    if (
-                      globalThis.confirm("Excluir este pagamento?") !== true
-                    ) {
-                      return;
-                    }
-                    remove.mutate(p.id);
-                  }}
-                >
-                  {ptBR.actions.delete}
-                </button>
-              </RowKebabMenu>
+                items={[
+                  {
+                    id: "edit",
+                    label: ptBR.actions.edit,
+                    link: paymentEditLink({
+                      tripId,
+                      passengerId,
+                      schoolId,
+                      paymentId: p.id,
+                    }),
+                  },
+                  {
+                    id: "delete",
+                    label: ptBR.actions.delete,
+                    destructive: true,
+                    disabled: remove.isPending,
+                    onClick: () => {
+                      if (
+                        globalThis.confirm("Excluir este pagamento?") !== true
+                      ) {
+                        return;
+                      }
+                      remove.mutate(p.id);
+                    },
+                  },
+                ]}
+              />
             </div>
           </div>
         ),
