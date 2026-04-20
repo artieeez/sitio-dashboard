@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Trip } from "@/lib/schemas/trip";
 import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,8 @@ import {
   landingMetadataSchema,
 } from "@/lib/schemas/metadata";
 import { ptBR } from "@/messages/pt-BR";
+
+const METADATA_DEBOUNCE_MS = 600;
 
 type Mode = "create" | "edit";
 
@@ -58,8 +61,11 @@ export function TripForm(props: {
   const [title, setTitle] = useState(trip?.title ?? "");
   const [description, setDescription] = useState(trip?.description ?? "");
   const [imageUrl, setImageUrl] = useState(trip?.imageUrl ?? "");
-  const [busy, setBusy] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [metadataLoading, setMetadataLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const metadataAbortRef = useRef<AbortController | null>(null);
+  const metadataGenerationRef = useRef(0);
 
   const baseline = useMemo(() => tripBaseline(trip, mode), [trip, mode]);
 
@@ -92,49 +98,90 @@ export function TripForm(props: {
 
   useReportWorkspaceDirty(isDirty);
 
-  async function fetchMetadata() {
-    setError(null);
-    const parsed = fetchPageRequestSchema.safeParse({ url: url.trim() });
-    if (!parsed.success) {
-      setError("Informe uma URL válida.");
+  useEffect(() => {
+    const trimmed = url.trim();
+    if (trimmed === baseline.url.trim()) {
       return;
     }
-    setBusy(true);
-    try {
-      const raw = await apiPostJson<unknown>(
-        "/metadata/fetch-page",
-        parsed.data,
-      );
-      const meta = landingMetadataSchema.parse(raw);
-      if (meta.title) {
-        setTitle(meta.title);
-      }
-      if (meta.defaultExpectedAmountMinor != null) {
-        setDefaultExpectedAmountMinor(String(meta.defaultExpectedAmountMinor));
-      }
-      if (meta.description) {
-        setDescription(meta.description);
-      }
-      if (meta.imageUrl) {
-        setImageUrl(meta.imageUrl);
-      }
-    } catch (e) {
-      if (e instanceof ApiError && e.status === 502) {
-        setError(
-          "Não foi possível buscar a página. Preencha os campos manualmente.",
-        );
-      } else {
-        setError("Falha ao buscar metadados.");
-      }
-    } finally {
-      setBusy(false);
+    const parsed = fetchPageRequestSchema.safeParse({ url: trimmed });
+    if (!parsed.success) {
+      return;
     }
-  }
+
+    const generation = metadataGenerationRef.current;
+    const timeoutId = window.setTimeout(() => {
+      if (metadataGenerationRef.current !== generation) return;
+
+      metadataAbortRef.current?.abort();
+      const ac = new AbortController();
+      metadataAbortRef.current = ac;
+
+      void (async () => {
+        setMetadataLoading(true);
+        setError(null);
+        try {
+          const raw = await apiPostJson<unknown>(
+            "/metadata/fetch-page",
+            parsed.data,
+            { signal: ac.signal },
+          );
+          if (
+            ac.signal.aborted ||
+            metadataGenerationRef.current !== generation
+          ) {
+            return;
+          }
+          const meta = landingMetadataSchema.parse(raw);
+          if (meta.title) {
+            setTitle(meta.title);
+          }
+          if (meta.defaultExpectedAmountMinor != null) {
+            setDefaultExpectedAmountMinor(String(meta.defaultExpectedAmountMinor));
+          }
+          if (meta.description) {
+            setDescription(meta.description);
+          }
+          if (meta.imageUrl) {
+            setImageUrl(meta.imageUrl);
+          }
+        } catch (e) {
+          if (
+            ac.signal.aborted ||
+            metadataGenerationRef.current !== generation
+          ) {
+            return;
+          }
+          if (e instanceof ApiError && e.status === 502) {
+            setError(
+              "Não foi possível buscar a página. Preencha os campos manualmente.",
+            );
+          } else {
+            setError("Falha ao buscar metadados.");
+          }
+        } finally {
+          if (
+            metadataGenerationRef.current === generation &&
+            !ac.signal.aborted
+          ) {
+            setMetadataLoading(false);
+          }
+        }
+      })();
+    }, METADATA_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      metadataAbortRef.current?.abort();
+      metadataAbortRef.current = null;
+      metadataGenerationRef.current += 1;
+      setMetadataLoading(false);
+    };
+  }, [url, baseline.url]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setBusy(true);
+    setSubmitting(true);
     try {
       const minor =
         defaultExpectedAmountMinor.trim() === ""
@@ -142,7 +189,7 @@ export function TripForm(props: {
           : Number(defaultExpectedAmountMinor);
       if (minor !== null && (Number.isNaN(minor) || minor < 0)) {
         setError("Valor esperado inválido (centavos).");
-        setBusy(false);
+        setSubmitting(false);
         return;
       }
       if (mode === "create") {
@@ -175,7 +222,7 @@ export function TripForm(props: {
         setError("Erro ao salvar.");
       }
     } finally {
-      setBusy(false);
+      setSubmitting(false);
     }
   }
 
@@ -198,24 +245,26 @@ export function TripForm(props: {
           </p>
         ) : null}
         <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
-          <span>{ptBR.fields.url}</span>
+          <span className="flex items-center gap-2">
+            {ptBR.fields.url}
+            {metadataLoading ? (
+              <Loader2
+                className="size-4 shrink-0 animate-spin text-muted-foreground"
+                aria-hidden
+              />
+            ) : null}
+            {metadataLoading ? (
+              <span className="sr-only">Carregando dados da página…</span>
+            ) : null}
+          </span>
           <input
             className={fieldClass}
             value={url}
             onChange={(ev) => setUrl(ev.target.value)}
             placeholder="https://"
+            aria-busy={metadataLoading}
           />
         </label>
-        <div className="md:col-span-2">
-          <Button
-            type="button"
-            variant="outline"
-            disabled={busy}
-            onClick={fetchMetadata}
-          >
-            {ptBR.actions.fetchMetadata}
-          </Button>
-        </div>
         <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
           <span>{ptBR.fields.defaultExpectedAmount}</span>
           <input
@@ -253,7 +302,7 @@ export function TripForm(props: {
           />
         </label>
         <div className="flex justify-end pt-1 md:col-span-2">
-          <Button type="submit" disabled={busy}>
+          <Button type="submit" disabled={submitting}>
             {ptBR.actions.save}
           </Button>
         </div>
