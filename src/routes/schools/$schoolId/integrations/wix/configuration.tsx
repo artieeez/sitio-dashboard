@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { DetailPanePageHeader } from "@/components/layout/detail-pane-page-header";
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
-import { FormFooter } from "@/components/ui/form-footer";
 import { useWixIntegrationConfig } from "@/components/wix/wix-integration-config-context";
 import { WixIntegrationKeyFields } from "@/components/wix/wix-integration-key-fields";
 import { ptBR } from "@/messages/pt-BR";
@@ -37,16 +36,6 @@ function WixConfigurationDetailRoute() {
         onPublicKeyChange={setPublicKey}
         onPrivateApiKeyChange={setPrivateApiKey}
       />
-      <FormFooter
-        className="mt-6 shrink-0"
-        primaryProps={{
-          type: "button",
-          onClick: () => requestCloseDetail(),
-          "aria-label": ptBR.wixIntegration.saveConfigurationAriaLabel,
-        }}
-      >
-        {ptBR.actions.save}
-      </FormFooter>
     </div>
   );
 }

@@ -190,9 +190,6 @@ export const ptBR = {
     settingsSheetTitle: "Configuração da integração",
     settingsSheetDescription:
       "Chaves públicas e privadas permanecem apenas nesta sessão do navegador.",
-    /** Primary action: confirm settings for this session and return to the events list. */
-    saveConfigurationAriaLabel:
-      "Salvar configuração da integração Wix e voltar à lista de eventos",
     emptyTable: "Nenhum evento para exibir com os filtros atuais.",
     emptyOrphans: "Nenhum evento órfão com os filtros atuais.",
     orphanBadge: "Órfão",
@@ -211,6 +208,10 @@ export const ptBR = {
       privateKeyPlaceholder: "Cole a chave privada ou da API",
       revealPrivate: "Mostrar chave",
       hidePrivate: "Ocultar chave",
+      keyNotSet: "Não configurada",
+      editKey: "Editar",
+      applyKey: "Aplicar",
+      cancelEdit: "Cancelar",
     },
     toggles: {
       orphanOnly: "Somente órfãos",
