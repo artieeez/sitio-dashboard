@@ -189,7 +189,7 @@ export const ptBR = {
     configureKeys: "Configurar chaves",
     settingsSheetTitle: "Configuração da integração",
     settingsSheetDescription:
-      "Chaves públicas e privadas permanecem apenas nesta sessão do navegador.",
+      "A chave pública é usada nos webhooks do Wix: o Wix envia eventos para atualizarmos a base de dados. A chave da API (privada) autentica o acesso programático à API do Wix. Os valores permanecem apenas nesta sessão do navegador.",
     emptyTable: "Nenhum evento para exibir com os filtros atuais.",
     emptyOrphans: "Nenhum evento órfão com os filtros atuais.",
     orphanBadge: "Órfão",
