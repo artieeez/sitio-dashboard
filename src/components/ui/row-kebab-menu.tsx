@@ -12,7 +12,7 @@ import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 const menuItemClass =
-  "flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm text-foreground no-underline hover:bg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
+  "flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left text-sm text-foreground no-underline hover:bg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
 
 export type RowKebabMenuItem = {
   id: string;
