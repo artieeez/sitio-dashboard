@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { flushSync } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPostJson } from "@/lib/api-client";
@@ -71,14 +72,16 @@ export function PassengerCreateForm(props: {
       return passengerWithStatusSchema.parse(raw);
     },
     onSuccess: async () => {
-      setError(null);
-      setFullName("");
-      setCpf("");
-      setParentName("");
-      setParentPhoneNumber("");
-      setParentEmail("");
-      setExpectedOverride("");
-      setConfirmNameDuplicate(false);
+      flushSync(() => {
+        setError(null);
+        setFullName("");
+        setCpf("");
+        setParentName("");
+        setParentPhoneNumber("");
+        setParentEmail("");
+        setExpectedOverride("");
+        setConfirmNameDuplicate(false);
+      });
       await qc.invalidateQueries({
         queryKey: queryKeys.passengers(tripId, false),
       });
