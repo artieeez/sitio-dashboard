@@ -1,10 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { DetailPanePageHeader } from "@/components/layout/detail-pane-page-header";
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
-import { TripForm } from "@/components/trips/TripForm";
+import { TripFormWorkspace } from "@/components/trips/trip-form-workspace";
 import { queryKeys } from "@/lib/query-keys";
 import { isUuid } from "@/lib/uuid";
 import { ptBR } from "@/messages/pt-BR";
@@ -34,32 +33,24 @@ function NewTripPage() {
   }
 
   return (
-    <div className="min-w-0 p-6">
-      <div className="flex w-full min-w-0 max-w-xl flex-col gap-6">
-        <DetailPanePageHeader
-          title={`${ptBR.actions.create} ${ptBR.entities.trip}`}
-          onClose={requestCloseDetail}
-          subtitle={
-            <p className="text-xs text-muted-foreground">
-              A viagem é sempre criada para esta escola (sem seletor de escola).
-            </p>
-          }
-        />
-
-        <TripForm
-          mode="create"
-          schoolId={schoolId}
-          onSuccess={async () => {
-            await qc.invalidateQueries({
-              queryKey: queryKeys.trips(schoolId, includeInactive),
-            });
-            await navigate({
-              to: "/schools/$schoolId/trips",
-              params: { schoolId },
-            });
-          }}
-        />
-      </div>
-    </div>
+    <TripFormWorkspace
+      mode="create"
+      schoolId={schoolId}
+      onClose={requestCloseDetail}
+      headerSubtitle={
+        <p className="text-xs text-muted-foreground">
+          A viagem é sempre criada para esta escola (sem seletor de escola).
+        </p>
+      }
+      onSuccess={async () => {
+        await qc.invalidateQueries({
+          queryKey: queryKeys.trips(schoolId, includeInactive),
+        });
+        await navigate({
+          to: "/schools/$schoolId/trips",
+          params: { schoolId },
+        });
+      }}
+    />
   );
 }

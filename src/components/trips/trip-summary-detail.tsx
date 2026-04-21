@@ -1,10 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 
-import { DetailPanePageHeader } from "@/components/layout/detail-pane-page-header";
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import { RouteInvalidRecovery } from "@/components/layout/route-invalid-recovery";
-import { TripForm } from "@/components/trips/TripForm";
+import { TripFormWorkspace } from "@/components/trips/trip-form-workspace";
 import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { tripSchema } from "@/lib/schemas/trip";
@@ -121,21 +120,12 @@ export function TripSummaryDetail({
   };
 
   return (
-    <div className="min-w-0 p-6">
-      <div className="flex w-full min-w-0 max-w-xl flex-col gap-6">
-        <DetailPanePageHeader
-          className="mb-0"
-          rowLayout="loose"
-          title={`${ptBR.actions.edit} ${ptBR.entities.trip}`}
-          onClose={requestCloseDetail}
-        />
-        <TripForm
-          mode="edit"
-          schoolId={schoolId}
-          trip={trip}
-          onSuccess={onSaved}
-        />
-      </div>
-    </div>
+    <TripFormWorkspace
+      mode="edit"
+      schoolId={schoolId}
+      trip={trip}
+      onClose={requestCloseDetail}
+      onSuccess={onSaved}
+    />
   );
 }
