@@ -1,6 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import {
+  Eye,
+  Pencil,
+  Plane,
+  Plus,
+  Power,
+  PowerOff,
+  Trash2,
+} from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
@@ -246,11 +254,17 @@ export function SchoolsDirectorySchoolsTablePane({
                   items={[
                     {
                       id: "view",
+                      icon: (
+                        <Eye className="text-muted-foreground" aria-hidden />
+                      ),
                       label: ptBR.actions.viewSchool,
                       onClick: () => requestSelect(s.id),
                     },
                     {
                       id: "edit",
+                      icon: (
+                        <Pencil className="text-muted-foreground" aria-hidden />
+                      ),
                       label: ptBR.actions.edit,
                       onClick: () => {
                         void navigate({
@@ -261,6 +275,9 @@ export function SchoolsDirectorySchoolsTablePane({
                     },
                     {
                       id: "trips",
+                      icon: (
+                        <Plane className="text-muted-foreground" aria-hidden />
+                      ),
                       label: ptBR.actions.viewTrips,
                       onClick: () => navigateToSchoolTrips(navigate, s.id),
                     },
@@ -268,6 +285,12 @@ export function SchoolsDirectorySchoolsTablePane({
                       ? [
                           {
                             id: "activate" as const,
+                            icon: (
+                              <Power
+                                className="text-muted-foreground"
+                                aria-hidden
+                              />
+                            ),
                             label: ptBR.actions.activate,
                             onClick: () => {
                               setSchoolPendingActivate(s);
@@ -279,6 +302,12 @@ export function SchoolsDirectorySchoolsTablePane({
                       ? [
                           {
                             id: "deactivate" as const,
+                            icon: (
+                              <PowerOff
+                                className="text-muted-foreground"
+                                aria-hidden
+                              />
+                            ),
                             label: ptBR.actions.deactivate,
                             onClick: () => {
                               setSchoolPendingDeactivate(s);
@@ -288,6 +317,7 @@ export function SchoolsDirectorySchoolsTablePane({
                       : []),
                     {
                       id: "delete-permanent",
+                      icon: <Trash2 className="text-destructive" aria-hidden />,
                       label: ptBR.actions.deletePermanently,
                       destructive: true,
                       onClick: () => {
