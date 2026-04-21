@@ -15,11 +15,11 @@ export const Route = createFileRoute(
 function WixConfigurationDetailRoute() {
   const { requestCloseDetail } = useListDetailLayout();
   const {
-    appId,
+    siteId,
     publicKey,
     privateApiKeyPrefix,
     isLoading,
-    setAppId,
+    setSiteId,
     setPublicKey,
     setPrivateApiKey,
   } = useWixIntegrationConfig();
@@ -38,11 +38,11 @@ function WixConfigurationDetailRoute() {
         </p>
       </div>
       <WixIntegrationKeyFields
-        appId={appId}
+        siteId={siteId}
         publicKey={publicKey}
         privateApiKeyPrefix={privateApiKeyPrefix}
         isLoading={isLoading}
-        onAppIdChange={setAppId}
+        onSiteIdChange={setSiteId}
         onPublicKeyChange={setPublicKey}
         onPrivateApiKeyChange={setPrivateApiKey}
       />

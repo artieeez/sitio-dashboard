@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { ptBR } from "@/messages/pt-BR";
 
 export type WixIntegrationKeyFieldsProps = {
-  /** Wix App ID as returned by the API (OAuth app identifier). */
-  appId: string | null;
+  /** Wix site GUID as returned by the API; used as `wix-site-id` on REST calls. */
+  siteId: string | null;
   /** Full public key as returned by the API (for webhook setup). */
   publicKey: string | null;
   privateApiKeyPrefix: string | null;
   isLoading?: boolean;
-  onAppIdChange: (value: string) => void;
+  onSiteIdChange: (value: string) => void;
   onPublicKeyChange: (value: string) => void;
   onPrivateApiKeyChange: (value: string) => void;
 };
@@ -27,30 +27,30 @@ function formatMaskedFromPrefix(prefix: string | null): string {
 }
 
 export function WixIntegrationKeyFields({
-  appId,
+  siteId,
   publicKey,
   privateApiKeyPrefix,
   isLoading = false,
-  onAppIdChange,
+  onSiteIdChange,
   onPublicKeyChange,
   onPrivateApiKeyChange,
 }: WixIntegrationKeyFieldsProps) {
   const baseId = useId();
-  const appIdFieldId = `${baseId}-app-id`;
+  const siteIdFieldId = `${baseId}-site-id`;
   const publicId = `${baseId}-public`;
   const privateId = `${baseId}-private`;
 
-  const [editingAppId, setEditingAppId] = useState(false);
+  const [editingSiteId, setEditingSiteId] = useState(false);
   const [editingPublic, setEditingPublic] = useState(false);
   const [editingPrivate, setEditingPrivate] = useState(false);
-  const [draftAppId, setDraftAppId] = useState("");
+  const [draftSiteId, setDraftSiteId] = useState("");
   const [draftPublic, setDraftPublic] = useState("");
   const [draftPrivate, setDraftPrivate] = useState("");
   const [privateVisible, setPrivateVisible] = useState(false);
 
   useEffect(() => {
-    if (editingAppId) setDraftAppId("");
-  }, [editingAppId]);
+    if (editingSiteId) setDraftSiteId("");
+  }, [editingSiteId]);
 
   useEffect(() => {
     if (editingPublic) setDraftPublic("");
@@ -63,10 +63,10 @@ export function WixIntegrationKeyFields({
     }
   }, [editingPrivate]);
 
-  const applyAppId = () => {
-    const next = draftAppId.trim();
-    if (next) onAppIdChange(next);
-    setEditingAppId(false);
+  const applySiteId = () => {
+    const next = draftSiteId.trim();
+    if (next) onSiteIdChange(next);
+    setEditingSiteId(false);
   };
 
   const applyPublic = () => {
@@ -85,30 +85,30 @@ export function WixIntegrationKeyFields({
     <div className="flex flex-col gap-4">
       <div className="grid gap-2">
         <label
-          htmlFor={editingAppId ? appIdFieldId : undefined}
+          htmlFor={editingSiteId ? siteIdFieldId : undefined}
           className="font-medium text-sm"
         >
-          {ptBR.wixIntegration.keys.appId}
+          {ptBR.wixIntegration.keys.siteId}
         </label>
-        {editingAppId ? (
+        {editingSiteId ? (
           <div className="flex flex-col gap-2">
             <Input
-              id={appIdFieldId}
-              name="wixAppId"
+              id={siteIdFieldId}
+              name="wixSiteId"
               autoComplete="off"
-              value={draftAppId}
-              onChange={(e) => setDraftAppId(e.target.value)}
-              placeholder={ptBR.wixIntegration.keys.appIdPlaceholder}
+              value={draftSiteId}
+              onChange={(e) => setDraftSiteId(e.target.value)}
+              placeholder={ptBR.wixIntegration.keys.siteIdPlaceholder}
             />
             <div className="flex flex-wrap gap-2">
-              <Button type="button" size="sm" onClick={applyAppId}>
+              <Button type="button" size="sm" onClick={applySiteId}>
                 {ptBR.wixIntegration.keys.applyKey}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setEditingAppId(false)}
+                onClick={() => setEditingSiteId(false)}
               >
                 {ptBR.wixIntegration.keys.cancelEdit}
               </Button>
@@ -118,13 +118,13 @@ export function WixIntegrationKeyFields({
           <div className="flex min-w-0 items-start gap-2">
             <section
               className="border-input bg-muted/40 min-h-9 min-w-0 flex-1 rounded-md border px-3 py-2 font-mono text-sm break-all"
-              aria-label={ptBR.wixIntegration.keys.appId}
+              aria-label={ptBR.wixIntegration.keys.siteId}
               aria-busy={isLoading}
             >
               {isLoading ? (
                 <div className="bg-muted h-4 max-w-48 animate-pulse rounded" />
-              ) : appId ? (
-                appId
+              ) : siteId ? (
+                siteId
               ) : (
                 <span className="text-muted-foreground">
                   {ptBR.wixIntegration.keys.keyNotSet}
@@ -138,7 +138,7 @@ export function WixIntegrationKeyFields({
               className="shrink-0"
               disabled={isLoading}
               aria-label={ptBR.wixIntegration.keys.editKey}
-              onClick={() => setEditingAppId(true)}
+              onClick={() => setEditingSiteId(true)}
             >
               <SquarePen aria-hidden className="size-4" />
             </Button>

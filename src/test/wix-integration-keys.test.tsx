@@ -5,17 +5,17 @@ import { describe, expect, it } from "vitest";
 import { WixIntegrationKeyFields } from "@/components/wix/wix-integration-key-fields";
 
 function KeyFieldsHarness() {
-  const [appId, setAppId] = useState<string | null>(null);
+  const [siteId, setSiteId] = useState<string | null>(null);
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [privateApiKeyPrefix, setPrivateApiKeyPrefix] = useState<string | null>(
     null,
   );
   return (
     <WixIntegrationKeyFields
-      appId={appId}
+      siteId={siteId}
       publicKey={publicKey}
       privateApiKeyPrefix={privateApiKeyPrefix}
-      onAppIdChange={setAppId}
+      onSiteIdChange={setSiteId}
       onPublicKeyChange={setPublicKey}
       onPrivateApiKeyChange={(v) => setPrivateApiKeyPrefix(v.slice(0, 10))}
     />
@@ -31,7 +31,7 @@ describe("Wix integration key fields (US2)", () => {
 
     fireEvent.click(editButtons[0]);
     expect(
-      screen.getByPlaceholderText(/oauth apps no painel wix/i),
+      screen.getByPlaceholderText(/guid do site no painel wix/i),
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /cancelar/i }));

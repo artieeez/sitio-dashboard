@@ -40,7 +40,7 @@ function WixIntegrationShell() {
 
   const { mutate: patchWix } = useMutation({
     mutationFn: async (body: {
-      appId?: string;
+      siteId?: string;
       publicKey?: string;
       privateApiKey?: string;
     }) => {
@@ -93,12 +93,12 @@ function WixIntegrationShell() {
 
   const configValue = useMemo(
     () => ({
-      appId: wixQuery.data?.appId ?? null,
+      siteId: wixQuery.data?.siteId ?? null,
       publicKey: wixQuery.data?.publicKey ?? null,
       privateApiKeyPrefix: wixQuery.data?.privateApiKeyPrefix ?? null,
       isLoading: wixQuery.isPending,
-      setAppId: (value: string) => {
-        patchWix({ appId: value });
+      setSiteId: (value: string) => {
+        patchWix({ siteId: value });
       },
       setPublicKey: (value: string) => {
         patchWix({ publicKey: value });

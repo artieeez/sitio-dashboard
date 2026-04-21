@@ -189,7 +189,7 @@ export const ptBR = {
     configureKeys: "Configurar chaves",
     settingsSheetTitle: "Configuração da integração",
     settingsSheetDescription:
-      "Integração única para todo o ambiente. O ID do app Wix identifica o aplicativo OAuth e é enviado nas chamadas à API (`wix-app-id`). A chave pública é usada nos webhooks do Wix para recebermos eventos e atualizarmos a base de dados. A chave da API (privada) autentica o acesso programático à API do Wix. Apenas um prefixo da chave privada é exibido aqui; os valores completos ficam no servidor.",
+      "Integração única para todo o ambiente. O ID do site Wix (GUID) é enviado nas chamadas à API como cabeçalho `wix-site-id` (ou use a variável `WIX_SITE_ID` no servidor). A chave pública é usada nos webhooks do Wix para recebermos eventos e atualizarmos a base de dados. A chave da API (privada) autentica o acesso programático à API do Wix. Apenas um prefixo da chave privada é exibido aqui; os valores completos ficam no servidor.",
     emptyTable: "Nenhum evento para exibir com os filtros atuais.",
     emptySchoolConsole: "Nenhum evento de escola com os filtros atuais.",
     emptyTripConsole: "Nenhum evento de viagem com os filtros atuais.",
@@ -209,8 +209,8 @@ export const ptBR = {
       integrationEventType: "Tipo de evento",
     },
     keys: {
-      appId: "ID do app Wix",
-      appIdPlaceholder: "Cole o App ID (OAuth Apps no painel Wix)",
+      siteId: "ID do site Wix",
+      siteIdPlaceholder: "Cole o Site ID (GUID do site no painel Wix)",
       publicKey: "Chave pública",
       publicKeyPlaceholder: "Cole a chave pública do site",
       privateKey: "Chave da API (privada)",
