@@ -1,4 +1,4 @@
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, SquarePen } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,10 @@ export function WixIntegrationKeyFields({
   return (
     <div className="flex flex-col gap-4">
       <div className="grid gap-2">
-        <label htmlFor={editingPublic ? publicId : undefined} className="font-medium text-sm">
+        <label
+          htmlFor={editingPublic ? publicId : undefined}
+          className="font-medium text-sm"
+        >
           {ptBR.wixIntegration.keys.publicKey}
         </label>
         {editingPublic ? (
@@ -94,8 +97,8 @@ export function WixIntegrationKeyFields({
             </div>
           </div>
         ) : (
-          <div className="flex min-w-0 items-center gap-2">
-            <div
+          <div className="flex min-w-0 items-start gap-2">
+            <section
               className="border-input bg-muted/40 min-h-9 min-w-0 flex-1 rounded-md border px-3 py-2 font-mono text-sm break-all"
               aria-label={ptBR.wixIntegration.keys.publicKey}
               aria-busy={isLoading}
@@ -109,16 +112,17 @@ export function WixIntegrationKeyFields({
                   {ptBR.wixIntegration.keys.keyNotSet}
                 </span>
               )}
-            </div>
+            </section>
             <Button
               type="button"
               variant="outline"
-              size="sm"
+              size="icon-sm"
               className="shrink-0"
               disabled={isLoading}
+              aria-label={ptBR.wixIntegration.keys.editKey}
               onClick={() => setEditingPublic(true)}
             >
-              {ptBR.wixIntegration.keys.editKey}
+              <SquarePen aria-hidden className="size-4" />
             </Button>
           </div>
         )}
@@ -177,8 +181,8 @@ export function WixIntegrationKeyFields({
             </div>
           </div>
         ) : (
-          <div className="flex min-w-0 items-center gap-2">
-            <div
+          <div className="flex min-w-0 items-start gap-2">
+            <section
               className="border-input bg-muted/40 min-h-9 min-w-0 flex-1 rounded-md border px-3 py-2 font-mono text-sm break-all"
               aria-label={ptBR.wixIntegration.keys.privateKey}
               aria-busy={isLoading}
@@ -192,16 +196,17 @@ export function WixIntegrationKeyFields({
                   {ptBR.wixIntegration.keys.keyNotSet}
                 </span>
               )}
-            </div>
+            </section>
             <Button
               type="button"
               variant="outline"
-              size="sm"
+              size="icon-sm"
               className="shrink-0"
               disabled={isLoading}
+              aria-label={ptBR.wixIntegration.keys.editKey}
               onClick={() => setEditingPrivate(true)}
             >
-              {ptBR.wixIntegration.keys.editKey}
+              <SquarePen aria-hidden className="size-4" />
             </Button>
           </div>
         )}
