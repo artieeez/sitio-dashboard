@@ -134,14 +134,14 @@ export function RichTextEditor(props: {
   }, [editor, disabled]);
 
   useEffect(() => {
-    if (!editor) {
+    if (!editor || disabled) {
       return;
     }
     const current = editor.getHTML();
     if (current !== value) {
       editor.commands.setContent(value || "", { emitUpdate: false });
     }
-  }, [editor, value]);
+  }, [editor, value, disabled]);
 
   const canSink = editor ? editor.can().sinkListItem("listItem") : false;
   const canLift = editor ? editor.can().liftListItem("listItem") : false;

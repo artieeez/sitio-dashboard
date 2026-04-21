@@ -6,6 +6,7 @@ export const wixProductSummarySchema = z.object({
   slug: z.string().optional(),
   description: z.string().nullable().optional(),
   imageUrl: z.string().nullable(),
+  wixMediaFileId: z.string().nullable().optional(),
   productPageUrl: z.string().nullable(),
   defaultExpectedAmountMinor: z.number().int().nullable().optional(),
 });

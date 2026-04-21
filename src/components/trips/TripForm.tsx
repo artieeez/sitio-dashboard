@@ -90,6 +90,8 @@ export function TripForm(props: {
   const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saveCommitted, setSaveCommitted] = useState(false);
+  /** Remount TipTap when description is reset (baseline / product fetch) so `content` matches `value`. */
+  const [descriptionMountKey, setDescriptionMountKey] = useState(0);
 
   const baseline = useMemo(() => tripBaseline(trip, mode), [trip, mode]);
 
@@ -114,6 +116,7 @@ export function TripForm(props: {
     setWixProductSlug(baseline.wixProductSlug ?? "");
     setWixProductPageUrl(baseline.wixProductPageUrl ?? "");
     setError(null);
+    setDescriptionMountKey((k) => k + 1);
   }, [baseline]);
 
   const isDirty = useMemo(() => {
@@ -279,8 +282,9 @@ export function TripForm(props: {
                     const full = wixProductSummarySchema.parse(raw);
                     setTitle(full.name);
                     setDescription(full.description?.trim() ?? "");
+                    setDescriptionMountKey((k) => k + 1);
                     setImageUrl(full.imageUrl ?? "");
-                    setWixMediaFileId(null);
+                    setWixMediaFileId(full.wixMediaFileId?.trim() || null);
                     setWixProductSlug(full.slug ?? "");
                     setWixProductPageUrl(full.productPageUrl ?? "");
                     if (full.defaultExpectedAmountMinor != null) {
@@ -302,6 +306,7 @@ export function TripForm(props: {
                 setWixProductPageUrl("");
                 setTitle("");
                 setDescription("");
+                setDescriptionMountKey((k) => k + 1);
                 setImageUrl("");
                 setWixMediaFileId(null);
                 setDefaultExpectedAmountMinor("");
@@ -341,6 +346,7 @@ export function TripForm(props: {
             <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
               <span>Descrição</span>
               <RichTextEditor
+                key={`trip-desc-${descriptionMountKey}`}
                 value={description}
                 onChange={setDescription}
                 placeholder="Descreva a viagem…"
@@ -383,6 +389,7 @@ export function TripForm(props: {
             <div className="flex min-w-0 flex-col gap-2 md:col-span-2">
               <span className="text-sm">{ptBR.fields.imagePreview}</span>
               <TripImageFilePond
+                key={`${wixProductId ?? "no-product"}-${imageUrl}`}
                 coverImageUrl={imageUrl}
                 disabled={submitting || detailLoading}
                 onUploaded={({ imageUrl: url, wixMediaFileId: id }) => {

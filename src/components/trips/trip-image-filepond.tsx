@@ -11,6 +11,19 @@ registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview);
 
 const ACCEPT = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
+function displayNameFromImageUrl(u: string): string {
+  try {
+    const parts = new URL(u).pathname.split("/").filter(Boolean);
+    const last = parts[parts.length - 1];
+    if (last?.includes(".")) {
+      return last;
+    }
+  } catch {
+    /* ignore */
+  }
+  return "cover.png";
+}
+
 export type TripImageFilePondProps = {
   /** Current cover URL (product image, saved trip, or last upload). Drives FilePond when it changes. */
   coverImageUrl: string;
@@ -28,10 +41,16 @@ export function TripImageFilePond({
   const pondRef = useRef<InstanceType<typeof FilePond> | null>(null);
   const syncingFromParent = useRef(false);
   const lastSyncedCoverUrl = useRef<string | null>(null);
+  /** Avoid duplicate load while one fetch/add is in flight (e.g. React Strict Mode double effect). */
+  const loadInFlightTarget = useRef<string | null>(null);
+  /** Invalidates in-flight fetch/add when `coverImageUrl` changes (avoids stale preview). */
+  const syncGenerationRef = useRef(0);
   const onUploadedRef = useRef(onUploaded);
   onUploadedRef.current = onUploaded;
 
   useEffect(() => {
+    const syncGeneration = ++syncGenerationRef.current;
+
     const apply = (): boolean => {
       const u = coverImageUrl.trim();
       const target = u.length > 0 ? u : null;
@@ -42,18 +61,93 @@ export function TripImageFilePond({
       if (target === lastSyncedCoverUrl.current) {
         return true;
       }
-      lastSyncedCoverUrl.current = target;
+      if (target != null && loadInFlightTarget.current === target) {
+        return true;
+      }
 
       syncingFromParent.current = true;
+
+      if (u.length === 0) {
+        lastSyncedCoverUrl.current = null;
+        loadInFlightTarget.current = null;
+        pond.removeFiles({ revert: false });
+        syncingFromParent.current = false;
+        return true;
+      }
+
+      loadInFlightTarget.current = target;
       pond.removeFiles({ revert: false });
 
-      if (u.length > 0) {
-        void pond.addFile(u).finally(() => {
-          syncingFromParent.current = false;
-        });
-      } else {
+      const isRemote = u.startsWith("https://") || u.startsWith("http://");
+
+      const finishFail = () => {
+        if (syncGeneration !== syncGenerationRef.current) {
+          return;
+        }
+        lastSyncedCoverUrl.current = null;
+        loadInFlightTarget.current = null;
         syncingFromParent.current = false;
+      };
+
+      const finishOk = () => {
+        if (syncGeneration !== syncGenerationRef.current) {
+          return;
+        }
+        lastSyncedCoverUrl.current = target;
+        loadInFlightTarget.current = null;
+        syncingFromParent.current = false;
+      };
+
+      if (!isRemote) {
+        void pond
+          .addFile(u)
+          .then(() => {
+            if (syncGeneration !== syncGenerationRef.current) {
+              return;
+            }
+            finishOk();
+          })
+          .catch(() => {
+            if (syncGeneration !== syncGenerationRef.current) {
+              return;
+            }
+            finishFail();
+          });
+        return true;
       }
+
+      void (async () => {
+        try {
+          const res = await fetch(u, { mode: "cors" });
+          if (syncGeneration !== syncGenerationRef.current) {
+            return;
+          }
+          if (!res.ok) {
+            throw new Error(String(res.status));
+          }
+          const blob = await res.blob();
+          if (syncGeneration !== syncGenerationRef.current) {
+            return;
+          }
+          const mime = blob.type || "image/png";
+          const name = displayNameFromImageUrl(u);
+          const file = new File([blob], name, { type: mime });
+
+          /** `type: 'local'` → FileOrigin.LOCAL so instantUpload does not run server.process (preview only). */
+          await pond.addFile(file, { type: "local" });
+          if (syncGeneration !== syncGenerationRef.current) {
+            pond.removeFiles({ revert: false });
+            return;
+          }
+          finishOk();
+        } catch {
+          if (syncGeneration !== syncGenerationRef.current) {
+            return;
+          }
+          finishFail();
+        }
+      })();
+
       return true;
     };
 
@@ -68,30 +162,6 @@ export function TripImageFilePond({
 
   const server = useMemo(
     () => ({
-      load: (
-        source: string,
-        loadBlob: (blob: Blob) => void,
-        error: (message: string) => void,
-        _progress: (computable: boolean, loaded: number, total: number) => void,
-        abort: () => void,
-      ) => {
-        const ac = new AbortController();
-        fetch(source, { mode: "cors", signal: ac.signal })
-          .then((r) => {
-            if (!r.ok) {
-              throw new Error(String(r.status));
-            }
-            return r.blob();
-          })
-          .then((blob) => loadBlob(blob))
-          .catch(() => error("Não foi possível carregar a imagem."));
-        return {
-          abort: () => {
-            ac.abort();
-            abort();
-          },
-        };
-      },
       process: (
         _fieldName: string,
         file: Blob & { name?: string },
