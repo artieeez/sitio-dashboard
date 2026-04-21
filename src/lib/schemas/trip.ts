@@ -34,9 +34,11 @@ export const tripCreateSchema = z.object({
   active: z.boolean().optional(),
 });
 
-/** PATCH: description, active, and cover image (product-linked fields are immutable). */
+/** PATCH: trip copy, pricing default, active, and cover image (Wix product id stays immutable). */
 export const tripUpdateSchema = z.object({
   description: z.string().nullable().optional(),
+  title: z.string().max(2000).nullable().optional(),
+  defaultExpectedAmountMinor: moneyMinorSchema.nullable().optional(),
   active: z.boolean().optional(),
   imageUrl: z.string().nullable().optional(),
   wixMediaFileId: z.string().nullable().optional(),

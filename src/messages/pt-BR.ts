@@ -43,6 +43,9 @@ export const ptBR = {
     wixProductSearchPlaceholder: "Buscar produto pelo nome…",
     wixProductClear: "Remover produto",
     wixProductPageUrl: "URL da página do produto",
+    /** Trip form: `defaultExpectedAmountMinor` is stored as integer centavos. */
+    defaultExpectedAmountMinorHint:
+      "Digite o valor em centavos inteiros (ex.: 15000 = R$ 150,00).",
     wixProductId: "ID do produto (Wix)",
     imagePreview: "Imagem",
     schoolUrlForFaviconOnly: "URL da página (apenas favicon)",
@@ -87,6 +90,7 @@ export const ptBR = {
     addPassenger: "Adicionar passageiro",
     edit: "Editar",
     save: "Salvar",
+    copyProductPageUrl: "Copiar URL da página do produto",
     cancel: "Cancelar",
     delete: "Excluir",
     /** School row: soft-delete (inactive, hidden from default list). */

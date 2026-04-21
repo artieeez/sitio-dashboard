@@ -61,7 +61,7 @@ function RichTextHtmlPreview(props: { html: string; emptyLabel: string }) {
     return (
       <div
         role="tabpanel"
-        className="rich-text-preview text-muted-foreground min-h-[7.5rem] px-2 py-1.5 text-sm"
+        className="rich-text-preview text-muted-foreground min-h-[6rem] max-h-full min-w-0 overflow-y-auto px-2 py-1.5 text-sm"
       >
         {emptyLabel}
       </div>
@@ -70,7 +70,7 @@ function RichTextHtmlPreview(props: { html: string; emptyLabel: string }) {
   return (
     <div
       role="tabpanel"
-      className="rich-text-preview min-h-[7.5rem] px-2 py-1.5 text-sm"
+      className="rich-text-preview min-h-[6rem] max-h-full min-w-0 overflow-y-auto px-2 py-1.5 text-sm"
       // biome-ignore lint/security/noDangerouslySetInnerHtml: preview of HTML authored in this field only
       dangerouslySetInnerHTML={{ __html: html }}
     />
@@ -119,7 +119,7 @@ export function RichTextEditor(props: {
     editorProps: {
       attributes: {
         class: cn(
-          "min-h-[7.5rem] max-w-none px-2 py-1.5 text-sm outline-none",
+          "min-h-[5rem] max-w-none px-2 py-1.5 text-sm outline-none",
           editorClassName,
         ),
       },
@@ -149,176 +149,185 @@ export function RichTextEditor(props: {
   return (
     <div
       className={cn(
-        "rich-text-editor-root border-input bg-background flex flex-col overflow-hidden rounded-md border",
+        "rich-text-editor-root border-input bg-background flex max-h-[min(32rem,60vh)] min-h-0 flex-col overflow-hidden rounded-md border",
         className,
       )}
     >
       <Tabs
         value={tab}
         onValueChange={(v) => setTab(v as "edit" | "preview")}
-        className="flex min-h-0 min-w-0 flex-1 flex-col"
+        className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
       >
         <TabsList className="border-input shrink-0 gap-4 border-b px-2">
           <TabsTrigger value="edit">Editar</TabsTrigger>
           <TabsTrigger value="preview">Pré-visualizar</TabsTrigger>
         </TabsList>
 
-        {tab === "preview" ? (
-          <RichTextHtmlPreview html={value} emptyLabel={previewEmptyLabel} />
-        ) : !editor ? (
-          <div
-            role="tabpanel"
-            className="bg-muted/20 min-h-[7.5rem]"
-            aria-busy="true"
-            aria-label="Carregando editor"
-          />
-        ) : (
-          <div
-            role="tabpanel"
-            className={cn(
-              "flex min-h-0 flex-1 flex-col",
-              disabled && "pointer-events-none opacity-60",
-            )}
-          >
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          {tab === "preview" ? (
+            <RichTextHtmlPreview html={value} emptyLabel={previewEmptyLabel} />
+          ) : !editor ? (
             <div
-              className="border-input flex flex-wrap gap-0.5 border-b bg-muted/30 p-1"
-              role="toolbar"
-              aria-label="Formatação"
+              role="tabpanel"
+              className="bg-muted/20 min-h-[6rem] flex-1"
+              aria-busy="true"
+              aria-label="Carregando editor"
+            />
+          ) : (
+            <div
+              role="tabpanel"
+              className={cn(
+                "flex min-h-0 flex-1 flex-col overflow-hidden",
+                disabled && "pointer-events-none opacity-60",
+              )}
             >
-              <ToolbarIconButton
-                label="Negrito"
-                pressed={editor.isActive("bold")}
-                disabled={disabled}
-                onClick={() => editor.chain().focus().toggleBold().run()}
+              <div
+                className="border-input flex shrink-0 flex-wrap gap-0.5 border-b bg-muted/30 p-1"
+                role="toolbar"
+                aria-label="Formatação"
               >
-                <Bold className="size-4" aria-hidden />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                label="Itálico"
-                pressed={editor.isActive("italic")}
-                disabled={disabled}
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-              >
-                <Italic className="size-4" aria-hidden />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                label="Sublinhado"
-                pressed={editor.isActive("underline")}
-                disabled={disabled}
-                onClick={() => editor.chain().focus().toggleUnderline().run()}
-              >
-                <Underline className="size-4" aria-hidden />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                label="Link"
-                pressed={editor.isActive("link")}
-                disabled={disabled}
-                onClick={() => {
-                  const previous =
-                    (editor.getAttributes("link").href as string | undefined) ??
-                    "";
-                  const next = window.prompt(
-                    "URL do link",
-                    previous || "https://",
-                  );
-                  if (next === null) {
-                    return;
-                  }
-                  if (next.trim() === "") {
+                <ToolbarIconButton
+                  label="Negrito"
+                  pressed={editor.isActive("bold")}
+                  disabled={disabled}
+                  onClick={() => editor.chain().focus().toggleBold().run()}
+                >
+                  <Bold className="size-4" aria-hidden />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label="Itálico"
+                  pressed={editor.isActive("italic")}
+                  disabled={disabled}
+                  onClick={() => editor.chain().focus().toggleItalic().run()}
+                >
+                  <Italic className="size-4" aria-hidden />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label="Sublinhado"
+                  pressed={editor.isActive("underline")}
+                  disabled={disabled}
+                  onClick={() => editor.chain().focus().toggleUnderline().run()}
+                >
+                  <Underline className="size-4" aria-hidden />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label="Link"
+                  pressed={editor.isActive("link")}
+                  disabled={disabled}
+                  onClick={() => {
+                    const previous =
+                      (editor.getAttributes("link").href as
+                        | string
+                        | undefined) ?? "";
+                    const next = window.prompt(
+                      "URL do link",
+                      previous || "https://",
+                    );
+                    if (next === null) {
+                      return;
+                    }
+                    if (next.trim() === "") {
+                      editor
+                        .chain()
+                        .focus()
+                        .extendMarkRange("link")
+                        .unsetLink()
+                        .run();
+                      return;
+                    }
                     editor
                       .chain()
                       .focus()
                       .extendMarkRange("link")
-                      .unsetLink()
+                      .setLink({ href: next.trim() })
                       .run();
-                    return;
-                  }
-                  editor
-                    .chain()
-                    .focus()
-                    .extendMarkRange("link")
-                    .setLink({ href: next.trim() })
-                    .run();
-                }}
-              >
-                <Link2 className="size-4" aria-hidden />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                label="Lista com marcadores"
-                pressed={editor.isActive("bulletList")}
-                disabled={disabled}
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
-              >
-                <List className="size-4" aria-hidden />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                label="Lista numerada"
-                pressed={editor.isActive("orderedList")}
-                disabled={disabled}
-                onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              >
-                <ListOrdered className="size-4" aria-hidden />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                label="Aumentar recuo"
-                disabled={disabled || !canSink}
-                onClick={() =>
-                  editor.chain().focus().sinkListItem("listItem").run()
-                }
-              >
-                <IndentIncrease className="size-4" aria-hidden />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                label="Diminuir recuo"
-                disabled={disabled || !canLift}
-                onClick={() =>
-                  editor.chain().focus().liftListItem("listItem").run()
-                }
-              >
-                <IndentDecrease className="size-4" aria-hidden />
-              </ToolbarIconButton>
-              <label className="ml-1 flex cursor-pointer items-center gap-1">
-                <span className="sr-only">Cor do texto</span>
-                <input
-                  type="color"
-                  aria-label="Cor do texto"
-                  disabled={disabled}
-                  className="border-input size-8 cursor-pointer rounded border bg-transparent p-0.5 disabled:cursor-not-allowed"
-                  value={
-                    (editor.getAttributes("textStyle").color as
-                      | string
-                      | undefined) || "#000000"
-                  }
-                  onChange={(e) => {
-                    editor.chain().focus().setColor(e.target.value).run();
                   }}
-                />
-              </label>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-xs"
-                disabled={disabled}
-                onClick={() => editor.chain().focus().unsetColor().run()}
-              >
-                Limpar cor
-              </Button>
-              {DEFAULT_COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  title={c}
+                >
+                  <Link2 className="size-4" aria-hidden />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label="Lista com marcadores"
+                  pressed={editor.isActive("bulletList")}
                   disabled={disabled}
-                  className="border-input size-6 shrink-0 rounded border disabled:opacity-50"
-                  style={{ backgroundColor: c }}
-                  onClick={() => editor.chain().focus().setColor(c).run()}
-                />
-              ))}
+                  onClick={() =>
+                    editor.chain().focus().toggleBulletList().run()
+                  }
+                >
+                  <List className="size-4" aria-hidden />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label="Lista numerada"
+                  pressed={editor.isActive("orderedList")}
+                  disabled={disabled}
+                  onClick={() =>
+                    editor.chain().focus().toggleOrderedList().run()
+                  }
+                >
+                  <ListOrdered className="size-4" aria-hidden />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label="Aumentar recuo"
+                  disabled={disabled || !canSink}
+                  onClick={() =>
+                    editor.chain().focus().sinkListItem("listItem").run()
+                  }
+                >
+                  <IndentIncrease className="size-4" aria-hidden />
+                </ToolbarIconButton>
+                <ToolbarIconButton
+                  label="Diminuir recuo"
+                  disabled={disabled || !canLift}
+                  onClick={() =>
+                    editor.chain().focus().liftListItem("listItem").run()
+                  }
+                >
+                  <IndentDecrease className="size-4" aria-hidden />
+                </ToolbarIconButton>
+                <label className="ml-1 flex cursor-pointer items-center gap-1">
+                  <span className="sr-only">Cor do texto</span>
+                  <input
+                    type="color"
+                    aria-label="Cor do texto"
+                    disabled={disabled}
+                    className="border-input size-8 cursor-pointer rounded border bg-transparent p-0.5 disabled:cursor-not-allowed"
+                    value={
+                      (editor.getAttributes("textStyle").color as
+                        | string
+                        | undefined) || "#000000"
+                    }
+                    onChange={(e) => {
+                      editor.chain().focus().setColor(e.target.value).run();
+                    }}
+                  />
+                </label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-xs"
+                  disabled={disabled}
+                  onClick={() => editor.chain().focus().unsetColor().run()}
+                >
+                  Limpar cor
+                </Button>
+                {DEFAULT_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    title={c}
+                    disabled={disabled}
+                    className="border-input size-6 shrink-0 rounded border disabled:opacity-50"
+                    style={{ backgroundColor: c }}
+                    onClick={() => editor.chain().focus().setColor(c).run()}
+                  />
+                ))}
+              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <EditorContent editor={editor} />
+              </div>
             </div>
-            <EditorContent editor={editor} />
-          </div>
-        )}
+          )}
+        </div>
       </Tabs>
     </div>
   );

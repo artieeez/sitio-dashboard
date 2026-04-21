@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Check, Copy, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
 
 import { TripImageFilePond } from "@/components/trips/trip-image-filepond";
 import { WixProductAutocomplete } from "@/components/trips/wix-product-autocomplete";
+import { Button } from "@/components/ui/button";
 import { FormFooter } from "@/components/ui/form-footer";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
@@ -91,6 +92,7 @@ export function TripForm(props: {
   const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saveCommitted, setSaveCommitted] = useState(false);
+  const [pageUrlCopied, setPageUrlCopied] = useState(false);
   /** Remount TipTap when description is reset (baseline / product fetch) so `content` matches `value`. */
   const [descriptionMountKey, setDescriptionMountKey] = useState(0);
 
@@ -190,6 +192,8 @@ export function TripForm(props: {
       } else if (trip) {
         const body = tripUpdateSchema.parse({
           description: normalizeRichTextForSave(description),
+          title: title.trim() || null,
+          defaultExpectedAmountMinor: minor,
           active: trip.active,
           imageUrl: imageUrl.trim() || null,
           wixMediaFileId: wixMediaFileId?.trim() || null,
@@ -216,7 +220,6 @@ export function TripForm(props: {
 
   const fieldClass =
     "w-full min-w-0 rounded border border-input bg-background px-2 py-1";
-  const readOnlyFieldClass = `${fieldClass} cursor-not-allowed bg-muted/60 text-muted-foreground`;
 
   /** Edit never waits on school fetch; create waits for Wix collection check. */
   const schoolReady = mode === "edit" || schoolQuery.isSuccess;
@@ -270,6 +273,7 @@ export function TripForm(props: {
               }
               disabled={submitting || detailLoading}
               onSelect={(s) => {
+                setPageUrlCopied(false);
                 setWixProductId(s.id);
                 setPickedName(s.name);
                 setTitle(s.name);
@@ -301,6 +305,7 @@ export function TripForm(props: {
                 })();
               }}
               onClear={() => {
+                setPageUrlCopied(false);
                 setWixProductId(null);
                 setPickedName(null);
                 setWixProductSlug("");
@@ -327,25 +332,42 @@ export function TripForm(props: {
             <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
               <span>{ptBR.fields.defaultExpectedAmount}</span>
               <input
-                className={readOnlyFieldClass}
-                readOnly
-                aria-readonly="true"
-                value={formatMinorStringAsBrl(defaultExpectedAmountMinor)}
-                placeholder="—"
+                className={fieldClass}
+                inputMode="numeric"
+                autoComplete="off"
+                value={defaultExpectedAmountMinor}
+                onChange={(e) => {
+                  setDefaultExpectedAmountMinor(
+                    e.target.value.replace(/\D/g, ""),
+                  );
+                }}
+                placeholder="0"
                 title={
                   defaultExpectedAmountMinor.trim() === ""
                     ? undefined
                     : `${defaultExpectedAmountMinor.trim()} centavos`
                 }
               />
+              <span className="text-muted-foreground text-xs">
+                {ptBR.fields.defaultExpectedAmountMinorHint}
+                {defaultExpectedAmountMinor.trim() !== "" &&
+                !Number.isNaN(Number(defaultExpectedAmountMinor)) ? (
+                  <>
+                    {" "}
+                    <span className="font-medium text-foreground">
+                      ≈ {formatMinorStringAsBrl(defaultExpectedAmountMinor)}
+                    </span>
+                  </>
+                ) : null}
+              </span>
             </label>
             <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
               <span>{ptBR.fields.title}</span>
               <input
-                className={readOnlyFieldClass}
-                readOnly
-                aria-readonly="true"
+                className={fieldClass}
                 value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={2000}
               />
             </label>
             <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
@@ -376,14 +398,42 @@ export function TripForm(props: {
                 <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
                   <span>{ptBR.fields.wixProductPageUrl}</span>
                   {wixProductPageUrl.trim().length > 0 ? (
-                    <a
-                      href={wixProductPageUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-primary text-sm underline"
-                    >
-                      {wixProductPageUrl}
-                    </a>
+                    <div className="flex min-w-0 items-start gap-2">
+                      <a
+                        href={wixProductPageUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary min-w-0 flex-1 break-all text-sm underline"
+                      >
+                        {wixProductPageUrl}
+                      </a>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="shrink-0"
+                        aria-label={ptBR.actions.copyProductPageUrl}
+                        title={ptBR.actions.copyProductPageUrl}
+                        onClick={() => {
+                          void navigator.clipboard
+                            .writeText(wixProductPageUrl.trim())
+                            .then(() => {
+                              setPageUrlCopied(true);
+                              window.setTimeout(
+                                () => setPageUrlCopied(false),
+                                1600,
+                              );
+                            })
+                            .catch(() => {});
+                        }}
+                      >
+                        {pageUrlCopied ? (
+                          <Check className="size-4" aria-hidden />
+                        ) : (
+                          <Copy className="size-4" aria-hidden />
+                        )}
+                      </Button>
+                    </div>
                   ) : (
                     <span className="text-muted-foreground text-sm">—</span>
                   )}

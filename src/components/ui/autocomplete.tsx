@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import { type ReactNode, useId } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,11 +20,12 @@ export type AutocompleteProps<T> = {
   search: string;
   onSearchChange: (value: string) => void;
   onFocus?: () => void;
-  /** When true, the listbox is rendered (loading / results / empty / error). */
+  /** When true, the listbox may be shown (hidden while `isLoading`). */
   showDropdown: boolean;
   items: T[];
   isLoading?: boolean;
   isError?: boolean;
+  /** @deprecated Loading is shown as a spinner in the input; not used in the listbox. */
   loadingMessage?: ReactNode;
   errorMessage?: ReactNode;
   emptyMessage?: ReactNode;
@@ -49,7 +51,6 @@ export function Autocomplete<T>(props: AutocompleteProps<T>) {
     items,
     isLoading,
     isError,
-    loadingMessage = "…",
     errorMessage = "Erro ao buscar.",
     emptyMessage = "Nenhum resultado.",
     getOptionKey,
@@ -61,6 +62,7 @@ export function Autocomplete<T>(props: AutocompleteProps<T>) {
 
   const listId = useId();
   const searchId = useId();
+  const listOpen = Boolean(showDropdown && !isLoading);
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
@@ -89,33 +91,41 @@ export function Autocomplete<T>(props: AutocompleteProps<T>) {
         ) : (
           <>
             <label htmlFor={searchId}>{label}</label>
-            <input
-              id={searchId}
-              className={cn(
-                "rounded border border-input bg-background px-2 py-1",
-                inputClassName,
-              )}
-              value={search}
-              onChange={(e) => {
-                onSearchChange(e.target.value);
-              }}
-              onFocus={() => onFocus?.()}
-              placeholder={placeholder}
-              disabled={disabled}
-              aria-autocomplete="list"
-              aria-controls={showDropdown ? listId : undefined}
-            />
-            {showDropdown ? (
+            <div className="relative">
+              <input
+                id={searchId}
+                className={cn(
+                  "w-full rounded border border-input bg-background py-1 pl-2",
+                  isLoading ? "pr-9" : "pr-2",
+                  inputClassName,
+                )}
+                value={search}
+                onChange={(e) => {
+                  onSearchChange(e.target.value);
+                }}
+                onFocus={() => onFocus?.()}
+                placeholder={placeholder}
+                disabled={disabled}
+                aria-autocomplete="list"
+                aria-busy={isLoading ? true : undefined}
+                aria-controls={listOpen ? listId : undefined}
+              />
+              {isLoading ? (
+                <span
+                  className="text-muted-foreground pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
+                  aria-hidden
+                >
+                  <Loader2 className="size-4 animate-spin" />
+                </span>
+              ) : null}
+            </div>
+            {listOpen ? (
               <div
                 id={listId}
                 role="listbox"
                 className="border-input bg-popover z-10 max-h-60 overflow-auto rounded-md border shadow-md"
               >
-                {isLoading ? (
-                  <div className="text-muted-foreground px-3 py-2 text-sm">
-                    {loadingMessage}
-                  </div>
-                ) : isError ? (
+                {isError ? (
                   <div className="text-destructive px-3 py-2 text-sm">
                     {errorMessage}
                   </div>
