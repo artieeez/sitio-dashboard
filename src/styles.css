@@ -129,35 +129,46 @@
   }
 }
 
-/* Tiptap / ProseMirror (trip description and other rich fields) */
-.rich-text-editor-root .ProseMirror {
+/* Tiptap / ProseMirror + HTML preview (trip description and other rich fields) */
+.rich-text-editor-root .ProseMirror,
+.rich-text-editor-root .rich-text-preview {
   min-height: 7.5rem;
+}
+
+.rich-text-editor-root .ProseMirror {
   outline: none;
 }
 
-.rich-text-editor-root .ProseMirror p {
+.rich-text-editor-root .ProseMirror p,
+.rich-text-editor-root .rich-text-preview p {
   margin: 0.35rem 0;
 }
 
-.rich-text-editor-root .ProseMirror p:first-child {
+.rich-text-editor-root .ProseMirror p:first-child,
+.rich-text-editor-root .rich-text-preview p:first-child {
   margin-top: 0;
 }
 
-.rich-text-editor-root .ProseMirror p:last-child {
+.rich-text-editor-root .ProseMirror p:last-child,
+.rich-text-editor-root .rich-text-preview p:last-child {
   margin-bottom: 0;
 }
 
 .rich-text-editor-root .ProseMirror ul,
-.rich-text-editor-root .ProseMirror ol {
+.rich-text-editor-root .ProseMirror ol,
+.rich-text-editor-root .rich-text-preview ul,
+.rich-text-editor-root .rich-text-preview ol {
   margin: 0.35rem 0;
   padding-left: 1.35rem;
 }
 
-.rich-text-editor-root .ProseMirror li {
+.rich-text-editor-root .ProseMirror li,
+.rich-text-editor-root .rich-text-preview li {
   margin: 0.15rem 0;
 }
 
-.rich-text-editor-root .ProseMirror a {
+.rich-text-editor-root .ProseMirror a,
+.rich-text-editor-root .rich-text-preview a {
   color: var(--primary);
   text-decoration: underline;
   text-underline-offset: 2px;
