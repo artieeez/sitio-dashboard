@@ -5,9 +5,11 @@ import { flushSync } from "react-dom";
 
 import { WixProductAutocomplete } from "@/components/trips/wix-product-autocomplete";
 import { FormFooter } from "@/components/ui/form-footer";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiJson, apiPatchJson, apiPostJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
+import { normalizeRichTextForSave } from "@/lib/rich-text";
 import { schoolSchema } from "@/lib/schemas/school";
 import type { Trip } from "@/lib/schemas/trip";
 import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
@@ -165,14 +167,14 @@ export function TripForm(props: {
           wixProductPageUrl: wixProductPageUrl.trim() || null,
           defaultExpectedAmountMinor: minor,
           title: title.trim() || null,
-          description: description.trim() || null,
+          description: normalizeRichTextForSave(description),
           imageUrl: imageUrl.trim() || null,
           active: true,
         });
         await apiPostJson(`/schools/${schoolId}/trips`, body);
       } else if (trip) {
         const body = tripUpdateSchema.parse({
-          description: description.trim() || null,
+          description: normalizeRichTextForSave(description),
           active: trip.active,
         });
         await apiPatchJson(`/trips/${trip.id}`, body);
@@ -320,14 +322,15 @@ export function TripForm(props: {
                 value={title}
               />
             </label>
-            <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+            <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
               <span>Descrição</span>
-              <textarea
-                className={`min-h-[4rem] ${fieldClass}`}
+              <RichTextEditor
                 value={description}
-                onChange={(ev) => setDescription(ev.target.value)}
+                onChange={setDescription}
+                placeholder="Descreva a viagem…"
+                disabled={submitting || detailLoading}
               />
-            </label>
+            </div>
 
             {mode === "create" && wixProductId ? (
               <>
