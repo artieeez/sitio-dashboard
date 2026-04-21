@@ -335,31 +335,23 @@ export function TripForm(props: {
                 className={fieldClass}
                 inputMode="numeric"
                 autoComplete="off"
-                value={defaultExpectedAmountMinor}
+                value={
+                  defaultExpectedAmountMinor.trim() === ""
+                    ? ""
+                    : formatMinorStringAsBrl(defaultExpectedAmountMinor)
+                }
                 onChange={(e) => {
                   setDefaultExpectedAmountMinor(
                     e.target.value.replace(/\D/g, ""),
                   );
                 }}
-                placeholder="0"
+                placeholder="R$ 0,00"
                 title={
                   defaultExpectedAmountMinor.trim() === ""
                     ? undefined
                     : `${defaultExpectedAmountMinor.trim()} centavos`
                 }
               />
-              <span className="text-muted-foreground text-xs">
-                {ptBR.fields.defaultExpectedAmountMinorHint}
-                {defaultExpectedAmountMinor.trim() !== "" &&
-                !Number.isNaN(Number(defaultExpectedAmountMinor)) ? (
-                  <>
-                    {" "}
-                    <span className="font-medium text-foreground">
-                      ≈ {formatMinorStringAsBrl(defaultExpectedAmountMinor)}
-                    </span>
-                  </>
-                ) : null}
-              </span>
             </label>
             <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
               <span>{ptBR.fields.title}</span>
