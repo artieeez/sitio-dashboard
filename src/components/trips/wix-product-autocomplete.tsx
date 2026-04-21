@@ -23,7 +23,8 @@ export function WixProductAutocomplete(props: {
   const { schoolId, valueId, valueName, disabled, onSelect, onClear } = props;
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const debouncedSearch = useDebouncedValue(search, DEBOUNCE_MS);
+  const debounceMs = search.trim() ? DEBOUNCE_MS : 0;
+  const debouncedSearch = useDebouncedValue(search, debounceMs);
 
   const acQuery = useQuery({
     queryKey: ["wix-product-autocomplete", schoolId, debouncedSearch],
@@ -33,11 +34,11 @@ export function WixProductAutocomplete(props: {
       );
       return wixProductAutocompleteResponseSchema.parse(raw);
     },
-    enabled: !disabled && debouncedSearch.trim().length >= 1 && open,
+    enabled: !disabled && open,
   });
 
   const items = acQuery.data?.products ?? [];
-  const showDropdown = open && debouncedSearch.trim().length >= 1;
+  const showDropdown = open;
 
   const selected =
     valueId && (valueName || valueId)
@@ -61,7 +62,7 @@ export function WixProductAutocomplete(props: {
       search={search}
       onSearchChange={(v) => {
         setSearch(v);
-        setOpen(v.trim().length >= 1);
+        setOpen(true);
       }}
       onFocus={() => setOpen(true)}
       showDropdown={showDropdown}
