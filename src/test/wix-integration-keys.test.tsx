@@ -5,14 +5,17 @@ import { describe, expect, it } from "vitest";
 import { WixIntegrationKeyFields } from "@/components/wix/wix-integration-key-fields";
 
 function KeyFieldsHarness() {
+  const [appId, setAppId] = useState<string | null>(null);
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [privateApiKeyPrefix, setPrivateApiKeyPrefix] = useState<string | null>(
     null,
   );
   return (
     <WixIntegrationKeyFields
+      appId={appId}
       publicKey={publicKey}
       privateApiKeyPrefix={privateApiKeyPrefix}
+      onAppIdChange={setAppId}
       onPublicKeyChange={setPublicKey}
       onPrivateApiKeyChange={(v) => setPrivateApiKeyPrefix(v.slice(0, 10))}
     />
@@ -24,15 +27,15 @@ describe("Wix integration key fields (US2)", () => {
     render(<KeyFieldsHarness />);
 
     const editButtons = screen.getAllByRole("button", { name: /^editar$/i });
-    expect(editButtons).toHaveLength(2);
+    expect(editButtons).toHaveLength(3);
 
     fireEvent.click(editButtons[0]);
     expect(
-      screen.getByPlaceholderText(/chave pública do site/i),
+      screen.getByPlaceholderText(/oauth apps no painel wix/i),
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /cancelar/i }));
-    fireEvent.click(screen.getAllByRole("button", { name: /^editar$/i })[1]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^editar$/i })[2]);
 
     const privateInput = screen.getByPlaceholderText(
       /chave privada ou da api/i,
@@ -43,7 +46,7 @@ describe("Wix integration key fields (US2)", () => {
   it("retains draft values in edit mode after blur", () => {
     render(<KeyFieldsHarness />);
 
-    fireEvent.click(screen.getAllByRole("button", { name: /^editar$/i })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^editar$/i })[1]);
     const pub = screen.getByPlaceholderText(/chave pública do site/i);
     fireEvent.change(pub, { target: { value: "pk-test" } });
     fireEvent.blur(pub);
@@ -53,7 +56,7 @@ describe("Wix integration key fields (US2)", () => {
   it("toggles private field visibility with reveal control", () => {
     render(<KeyFieldsHarness />);
 
-    fireEvent.click(screen.getAllByRole("button", { name: /^editar$/i })[1]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^editar$/i })[2]);
     const priv = screen.getByPlaceholderText(/chave privada ou da api/i);
     expect(priv).toHaveAttribute("type", "password");
 
