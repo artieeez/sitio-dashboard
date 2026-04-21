@@ -41,7 +41,7 @@ export function TripImageFilePond({
   const pondRef = useRef<InstanceType<typeof FilePond> | null>(null);
   const syncingFromParent = useRef(false);
   const lastSyncedCoverUrl = useRef<string | null>(null);
-  /** Avoid duplicate load while one fetch/add is in flight (e.g. React Strict Mode double effect). */
+  /** Tracks which remote URL the current fetch/add belongs to (cleared in finish paths). */
   const loadInFlightTarget = useRef<string | null>(null);
   /** Invalidates in-flight fetch/add when `coverImageUrl` changes (avoids stale preview). */
   const syncGenerationRef = useRef(0);
@@ -59,9 +59,6 @@ export function TripImageFilePond({
         return false;
       }
       if (target === lastSyncedCoverUrl.current) {
-        return true;
-      }
-      if (target != null && loadInFlightTarget.current === target) {
         return true;
       }
 
@@ -120,6 +117,8 @@ export function TripImageFilePond({
         try {
           const res = await fetch(u, { mode: "cors" });
           if (syncGeneration !== syncGenerationRef.current) {
+            loadInFlightTarget.current = null;
+            syncingFromParent.current = false;
             return;
           }
           if (!res.ok) {
@@ -127,6 +126,8 @@ export function TripImageFilePond({
           }
           const blob = await res.blob();
           if (syncGeneration !== syncGenerationRef.current) {
+            loadInFlightTarget.current = null;
+            syncingFromParent.current = false;
             return;
           }
           const mime = blob.type || "image/png";
@@ -137,6 +138,8 @@ export function TripImageFilePond({
           await pond.addFile(file, { type: "local" });
           if (syncGeneration !== syncGenerationRef.current) {
             pond.removeFiles({ revert: false });
+            loadInFlightTarget.current = null;
+            syncingFromParent.current = false;
             return;
           }
           finishOk();
