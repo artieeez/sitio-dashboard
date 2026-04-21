@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { apiDelete, apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import type { School } from "@/lib/schemas/school";
-import { schoolDeactivateEligibilitySchema } from "@/lib/schemas/school";
+import { schoolDeleteEligibilitySchema } from "@/lib/schemas/school";
 import { ptBR } from "@/messages/pt-BR";
 
 function schoolDisplayName(s: School): string {
@@ -37,16 +37,14 @@ export function DeleteSchoolDialog({
   const copy = ptBR.deleteSchoolDialog;
 
   const eligibilityQuery = useQuery({
-    queryKey: queryKeys.schoolDeactivateEligibility(school?.id ?? ""),
+    queryKey: queryKeys.schoolDeleteEligibility(school?.id ?? ""),
     queryFn: async () => {
       const id = school?.id;
       if (!id) {
-        throw new Error("School id required for deactivate eligibility");
+        throw new Error("School id required for delete eligibility");
       }
-      const raw = await apiJson<unknown>(
-        `/schools/${id}/deactivate-eligibility`,
-      );
-      return schoolDeactivateEligibilitySchema.parse(raw);
+      const raw = await apiJson<unknown>(`/schools/${id}/delete-eligibility`);
+      return schoolDeleteEligibilitySchema.parse(raw);
     },
     enabled: open && school != null,
   });
@@ -173,7 +171,7 @@ export function DeleteSchoolDialog({
             disabled={!school || !canConfirm || loading}
             onClick={() => deleteMutation.mutate()}
           >
-            {ptBR.actions.delete}
+            {ptBR.actions.deletePermanently}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -11,6 +11,7 @@ import {
   ListPaneScrollArea,
   ListPaneShell,
 } from "@/components/layout/list-pane-layout";
+import { DeactivateSchoolDialog } from "@/components/schools/deactivate-school-dialog";
 import { DeleteSchoolDialog } from "@/components/schools/delete-school-dialog";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import { buttonVariants } from "@/components/ui/button";
@@ -100,6 +101,8 @@ export function SchoolsDirectorySchoolsTablePane({
     (s) => s.setIncludeInactiveSchools,
   );
 
+  const [schoolPendingDeactivate, setSchoolPendingDeactivate] =
+    useState<School | null>(null);
   const [schoolPendingDelete, setSchoolPendingDelete] = useState<School | null>(
     null,
   );
@@ -258,9 +261,20 @@ export function SchoolsDirectorySchoolsTablePane({
                       label: ptBR.actions.viewTrips,
                       onClick: () => navigateToSchoolTrips(navigate, s.id),
                     },
+                    ...(s.active
+                      ? [
+                          {
+                            id: "deactivate" as const,
+                            label: ptBR.actions.deactivate,
+                            onClick: () => {
+                              setSchoolPendingDeactivate(s);
+                            },
+                          },
+                        ]
+                      : []),
                     {
-                      id: "delete",
-                      label: ptBR.actions.delete,
+                      id: "delete-permanent",
+                      label: ptBR.actions.deletePermanently,
                       destructive: true,
                       onClick: () => {
                         setSchoolPendingDelete(s);
@@ -279,6 +293,16 @@ export function SchoolsDirectorySchoolsTablePane({
 
   return (
     <ListPaneShell>
+      <DeactivateSchoolDialog
+        open={schoolPendingDeactivate != null}
+        onOpenChange={(next) => {
+          if (!next) {
+            setSchoolPendingDeactivate(null);
+          }
+        }}
+        school={schoolPendingDeactivate}
+        includeInactive={includeInactive}
+      />
       <DeleteSchoolDialog
         open={schoolPendingDelete != null}
         onOpenChange={(next) => {

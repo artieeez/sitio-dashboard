@@ -83,6 +83,10 @@ export const ptBR = {
     save: "Salvar",
     cancel: "Cancelar",
     delete: "Excluir",
+    /** School row: soft-delete (inactive, hidden from default list). */
+    deactivate: "Desativar",
+    /** School row: hard-delete from DB (Wix rules apply). */
+    deletePermanently: "Excluir permanentemente",
     restore: "Restaurar",
     paymentHistory: "Pagamentos",
     newPayment: "Novo pagamento",
@@ -141,11 +145,19 @@ export const ptBR = {
     trips: "Nenhuma viagem para esta escola (com os filtros atuais).",
     payments: "Nenhum pagamento registrado.",
   },
-  /** School row delete: AlertDialog + Wix collection product check. */
-  deleteSchoolDialog: {
-    title: "Excluir escola",
+  /** School row: soft deactivate (inactive). */
+  deactivateSchoolDialog: {
+    title: "Desativar escola",
     intro: (name: string) =>
-      `A escola “${name}” será marcada como inativa e sumirá das listas padrão.`,
+      `A escola “${name}” será marcada como inativa e deixará de aparecer na lista padrão.`,
+    hint: "Você ainda pode vê-la com o filtro “Incluir escolas inativas”.",
+    deactivateFailed: "Não foi possível desativar a escola. Tente novamente.",
+  },
+  /** School row hard delete: AlertDialog + Wix collection product check. */
+  deleteSchoolDialog: {
+    title: "Excluir permanentemente",
+    intro: (name: string) =>
+      `A escola “${name}” e todos os dados associados (viagens, passageiros, pagamentos) serão removidos do sistema. Esta ação não pode ser desfeita.`,
     checking: "Verificando a coleção Wix…",
     cannotBlockedProducts: (n: number) =>
       `Não é possível excluir: a coleção Wix desta escola tem ${n} produto(s). Remova os produtos da coleção no Wix e tente novamente.`,
