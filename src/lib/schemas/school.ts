@@ -4,6 +4,7 @@ import { dateTimeStringSchema, uuidStringSchema } from "./common";
 export const schoolSchema = z.object({
   id: uuidStringSchema,
   active: z.boolean(),
+  wixCollectionId: z.string().nullable(),
   url: z.string().nullable(),
   title: z.string().nullable(),
   description: z.string().nullable(),
@@ -14,6 +15,7 @@ export const schoolSchema = z.object({
 });
 
 export const schoolCreateSchema = z.object({
+  wixCollectionId: z.string().nullable().optional(),
   url: z.string().nullable().optional(),
   title: z.string().nullable().optional(),
   description: z.string().nullable().optional(),

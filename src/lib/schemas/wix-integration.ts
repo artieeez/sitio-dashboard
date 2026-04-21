@@ -6,4 +6,6 @@ export const wixIntegrationSettingsSchema = z.object({
   privateApiKeyPrefix: z.string().nullable(),
 });
 
-export type WixIntegrationSettings = z.infer<typeof wixIntegrationSettingsSchema>;
+export type WixIntegrationSettings = z.infer<
+  typeof wixIntegrationSettingsSchema
+>;

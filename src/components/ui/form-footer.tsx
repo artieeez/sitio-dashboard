@@ -30,7 +30,12 @@ export function FormFooter({
   return (
     <div className={cn("flex flex-wrap justify-end gap-2", className)}>
       {onCancel ? (
-        <Button type="button" variant="outline" {...cancelProps} onClick={onCancel}>
+        <Button
+          type="button"
+          variant="outline"
+          {...cancelProps}
+          onClick={onCancel}
+        >
           {cancelLabel ?? ptBR.actions.cancel}
         </Button>
       ) : null}

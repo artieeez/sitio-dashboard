@@ -78,9 +78,7 @@ export function ListTablePaginationToolbar({
           <span className="sr-only">
             {labels.pageOfAria(current, safeTotal)}
           </span>
-          <span aria-hidden="true">
-            {labels.pageOf(current, safeTotal)}
-          </span>
+          <span aria-hidden="true">{labels.pageOf(current, safeTotal)}</span>
         </span>
         <Button
           type="button"

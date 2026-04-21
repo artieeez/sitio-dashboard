@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
+import { useEffect, useRef } from "react";
 
 import { shouldIgnoreForListArrowNavigation } from "@/lib/keyboard-navigation";
 import { cn } from "@/lib/utils";
@@ -66,7 +66,13 @@ export type SortableListTableProps<TRow, TSortKey extends string> = {
   selectionKeyboardNavigation?: SelectionKeyboardNavigation<TRow>;
 };
 
-function SortIcon({ active, direction }: { active: boolean; direction: SortDirection }) {
+function SortIcon({
+  active,
+  direction,
+}: {
+  active: boolean;
+  direction: SortDirection;
+}) {
   if (!active) return null;
   return direction === "asc" ? (
     <ArrowUp className="size-3.5 shrink-0 opacity-70" aria-hidden />
@@ -134,7 +140,9 @@ export function SortableListTable<TRow, TSortKey extends string>({
   }, [nav, getRowKey]);
 
   return (
-    <div className={cn("max-w-full min-h-0 overflow-x-auto rounded-md", className)}>
+    <div
+      className={cn("max-w-full min-h-0 overflow-x-auto rounded-md", className)}
+    >
       <table
         className={cn(
           "w-full border-collapse text-left text-sm",
@@ -186,7 +194,9 @@ export function SortableListTable<TRow, TSortKey extends string>({
               const key = getRowKey(row);
               const selected =
                 (isRowHighlighted?.(row) ?? false) ||
-                (selectedKey != null && selectedKey !== "" && selectedKey === key);
+                (selectedKey != null &&
+                  selectedKey !== "" &&
+                  selectedKey === key);
               const ariaLabel = rowAriaLabel?.(row);
 
               return (
@@ -247,9 +257,7 @@ export function SortableListTable<TRow, TSortKey extends string>({
                               if (idx >= fullRows.length - 1) return;
                               ev.preventDefault();
                               ev.stopPropagation();
-                              onNavigateToRow(
-                                fullRows[fullRows.length - 1],
-                              );
+                              onNavigateToRow(fullRows[fullRows.length - 1]);
                             } else if (ev.key === "Enter" || ev.key === " ") {
                               ev.preventDefault();
                               ev.stopPropagation();
@@ -257,7 +265,9 @@ export function SortableListTable<TRow, TSortKey extends string>({
                             }
                             return;
                           }
-                          const idx = rows.findIndex((r) => getRowKey(r) === id);
+                          const idx = rows.findIndex(
+                            (r) => getRowKey(r) === id,
+                          );
                           if (idx < 0) return;
                           if (ev.key === "ArrowDown") {
                             ev.preventDefault();

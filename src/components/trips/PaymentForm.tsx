@@ -88,6 +88,7 @@ export function PaymentForm(props: {
     [mode, payment, defaultAmountMinor],
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset when payment baseline identity changes
   useEffect(() => {
     setSaveCommitted(false);
   }, [baseline]);

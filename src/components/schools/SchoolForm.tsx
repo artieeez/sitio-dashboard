@@ -1,9 +1,13 @@
+import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+import { WixCollectionAutocomplete } from "@/components/schools/wix-collection-autocomplete";
+import { WixCollectionCard } from "@/components/schools/wix-collection-card";
 import { FormFooter } from "@/components/ui/form-footer";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
-import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
+import { ApiError, apiJson, apiPatchJson, apiPostJson } from "@/lib/api-client";
+import { queryKeys } from "@/lib/query-keys";
 import {
   fetchPageRequestSchema,
   landingMetadataSchema,
@@ -13,6 +17,10 @@ import {
   schoolCreateSchema,
   schoolUpdateSchema,
 } from "@/lib/schemas/school";
+import {
+  type WixCollectionSummary,
+  wixCollectionSummarySchema,
+} from "@/lib/schemas/wix-collection";
 import { ptBR } from "@/messages/pt-BR";
 
 const METADATA_DEBOUNCE_MS = 600;
@@ -20,6 +28,7 @@ const METADATA_DEBOUNCE_MS = 600;
 type Mode = "create" | "edit";
 
 type SchoolFormSnapshot = {
+  wixCollectionId: string | null;
   url: string;
   title: string;
   description: string;
@@ -33,6 +42,7 @@ function schoolBaseline(
 ): SchoolFormSnapshot {
   if (mode === "create" || !school) {
     return {
+      wixCollectionId: null,
       url: "",
       title: "",
       description: "",
@@ -41,6 +51,7 @@ function schoolBaseline(
     };
   }
   return {
+    wixCollectionId: school.wixCollectionId ?? null,
     url: school.url ?? "",
     title: school.title ?? "",
     description: school.description ?? "",
@@ -55,6 +66,11 @@ export function SchoolForm(props: {
   onSuccess: () => void;
 }) {
   const { mode, school, onSuccess } = props;
+  const [wixCollectionId, setWixCollectionId] = useState<string | null>(
+    () => school?.wixCollectionId ?? null,
+  );
+  const [pickedSummary, setPickedSummary] =
+    useState<WixCollectionSummary | null>(null);
   const [url, setUrl] = useState(school?.url ?? "");
   const [title, setTitle] = useState(school?.title ?? "");
   const [description, setDescription] = useState(school?.description ?? "");
@@ -71,6 +87,8 @@ export function SchoolForm(props: {
 
   useEffect(() => {
     setSaveCommitted(false);
+    setWixCollectionId(baseline.wixCollectionId);
+    setPickedSummary(null);
     setUrl(baseline.url);
     setTitle(baseline.title);
     setDescription(baseline.description);
@@ -79,11 +97,27 @@ export function SchoolForm(props: {
     setError(null);
   }, [baseline]);
 
+  const remoteCollectionQuery = useQuery({
+    queryKey: queryKeys.wixCollection(wixCollectionId ?? ""),
+    queryFn: async () => {
+      const id = wixCollectionId;
+      if (!id) throw new Error("missing id");
+      const raw = await apiJson<unknown>(
+        `/integrations/wix/collections/${encodeURIComponent(id)}`,
+      );
+      return wixCollectionSummarySchema.parse(raw);
+    },
+    enabled: mode === "edit" && !!wixCollectionId && !pickedSummary,
+  });
+
+  const displaySummary = pickedSummary ?? remoteCollectionQuery.data ?? null;
+
   const isDirty = useMemo(() => {
     if (saveCommitted) {
       return false;
     }
     const current: SchoolFormSnapshot = {
+      wixCollectionId,
       url,
       title,
       description,
@@ -91,7 +125,16 @@ export function SchoolForm(props: {
       faviconUrl,
     };
     return JSON.stringify(current) !== JSON.stringify(baseline);
-  }, [saveCommitted, baseline, url, title, description, imageUrl, faviconUrl]);
+  }, [
+    saveCommitted,
+    baseline,
+    wixCollectionId,
+    url,
+    title,
+    description,
+    imageUrl,
+    faviconUrl,
+  ]);
 
   useReportWorkspaceDirty(isDirty);
 
@@ -129,15 +172,6 @@ export function SchoolForm(props: {
             return;
           }
           const meta = landingMetadataSchema.parse(raw);
-          if (meta.title) {
-            setTitle(meta.title);
-          }
-          if (meta.description) {
-            setDescription(meta.description);
-          }
-          if (meta.imageUrl) {
-            setImageUrl(meta.imageUrl);
-          }
           if (meta.faviconUrl) {
             setFaviconUrl(meta.faviconUrl);
           }
@@ -150,10 +184,10 @@ export function SchoolForm(props: {
           }
           if (e instanceof ApiError && e.status === 502) {
             setError(
-              "Não foi possível buscar a página. Preencha os campos manualmente.",
+              "Não foi possível buscar a página. Preencha o favicon manualmente.",
             );
           } else {
-            setError("Falha ao buscar metadados.");
+            setError("Falha ao buscar favicon.");
           }
         } finally {
           if (
@@ -182,6 +216,7 @@ export function SchoolForm(props: {
     try {
       if (mode === "create") {
         const body = schoolCreateSchema.parse({
+          wixCollectionId: wixCollectionId?.trim() || null,
           url: url.trim() || null,
           title: title.trim() || null,
           description: description.trim() || null,
@@ -192,6 +227,7 @@ export function SchoolForm(props: {
         await apiPostJson("/schools", body);
       } else if (school) {
         const body = schoolUpdateSchema.parse({
+          wixCollectionId: wixCollectionId?.trim() || null,
           url: url.trim() || null,
           title: title.trim() || null,
           description: description.trim() || null,
@@ -226,9 +262,35 @@ export function SchoolForm(props: {
           {error}
         </p>
       ) : null}
+
+      <WixCollectionAutocomplete
+        valueId={wixCollectionId}
+        valueName={
+          pickedSummary?.name ??
+          remoteCollectionQuery.data?.name ??
+          (wixCollectionId && remoteCollectionQuery.isPending ? "…" : null)
+        }
+        disabled={submitting}
+        onSelect={(s) => {
+          setWixCollectionId(s.id);
+          setPickedSummary(s);
+          setTitle(s.name);
+          setDescription(s.description?.trim() ?? "");
+          setImageUrl(s.imageUrl ?? "");
+        }}
+        onClear={() => {
+          setWixCollectionId(null);
+          setPickedSummary(null);
+        }}
+      />
+
+      {wixCollectionId && displaySummary ? (
+        <WixCollectionCard summary={displaySummary} />
+      ) : null}
+
       <label className="flex flex-col gap-1 text-sm">
         <span className="flex items-center gap-2">
-          {ptBR.fields.url}
+          {ptBR.fields.schoolUrlForFaviconOnly}
           {metadataLoading ? (
             <Loader2
               className="size-4 shrink-0 animate-spin text-muted-foreground"
@@ -236,7 +298,7 @@ export function SchoolForm(props: {
             />
           ) : null}
           {metadataLoading ? (
-            <span className="sr-only">Carregando dados da página…</span>
+            <span className="sr-only">Carregando favicon…</span>
           ) : null}
         </span>
         <input
@@ -248,7 +310,7 @@ export function SchoolForm(props: {
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
-        <span>Título</span>
+        <span>{ptBR.fields.title}</span>
         <input
           className="rounded border border-input bg-background px-2 py-1"
           value={title}

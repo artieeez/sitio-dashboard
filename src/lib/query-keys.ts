@@ -15,4 +15,7 @@ export const queryKeys = {
     ["passengerAggregates", tripId, { includeRemoved }] as const,
   /** Tenant-wide Wix keys (public key full; private key first 10 chars only in API). */
   wixIntegration: () => ["wix-integration"] as const,
+  /** Single Wix Stores collection summary (`GET .../integrations/wix/collections/:id`). */
+  wixCollection: (collectionId: string) =>
+    ["wix-collection", collectionId] as const,
 };

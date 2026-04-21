@@ -3,8 +3,8 @@ import { Pencil, Share2, Trash2, Users } from "lucide-react";
 import { useMemo } from "react";
 
 import {
-  type RowKebabMenuItem,
   RowKebabMenu,
+  type RowKebabMenuItem,
 } from "@/components/ui/row-kebab-menu";
 import { passengersListLink, tripSummaryLink } from "@/lib/trip-payment-links";
 import { ptBR } from "@/messages/pt-BR";

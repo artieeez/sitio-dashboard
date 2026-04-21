@@ -1,8 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import type { Trip } from "@/lib/schemas/trip";
-import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
 import { FormFooter } from "@/components/ui/form-footer";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
@@ -10,6 +8,8 @@ import {
   fetchPageRequestSchema,
   landingMetadataSchema,
 } from "@/lib/schemas/metadata";
+import type { Trip } from "@/lib/schemas/trip";
+import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
 import { ptBR } from "@/messages/pt-BR";
 
 const METADATA_DEBOUNCE_MS = 600;
@@ -143,7 +143,9 @@ export function TripForm(props: {
             setTitle(meta.title);
           }
           if (meta.defaultExpectedAmountMinor != null) {
-            setDefaultExpectedAmountMinor(String(meta.defaultExpectedAmountMinor));
+            setDefaultExpectedAmountMinor(
+              String(meta.defaultExpectedAmountMinor),
+            );
           }
           if (meta.description) {
             setDescription(meta.description);
@@ -311,7 +313,10 @@ export function TripForm(props: {
             onChange={(ev) => setImageUrl(ev.target.value)}
           />
         </label>
-        <FormFooter className="pt-1 md:col-span-2" primaryProps={{ disabled: submitting }}>
+        <FormFooter
+          className="pt-1 md:col-span-2"
+          primaryProps={{ disabled: submitting }}
+        >
           {ptBR.actions.save}
         </FormFooter>
       </div>
