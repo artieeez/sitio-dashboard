@@ -1,3 +1,4 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createFileRoute,
   Outlet,
@@ -5,7 +6,6 @@ import {
   useParams,
   useRouterState,
 } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 
 import { ListDetailLayout } from "@/components/layout/list-detail-layout";
@@ -39,7 +39,10 @@ function WixIntegrationShell() {
   });
 
   const { mutate: patchWix } = useMutation({
-    mutationFn: async (body: { publicKey?: string; privateApiKey?: string }) => {
+    mutationFn: async (body: {
+      publicKey?: string;
+      privateApiKey?: string;
+    }) => {
       const raw = await apiPatchJson<unknown>("/integrations/wix", body);
       return wixIntegrationSettingsSchema.parse(raw);
     },
