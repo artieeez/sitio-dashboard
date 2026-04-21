@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
 
+import { TripImageFilePond } from "@/components/trips/trip-image-filepond";
 import { WixProductAutocomplete } from "@/components/trips/wix-product-autocomplete";
 import { FormFooter } from "@/components/ui/form-footer";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
@@ -23,6 +24,7 @@ type TripFormSnapshot = {
   title: string;
   description: string;
   imageUrl: string;
+  wixMediaFileId: string | null;
   wixProductId: string | null;
   wixProductSlug: string | null;
   wixProductPageUrl: string | null;
@@ -35,6 +37,7 @@ function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
       title: "",
       description: "",
       imageUrl: "",
+      wixMediaFileId: null,
       wixProductId: null,
       wixProductSlug: null,
       wixProductPageUrl: null,
@@ -48,6 +51,7 @@ function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
     title: trip.title ?? "",
     description: trip.description ?? "",
     imageUrl: trip.imageUrl ?? "",
+    wixMediaFileId: trip.wixMediaFileId ?? null,
     wixProductId: trip.wixProductId,
     wixProductSlug: trip.wixProductSlug?.trim() || null,
     wixProductPageUrl: trip.wixProductPageUrl?.trim() || null,
@@ -69,6 +73,9 @@ export function TripForm(props: {
   const [title, setTitle] = useState(trip?.title ?? "");
   const [description, setDescription] = useState(trip?.description ?? "");
   const [imageUrl, setImageUrl] = useState(trip?.imageUrl ?? "");
+  const [wixMediaFileId, setWixMediaFileId] = useState<string | null>(
+    trip?.wixMediaFileId ?? null,
+  );
   const [wixProductId, setWixProductId] = useState<string | null>(
     trip?.wixProductId ?? null,
   );
@@ -101,6 +108,7 @@ export function TripForm(props: {
     setTitle(baseline.title);
     setDescription(baseline.description);
     setImageUrl(baseline.imageUrl);
+    setWixMediaFileId(baseline.wixMediaFileId);
     setWixProductId(baseline.wixProductId);
     setPickedName(null);
     setWixProductSlug(baseline.wixProductSlug ?? "");
@@ -117,6 +125,7 @@ export function TripForm(props: {
       title,
       description,
       imageUrl,
+      wixMediaFileId,
       wixProductId,
       wixProductSlug: wixProductSlug.trim() || null,
       wixProductPageUrl: wixProductPageUrl.trim() || null,
@@ -129,6 +138,7 @@ export function TripForm(props: {
     title,
     description,
     imageUrl,
+    wixMediaFileId,
     wixProductId,
     wixProductSlug,
     wixProductPageUrl,
@@ -169,6 +179,7 @@ export function TripForm(props: {
           title: title.trim() || null,
           description: normalizeRichTextForSave(description),
           imageUrl: imageUrl.trim() || null,
+          wixMediaFileId: wixMediaFileId?.trim() || null,
           active: true,
         });
         await apiPostJson(`/schools/${schoolId}/trips`, body);
@@ -176,6 +187,8 @@ export function TripForm(props: {
         const body = tripUpdateSchema.parse({
           description: normalizeRichTextForSave(description),
           active: trip.active,
+          imageUrl: imageUrl.trim() || null,
+          wixMediaFileId: wixMediaFileId?.trim() || null,
         });
         await apiPatchJson(`/trips/${trip.id}`, body);
       }
@@ -266,6 +279,7 @@ export function TripForm(props: {
                     setTitle(full.name);
                     setDescription(full.description?.trim() ?? "");
                     setImageUrl(full.imageUrl ?? "");
+                    setWixMediaFileId(null);
                     setWixProductSlug(full.slug ?? "");
                     setWixProductPageUrl(full.productPageUrl ?? "");
                     if (full.defaultExpectedAmountMinor != null) {
@@ -288,6 +302,7 @@ export function TripForm(props: {
                 setTitle("");
                 setDescription("");
                 setImageUrl("");
+                setWixMediaFileId(null);
                 setDefaultExpectedAmountMinor("");
               }}
             />
@@ -408,6 +423,17 @@ export function TripForm(props: {
               ) : (
                 <p className="text-muted-foreground text-sm">—</p>
               )}
+              <TripImageFilePond
+                disabled={submitting || detailLoading}
+                onUploaded={({ imageUrl: url, wixMediaFileId: id }) => {
+                  setImageUrl(url);
+                  setWixMediaFileId(id);
+                }}
+                onRemove={() => {
+                  setImageUrl("");
+                  setWixMediaFileId(null);
+                }}
+              />
             </div>
           </>
         ) : null}

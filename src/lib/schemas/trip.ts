@@ -16,6 +16,7 @@ export const tripSchema = z.object({
   title: z.string().nullable(),
   description: z.string().nullable(),
   imageUrl: z.string().nullable(),
+  wixMediaFileId: z.string().nullable(),
   createdAt: dateTimeStringSchema,
   updatedAt: dateTimeStringSchema,
 });
@@ -28,13 +29,16 @@ export const tripCreateSchema = z.object({
   title: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
+  wixMediaFileId: z.string().nullable().optional(),
   active: z.boolean().optional(),
 });
 
-/** PATCH: description and active only (product-linked fields are immutable). */
+/** PATCH: description, active, and cover image (product-linked fields are immutable). */
 export const tripUpdateSchema = z.object({
   description: z.string().nullable().optional(),
   active: z.boolean().optional(),
+  imageUrl: z.string().nullable().optional(),
+  wixMediaFileId: z.string().nullable().optional(),
 });
 
 export const passengerStatusAggregatesSchema = z.object({
