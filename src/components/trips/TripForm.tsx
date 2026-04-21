@@ -9,6 +9,7 @@ import { FormFooter } from "@/components/ui/form-footer";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
 import { ApiError, apiJson, apiPatchJson, apiPostJson } from "@/lib/api-client";
+import { formatMinorStringAsBrl } from "@/lib/brl-minor-format";
 import { queryKeys } from "@/lib/query-keys";
 import { normalizeRichTextForSave } from "@/lib/rich-text";
 import { schoolSchema } from "@/lib/schemas/school";
@@ -329,9 +330,13 @@ export function TripForm(props: {
                 className={readOnlyFieldClass}
                 readOnly
                 aria-readonly="true"
-                inputMode="numeric"
-                value={defaultExpectedAmountMinor}
-                placeholder="ex.: 15000 (= R$ 150,00)"
+                value={formatMinorStringAsBrl(defaultExpectedAmountMinor)}
+                placeholder="—"
+                title={
+                  defaultExpectedAmountMinor.trim() === ""
+                    ? undefined
+                    : `${defaultExpectedAmountMinor.trim()} centavos`
+                }
               />
             </label>
             <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
