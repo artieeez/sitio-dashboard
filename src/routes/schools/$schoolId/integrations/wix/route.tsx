@@ -89,7 +89,7 @@ function WixIntegrationShell() {
 
   const configValue = useMemo(
     () => ({
-      publicKeyPrefix: wixQuery.data?.publicKeyPrefix ?? null,
+      publicKey: wixQuery.data?.publicKey ?? null,
       privateApiKeyPrefix: wixQuery.data?.privateApiKeyPrefix ?? null,
       isLoading: wixQuery.isPending,
       setPublicKey: (value: string) => {

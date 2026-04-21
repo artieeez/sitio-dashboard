@@ -27,7 +27,7 @@ vi.mock("@/lib/api-client", () => ({
   apiJson: vi.fn((path: string) => {
     if (path === "/integrations/wix") {
       return Promise.resolve({
-        publicKeyPrefix: null,
+        publicKey: null,
         privateApiKeyPrefix: null,
       });
     }

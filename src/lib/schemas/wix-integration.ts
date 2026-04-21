@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const wixIntegrationSettingsSchema = z.object({
-  publicKeyPrefix: z.string().nullable(),
+  publicKey: z.string().nullable(),
   privateApiKeyPrefix: z.string().nullable(),
 });
 

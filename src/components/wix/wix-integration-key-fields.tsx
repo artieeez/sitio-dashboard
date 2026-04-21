@@ -6,15 +6,15 @@ import { Input } from "@/components/ui/input";
 import { ptBR } from "@/messages/pt-BR";
 
 export type WixIntegrationKeyFieldsProps = {
-  /** Up to four characters; full key is never sent to the client. */
-  publicKeyPrefix: string | null;
+  /** Full public key as returned by the API (for webhook setup). */
+  publicKey: string | null;
   privateApiKeyPrefix: string | null;
   isLoading?: boolean;
   onPublicKeyChange: (value: string) => void;
   onPrivateApiKeyChange: (value: string) => void;
 };
 
-/** Renders stored prefix plus a censored tail (API only exposes the prefix). */
+/** Private key: prefix plus censored tail (API never returns the full secret). */
 function formatMaskedFromPrefix(prefix: string | null): string {
   if (!prefix) return "";
   const p = prefix.slice(0, 4);
@@ -22,7 +22,7 @@ function formatMaskedFromPrefix(prefix: string | null): string {
 }
 
 export function WixIntegrationKeyFields({
-  publicKeyPrefix,
+  publicKey,
   privateApiKeyPrefix,
   isLoading = false,
   onPublicKeyChange,
@@ -100,8 +100,8 @@ export function WixIntegrationKeyFields({
             >
               {isLoading ? (
                 <div className="bg-muted h-4 max-w-48 animate-pulse rounded" />
-              ) : publicKeyPrefix ? (
-                formatMaskedFromPrefix(publicKeyPrefix)
+              ) : publicKey ? (
+                publicKey
               ) : (
                 <span className="text-muted-foreground">
                   {ptBR.wixIntegration.keys.keyNotSet}

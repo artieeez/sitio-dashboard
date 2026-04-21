@@ -4,8 +4,8 @@ import { createContext, type ReactNode, useContext } from "react";
 export const WIX_CONFIG_SELECTED_KEY = "__wix_configuration__";
 
 export type WixIntegrationConfigContextValue = {
-  /** First chars of stored public key; full key is never held client-side. */
-  publicKeyPrefix: string | null;
+  /** Full public key for webhook signing (returned by the API). */
+  publicKey: string | null;
   privateApiKeyPrefix: string | null;
   isLoading: boolean;
   setPublicKey: (value: string) => void;

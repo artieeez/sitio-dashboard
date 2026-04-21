@@ -5,15 +5,15 @@ import { describe, expect, it } from "vitest";
 import { WixIntegrationKeyFields } from "@/components/wix/wix-integration-key-fields";
 
 function KeyFieldsHarness() {
-  const [publicKeyPrefix, setPublicKeyPrefix] = useState<string | null>(null);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
   const [privateApiKeyPrefix, setPrivateApiKeyPrefix] = useState<string | null>(
     null,
   );
   return (
     <WixIntegrationKeyFields
-      publicKeyPrefix={publicKeyPrefix}
+      publicKey={publicKey}
       privateApiKeyPrefix={privateApiKeyPrefix}
-      onPublicKeyChange={(v) => setPublicKeyPrefix(v.slice(0, 4))}
+      onPublicKeyChange={setPublicKey}
       onPrivateApiKeyChange={(v) => setPrivateApiKeyPrefix(v.slice(0, 4))}
     />
   );
