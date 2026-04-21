@@ -85,6 +85,8 @@ export const ptBR = {
     delete: "Excluir",
     /** School row: soft-delete (inactive, hidden from default list). */
     deactivate: "Desativar",
+    /** School row: re-enable inactive school in default list. */
+    activate: "Ativar",
     /** School row: hard-delete from DB (Wix rules apply). */
     deletePermanently: "Excluir permanentemente",
     restore: "Restaurar",
@@ -152,6 +154,13 @@ export const ptBR = {
       `A escola “${name}” será marcada como inativa e deixará de aparecer na lista padrão.`,
     hint: "Você ainda pode vê-la com o filtro “Incluir escolas inativas”.",
     deactivateFailed: "Não foi possível desativar a escola. Tente novamente.",
+  },
+  /** School row: activate inactive school. */
+  activateSchoolDialog: {
+    title: "Ativar escola",
+    intro: (name: string) =>
+      `A escola “${name}” voltará a aparecer na lista padrão e poderá ser usada normalmente.`,
+    activateFailed: "Não foi possível ativar a escola. Tente novamente.",
   },
   /** School row hard delete: AlertDialog + Wix collection product check. */
   deleteSchoolDialog: {

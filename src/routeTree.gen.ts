@@ -8,663 +8,663 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as SchoolsRouteRouteImport } from './routes/schools/route'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as SchoolsIndexRouteImport } from './routes/schools/index'
-import { Route as SchoolsNewRouteImport } from './routes/schools/new'
-import { Route as TripsTripIdRouteRouteImport } from './routes/trips/$tripId/route'
-import { Route as SchoolsSchoolIdRouteRouteImport } from './routes/schools/$schoolId/route'
-import { Route as SchoolsSchoolIdIndexRouteImport } from './routes/schools/$schoolId/index'
-import { Route as TripsTripIdSummaryRouteImport } from './routes/trips/$tripId/summary'
-import { Route as SchoolsSchoolIdHomeRouteImport } from './routes/schools/$schoolId/home'
-import { Route as SchoolsSchoolIdEditRouteImport } from './routes/schools/$schoolId/edit'
-import { Route as SchoolsSchoolIdTripsRouteRouteImport } from './routes/schools/$schoolId/trips/route'
-import { Route as SchoolsSchoolIdIntegrationsRouteRouteImport } from './routes/schools/$schoolId/integrations/route'
-import { Route as TripsTripIdPassengersIndexRouteImport } from './routes/trips/$tripId/passengers/index'
-import { Route as SchoolsSchoolIdTripsIndexRouteImport } from './routes/schools/$schoolId/trips/index'
-import { Route as TripsTripIdPassengersNewRouteImport } from './routes/trips/$tripId/passengers/new'
-import { Route as SchoolsSchoolIdTripsNewRouteImport } from './routes/schools/$schoolId/trips/new'
-import { Route as SchoolsSchoolIdTripsTripIdRouteRouteImport } from './routes/schools/$schoolId/trips/$tripId/route'
-import { Route as SchoolsSchoolIdIntegrationsWixRouteRouteImport } from './routes/schools/$schoolId/integrations/wix/route'
-import { Route as SchoolsSchoolIdTripsTripIdIndexRouteImport } from './routes/schools/$schoolId/trips/$tripId/index'
-import { Route as SchoolsSchoolIdIntegrationsWixIndexRouteImport } from './routes/schools/$schoolId/integrations/wix/index'
-import { Route as TripsTripIdPassengersPassengerIdEditRouteImport } from './routes/trips/$tripId/passengers/$passengerId/edit'
-import { Route as SchoolsSchoolIdIntegrationsWixConfigurationRouteImport } from './routes/schools/$schoolId/integrations/wix/configuration'
-import { Route as SchoolsSchoolIdIntegrationsWixEventIdRouteImport } from './routes/schools/$schoolId/integrations/wix/$eventId'
-import { Route as TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport } from './routes/trips/$tripId/passengers/$passengerId/payments/index'
-import { Route as SchoolsSchoolIdTripsTripIdPassengersIndexRouteImport } from './routes/schools/$schoolId/trips/$tripId/passengers/index'
-import { Route as TripsTripIdPassengersPassengerIdPaymentsNewRouteImport } from './routes/trips/$tripId/passengers/$passengerId/payments/new'
-import { Route as SchoolsSchoolIdTripsTripIdPassengersNewRouteImport } from './routes/schools/$schoolId/trips/$tripId/passengers/new'
-import { Route as TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport } from './routes/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-import { Route as SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRouteImport } from './routes/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit'
-import { Route as SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRouteImport } from './routes/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/index'
-import { Route as SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRouteImport } from './routes/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new'
-import { Route as SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport } from './routes/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as SchoolsSchoolIdEditRouteImport } from "./routes/schools/$schoolId/edit";
+import { Route as SchoolsSchoolIdHomeRouteImport } from "./routes/schools/$schoolId/home";
+import { Route as SchoolsSchoolIdIndexRouteImport } from "./routes/schools/$schoolId/index";
+import { Route as SchoolsSchoolIdIntegrationsRouteRouteImport } from "./routes/schools/$schoolId/integrations/route";
+import { Route as SchoolsSchoolIdIntegrationsWixEventIdRouteImport } from "./routes/schools/$schoolId/integrations/wix/$eventId";
+import { Route as SchoolsSchoolIdIntegrationsWixConfigurationRouteImport } from "./routes/schools/$schoolId/integrations/wix/configuration";
+import { Route as SchoolsSchoolIdIntegrationsWixIndexRouteImport } from "./routes/schools/$schoolId/integrations/wix/index";
+import { Route as SchoolsSchoolIdIntegrationsWixRouteRouteImport } from "./routes/schools/$schoolId/integrations/wix/route";
+import { Route as SchoolsSchoolIdRouteRouteImport } from "./routes/schools/$schoolId/route";
+import { Route as SchoolsSchoolIdTripsTripIdIndexRouteImport } from "./routes/schools/$schoolId/trips/$tripId/index";
+import { Route as SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRouteImport } from "./routes/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit";
+import { Route as SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport } from "./routes/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
+import { Route as SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRouteImport } from "./routes/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/index";
+import { Route as SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRouteImport } from "./routes/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new";
+import { Route as SchoolsSchoolIdTripsTripIdPassengersIndexRouteImport } from "./routes/schools/$schoolId/trips/$tripId/passengers/index";
+import { Route as SchoolsSchoolIdTripsTripIdPassengersNewRouteImport } from "./routes/schools/$schoolId/trips/$tripId/passengers/new";
+import { Route as SchoolsSchoolIdTripsTripIdRouteRouteImport } from "./routes/schools/$schoolId/trips/$tripId/route";
+import { Route as SchoolsSchoolIdTripsIndexRouteImport } from "./routes/schools/$schoolId/trips/index";
+import { Route as SchoolsSchoolIdTripsNewRouteImport } from "./routes/schools/$schoolId/trips/new";
+import { Route as SchoolsSchoolIdTripsRouteRouteImport } from "./routes/schools/$schoolId/trips/route";
+import { Route as SchoolsIndexRouteImport } from "./routes/schools/index";
+import { Route as SchoolsNewRouteImport } from "./routes/schools/new";
+import { Route as SchoolsRouteRouteImport } from "./routes/schools/route";
+import { Route as TripsTripIdPassengersPassengerIdEditRouteImport } from "./routes/trips/$tripId/passengers/$passengerId/edit";
+import { Route as TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport } from "./routes/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
+import { Route as TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport } from "./routes/trips/$tripId/passengers/$passengerId/payments/index";
+import { Route as TripsTripIdPassengersPassengerIdPaymentsNewRouteImport } from "./routes/trips/$tripId/passengers/$passengerId/payments/new";
+import { Route as TripsTripIdPassengersIndexRouteImport } from "./routes/trips/$tripId/passengers/index";
+import { Route as TripsTripIdPassengersNewRouteImport } from "./routes/trips/$tripId/passengers/new";
+import { Route as TripsTripIdRouteRouteImport } from "./routes/trips/$tripId/route";
+import { Route as TripsTripIdSummaryRouteImport } from "./routes/trips/$tripId/summary";
 
 const SchoolsRouteRoute = SchoolsRouteRouteImport.update({
-  id: '/schools',
-  path: '/schools',
+  id: "/schools",
+  path: "/schools",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const SchoolsIndexRoute = SchoolsIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => SchoolsRouteRoute,
-} as any)
+} as any);
 const SchoolsNewRoute = SchoolsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
+  id: "/new",
+  path: "/new",
   getParentRoute: () => SchoolsRouteRoute,
-} as any)
+} as any);
 const TripsTripIdRouteRoute = TripsTripIdRouteRouteImport.update({
-  id: '/trips/$tripId',
-  path: '/trips/$tripId',
+  id: "/trips/$tripId",
+  path: "/trips/$tripId",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const SchoolsSchoolIdRouteRoute = SchoolsSchoolIdRouteRouteImport.update({
-  id: '/$schoolId',
-  path: '/$schoolId',
+  id: "/$schoolId",
+  path: "/$schoolId",
   getParentRoute: () => SchoolsRouteRoute,
-} as any)
+} as any);
 const SchoolsSchoolIdIndexRoute = SchoolsSchoolIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => SchoolsSchoolIdRouteRoute,
-} as any)
+} as any);
 const TripsTripIdSummaryRoute = TripsTripIdSummaryRouteImport.update({
-  id: '/summary',
-  path: '/summary',
+  id: "/summary",
+  path: "/summary",
   getParentRoute: () => TripsTripIdRouteRoute,
-} as any)
+} as any);
 const SchoolsSchoolIdHomeRoute = SchoolsSchoolIdHomeRouteImport.update({
-  id: '/home',
-  path: '/home',
+  id: "/home",
+  path: "/home",
   getParentRoute: () => SchoolsSchoolIdRouteRoute,
-} as any)
+} as any);
 const SchoolsSchoolIdEditRoute = SchoolsSchoolIdEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
+  id: "/edit",
+  path: "/edit",
   getParentRoute: () => SchoolsSchoolIdRouteRoute,
-} as any)
+} as any);
 const SchoolsSchoolIdTripsRouteRoute =
   SchoolsSchoolIdTripsRouteRouteImport.update({
-    id: '/trips',
-    path: '/trips',
+    id: "/trips",
+    path: "/trips",
     getParentRoute: () => SchoolsSchoolIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdIntegrationsRouteRoute =
   SchoolsSchoolIdIntegrationsRouteRouteImport.update({
-    id: '/integrations',
-    path: '/integrations',
+    id: "/integrations",
+    path: "/integrations",
     getParentRoute: () => SchoolsSchoolIdRouteRoute,
-  } as any)
+  } as any);
 const TripsTripIdPassengersIndexRoute =
   TripsTripIdPassengersIndexRouteImport.update({
-    id: '/passengers/',
-    path: '/passengers/',
+    id: "/passengers/",
+    path: "/passengers/",
     getParentRoute: () => TripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdTripsIndexRoute =
   SchoolsSchoolIdTripsIndexRouteImport.update({
-    id: '/',
-    path: '/',
+    id: "/",
+    path: "/",
     getParentRoute: () => SchoolsSchoolIdTripsRouteRoute,
-  } as any)
+  } as any);
 const TripsTripIdPassengersNewRoute =
   TripsTripIdPassengersNewRouteImport.update({
-    id: '/passengers/new',
-    path: '/passengers/new',
+    id: "/passengers/new",
+    path: "/passengers/new",
     getParentRoute: () => TripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdTripsNewRoute = SchoolsSchoolIdTripsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
+  id: "/new",
+  path: "/new",
   getParentRoute: () => SchoolsSchoolIdTripsRouteRoute,
-} as any)
+} as any);
 const SchoolsSchoolIdTripsTripIdRouteRoute =
   SchoolsSchoolIdTripsTripIdRouteRouteImport.update({
-    id: '/$tripId',
-    path: '/$tripId',
+    id: "/$tripId",
+    path: "/$tripId",
     getParentRoute: () => SchoolsSchoolIdTripsRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdIntegrationsWixRouteRoute =
   SchoolsSchoolIdIntegrationsWixRouteRouteImport.update({
-    id: '/wix',
-    path: '/wix',
+    id: "/wix",
+    path: "/wix",
     getParentRoute: () => SchoolsSchoolIdIntegrationsRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdTripsTripIdIndexRoute =
   SchoolsSchoolIdTripsTripIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
+    id: "/",
+    path: "/",
     getParentRoute: () => SchoolsSchoolIdTripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdIntegrationsWixIndexRoute =
   SchoolsSchoolIdIntegrationsWixIndexRouteImport.update({
-    id: '/',
-    path: '/',
+    id: "/",
+    path: "/",
     getParentRoute: () => SchoolsSchoolIdIntegrationsWixRouteRoute,
-  } as any)
+  } as any);
 const TripsTripIdPassengersPassengerIdEditRoute =
   TripsTripIdPassengersPassengerIdEditRouteImport.update({
-    id: '/passengers/$passengerId/edit',
-    path: '/passengers/$passengerId/edit',
+    id: "/passengers/$passengerId/edit",
+    path: "/passengers/$passengerId/edit",
     getParentRoute: () => TripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdIntegrationsWixConfigurationRoute =
   SchoolsSchoolIdIntegrationsWixConfigurationRouteImport.update({
-    id: '/configuration',
-    path: '/configuration',
+    id: "/configuration",
+    path: "/configuration",
     getParentRoute: () => SchoolsSchoolIdIntegrationsWixRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdIntegrationsWixEventIdRoute =
   SchoolsSchoolIdIntegrationsWixEventIdRouteImport.update({
-    id: '/$eventId',
-    path: '/$eventId',
+    id: "/$eventId",
+    path: "/$eventId",
     getParentRoute: () => SchoolsSchoolIdIntegrationsWixRouteRoute,
-  } as any)
+  } as any);
 const TripsTripIdPassengersPassengerIdPaymentsIndexRoute =
   TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport.update({
-    id: '/passengers/$passengerId/payments/',
-    path: '/passengers/$passengerId/payments/',
+    id: "/passengers/$passengerId/payments/",
+    path: "/passengers/$passengerId/payments/",
     getParentRoute: () => TripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdTripsTripIdPassengersIndexRoute =
   SchoolsSchoolIdTripsTripIdPassengersIndexRouteImport.update({
-    id: '/passengers/',
-    path: '/passengers/',
+    id: "/passengers/",
+    path: "/passengers/",
     getParentRoute: () => SchoolsSchoolIdTripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const TripsTripIdPassengersPassengerIdPaymentsNewRoute =
   TripsTripIdPassengersPassengerIdPaymentsNewRouteImport.update({
-    id: '/passengers/$passengerId/payments/new',
-    path: '/passengers/$passengerId/payments/new',
+    id: "/passengers/$passengerId/payments/new",
+    path: "/passengers/$passengerId/payments/new",
     getParentRoute: () => TripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdTripsTripIdPassengersNewRoute =
   SchoolsSchoolIdTripsTripIdPassengersNewRouteImport.update({
-    id: '/passengers/new',
-    path: '/passengers/new',
+    id: "/passengers/new",
+    path: "/passengers/new",
     getParentRoute: () => SchoolsSchoolIdTripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute =
   TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport.update({
-    id: '/passengers/$passengerId/payments/$paymentId/edit',
-    path: '/passengers/$passengerId/payments/$paymentId/edit',
+    id: "/passengers/$passengerId/payments/$paymentId/edit",
+    path: "/passengers/$passengerId/payments/$paymentId/edit",
     getParentRoute: () => TripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute =
   SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRouteImport.update({
-    id: '/passengers/$passengerId/edit',
-    path: '/passengers/$passengerId/edit',
+    id: "/passengers/$passengerId/edit",
+    path: "/passengers/$passengerId/edit",
     getParentRoute: () => SchoolsSchoolIdTripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute =
   SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRouteImport.update(
     {
-      id: '/passengers/$passengerId/payments/',
-      path: '/passengers/$passengerId/payments/',
+      id: "/passengers/$passengerId/payments/",
+      path: "/passengers/$passengerId/payments/",
       getParentRoute: () => SchoolsSchoolIdTripsTripIdRouteRoute,
     } as any,
-  )
+  );
 const SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute =
   SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRouteImport.update({
-    id: '/passengers/$passengerId/payments/new',
-    path: '/passengers/$passengerId/payments/new',
+    id: "/passengers/$passengerId/payments/new",
+    path: "/passengers/$passengerId/payments/new",
     getParentRoute: () => SchoolsSchoolIdTripsTripIdRouteRoute,
-  } as any)
+  } as any);
 const SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute =
   SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport.update(
     {
-      id: '/passengers/$passengerId/payments/$paymentId/edit',
-      path: '/passengers/$passengerId/payments/$paymentId/edit',
+      id: "/passengers/$passengerId/payments/$paymentId/edit",
+      path: "/passengers/$passengerId/payments/$paymentId/edit",
       getParentRoute: () => SchoolsSchoolIdTripsTripIdRouteRoute,
     } as any,
-  )
+  );
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/schools': typeof SchoolsRouteRouteWithChildren
-  '/schools/$schoolId': typeof SchoolsSchoolIdRouteRouteWithChildren
-  '/trips/$tripId': typeof TripsTripIdRouteRouteWithChildren
-  '/schools/new': typeof SchoolsNewRoute
-  '/schools/': typeof SchoolsIndexRoute
-  '/schools/$schoolId/integrations': typeof SchoolsSchoolIdIntegrationsRouteRouteWithChildren
-  '/schools/$schoolId/trips': typeof SchoolsSchoolIdTripsRouteRouteWithChildren
-  '/schools/$schoolId/edit': typeof SchoolsSchoolIdEditRoute
-  '/schools/$schoolId/home': typeof SchoolsSchoolIdHomeRoute
-  '/trips/$tripId/summary': typeof TripsTripIdSummaryRoute
-  '/schools/$schoolId/': typeof SchoolsSchoolIdIndexRoute
-  '/schools/$schoolId/integrations/wix': typeof SchoolsSchoolIdIntegrationsWixRouteRouteWithChildren
-  '/schools/$schoolId/trips/$tripId': typeof SchoolsSchoolIdTripsTripIdRouteRouteWithChildren
-  '/schools/$schoolId/trips/new': typeof SchoolsSchoolIdTripsNewRoute
-  '/trips/$tripId/passengers/new': typeof TripsTripIdPassengersNewRoute
-  '/schools/$schoolId/trips/': typeof SchoolsSchoolIdTripsIndexRoute
-  '/trips/$tripId/passengers/': typeof TripsTripIdPassengersIndexRoute
-  '/schools/$schoolId/integrations/wix/$eventId': typeof SchoolsSchoolIdIntegrationsWixEventIdRoute
-  '/schools/$schoolId/integrations/wix/configuration': typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute
-  '/trips/$tripId/passengers/$passengerId/edit': typeof TripsTripIdPassengersPassengerIdEditRoute
-  '/schools/$schoolId/integrations/wix/': typeof SchoolsSchoolIdIntegrationsWixIndexRoute
-  '/schools/$schoolId/trips/$tripId/': typeof SchoolsSchoolIdTripsTripIdIndexRoute
-  '/schools/$schoolId/trips/$tripId/passengers/new': typeof SchoolsSchoolIdTripsTripIdPassengersNewRoute
-  '/trips/$tripId/passengers/$passengerId/payments/new': typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute
-  '/schools/$schoolId/trips/$tripId/passengers/': typeof SchoolsSchoolIdTripsTripIdPassengersIndexRoute
-  '/trips/$tripId/passengers/$passengerId/payments/': typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute
-  '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
+  "/": typeof IndexRoute;
+  "/schools": typeof SchoolsRouteRouteWithChildren;
+  "/schools/$schoolId": typeof SchoolsSchoolIdRouteRouteWithChildren;
+  "/trips/$tripId": typeof TripsTripIdRouteRouteWithChildren;
+  "/schools/new": typeof SchoolsNewRoute;
+  "/schools/": typeof SchoolsIndexRoute;
+  "/schools/$schoolId/integrations": typeof SchoolsSchoolIdIntegrationsRouteRouteWithChildren;
+  "/schools/$schoolId/trips": typeof SchoolsSchoolIdTripsRouteRouteWithChildren;
+  "/schools/$schoolId/edit": typeof SchoolsSchoolIdEditRoute;
+  "/schools/$schoolId/home": typeof SchoolsSchoolIdHomeRoute;
+  "/trips/$tripId/summary": typeof TripsTripIdSummaryRoute;
+  "/schools/$schoolId/": typeof SchoolsSchoolIdIndexRoute;
+  "/schools/$schoolId/integrations/wix": typeof SchoolsSchoolIdIntegrationsWixRouteRouteWithChildren;
+  "/schools/$schoolId/trips/$tripId": typeof SchoolsSchoolIdTripsTripIdRouteRouteWithChildren;
+  "/schools/$schoolId/trips/new": typeof SchoolsSchoolIdTripsNewRoute;
+  "/trips/$tripId/passengers/new": typeof TripsTripIdPassengersNewRoute;
+  "/schools/$schoolId/trips/": typeof SchoolsSchoolIdTripsIndexRoute;
+  "/trips/$tripId/passengers/": typeof TripsTripIdPassengersIndexRoute;
+  "/schools/$schoolId/integrations/wix/$eventId": typeof SchoolsSchoolIdIntegrationsWixEventIdRoute;
+  "/schools/$schoolId/integrations/wix/configuration": typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute;
+  "/trips/$tripId/passengers/$passengerId/edit": typeof TripsTripIdPassengersPassengerIdEditRoute;
+  "/schools/$schoolId/integrations/wix/": typeof SchoolsSchoolIdIntegrationsWixIndexRoute;
+  "/schools/$schoolId/trips/$tripId/": typeof SchoolsSchoolIdTripsTripIdIndexRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/new": typeof SchoolsSchoolIdTripsTripIdPassengersNewRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/new": typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/": typeof SchoolsSchoolIdTripsTripIdPassengersIndexRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/": typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit": typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/trips/$tripId': typeof TripsTripIdRouteRouteWithChildren
-  '/schools/new': typeof SchoolsNewRoute
-  '/schools': typeof SchoolsIndexRoute
-  '/schools/$schoolId/integrations': typeof SchoolsSchoolIdIntegrationsRouteRouteWithChildren
-  '/schools/$schoolId/edit': typeof SchoolsSchoolIdEditRoute
-  '/schools/$schoolId/home': typeof SchoolsSchoolIdHomeRoute
-  '/trips/$tripId/summary': typeof TripsTripIdSummaryRoute
-  '/schools/$schoolId': typeof SchoolsSchoolIdIndexRoute
-  '/schools/$schoolId/trips/new': typeof SchoolsSchoolIdTripsNewRoute
-  '/trips/$tripId/passengers/new': typeof TripsTripIdPassengersNewRoute
-  '/schools/$schoolId/trips': typeof SchoolsSchoolIdTripsIndexRoute
-  '/trips/$tripId/passengers': typeof TripsTripIdPassengersIndexRoute
-  '/schools/$schoolId/integrations/wix/$eventId': typeof SchoolsSchoolIdIntegrationsWixEventIdRoute
-  '/schools/$schoolId/integrations/wix/configuration': typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute
-  '/trips/$tripId/passengers/$passengerId/edit': typeof TripsTripIdPassengersPassengerIdEditRoute
-  '/schools/$schoolId/integrations/wix': typeof SchoolsSchoolIdIntegrationsWixIndexRoute
-  '/schools/$schoolId/trips/$tripId': typeof SchoolsSchoolIdTripsTripIdIndexRoute
-  '/schools/$schoolId/trips/$tripId/passengers/new': typeof SchoolsSchoolIdTripsTripIdPassengersNewRoute
-  '/trips/$tripId/passengers/$passengerId/payments/new': typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute
-  '/schools/$schoolId/trips/$tripId/passengers': typeof SchoolsSchoolIdTripsTripIdPassengersIndexRoute
-  '/trips/$tripId/passengers/$passengerId/payments': typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute
-  '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
+  "/": typeof IndexRoute;
+  "/trips/$tripId": typeof TripsTripIdRouteRouteWithChildren;
+  "/schools/new": typeof SchoolsNewRoute;
+  "/schools": typeof SchoolsIndexRoute;
+  "/schools/$schoolId/integrations": typeof SchoolsSchoolIdIntegrationsRouteRouteWithChildren;
+  "/schools/$schoolId/edit": typeof SchoolsSchoolIdEditRoute;
+  "/schools/$schoolId/home": typeof SchoolsSchoolIdHomeRoute;
+  "/trips/$tripId/summary": typeof TripsTripIdSummaryRoute;
+  "/schools/$schoolId": typeof SchoolsSchoolIdIndexRoute;
+  "/schools/$schoolId/trips/new": typeof SchoolsSchoolIdTripsNewRoute;
+  "/trips/$tripId/passengers/new": typeof TripsTripIdPassengersNewRoute;
+  "/schools/$schoolId/trips": typeof SchoolsSchoolIdTripsIndexRoute;
+  "/trips/$tripId/passengers": typeof TripsTripIdPassengersIndexRoute;
+  "/schools/$schoolId/integrations/wix/$eventId": typeof SchoolsSchoolIdIntegrationsWixEventIdRoute;
+  "/schools/$schoolId/integrations/wix/configuration": typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute;
+  "/trips/$tripId/passengers/$passengerId/edit": typeof TripsTripIdPassengersPassengerIdEditRoute;
+  "/schools/$schoolId/integrations/wix": typeof SchoolsSchoolIdIntegrationsWixIndexRoute;
+  "/schools/$schoolId/trips/$tripId": typeof SchoolsSchoolIdTripsTripIdIndexRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/new": typeof SchoolsSchoolIdTripsTripIdPassengersNewRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/new": typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  "/schools/$schoolId/trips/$tripId/passengers": typeof SchoolsSchoolIdTripsTripIdPassengersIndexRoute;
+  "/trips/$tripId/passengers/$passengerId/payments": typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit": typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/schools': typeof SchoolsRouteRouteWithChildren
-  '/schools/$schoolId': typeof SchoolsSchoolIdRouteRouteWithChildren
-  '/trips/$tripId': typeof TripsTripIdRouteRouteWithChildren
-  '/schools/new': typeof SchoolsNewRoute
-  '/schools/': typeof SchoolsIndexRoute
-  '/schools/$schoolId/integrations': typeof SchoolsSchoolIdIntegrationsRouteRouteWithChildren
-  '/schools/$schoolId/trips': typeof SchoolsSchoolIdTripsRouteRouteWithChildren
-  '/schools/$schoolId/edit': typeof SchoolsSchoolIdEditRoute
-  '/schools/$schoolId/home': typeof SchoolsSchoolIdHomeRoute
-  '/trips/$tripId/summary': typeof TripsTripIdSummaryRoute
-  '/schools/$schoolId/': typeof SchoolsSchoolIdIndexRoute
-  '/schools/$schoolId/integrations/wix': typeof SchoolsSchoolIdIntegrationsWixRouteRouteWithChildren
-  '/schools/$schoolId/trips/$tripId': typeof SchoolsSchoolIdTripsTripIdRouteRouteWithChildren
-  '/schools/$schoolId/trips/new': typeof SchoolsSchoolIdTripsNewRoute
-  '/trips/$tripId/passengers/new': typeof TripsTripIdPassengersNewRoute
-  '/schools/$schoolId/trips/': typeof SchoolsSchoolIdTripsIndexRoute
-  '/trips/$tripId/passengers/': typeof TripsTripIdPassengersIndexRoute
-  '/schools/$schoolId/integrations/wix/$eventId': typeof SchoolsSchoolIdIntegrationsWixEventIdRoute
-  '/schools/$schoolId/integrations/wix/configuration': typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute
-  '/trips/$tripId/passengers/$passengerId/edit': typeof TripsTripIdPassengersPassengerIdEditRoute
-  '/schools/$schoolId/integrations/wix/': typeof SchoolsSchoolIdIntegrationsWixIndexRoute
-  '/schools/$schoolId/trips/$tripId/': typeof SchoolsSchoolIdTripsTripIdIndexRoute
-  '/schools/$schoolId/trips/$tripId/passengers/new': typeof SchoolsSchoolIdTripsTripIdPassengersNewRoute
-  '/trips/$tripId/passengers/$passengerId/payments/new': typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute
-  '/schools/$schoolId/trips/$tripId/passengers/': typeof SchoolsSchoolIdTripsTripIdPassengersIndexRoute
-  '/trips/$tripId/passengers/$passengerId/payments/': typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute
-  '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute
-  '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/schools": typeof SchoolsRouteRouteWithChildren;
+  "/schools/$schoolId": typeof SchoolsSchoolIdRouteRouteWithChildren;
+  "/trips/$tripId": typeof TripsTripIdRouteRouteWithChildren;
+  "/schools/new": typeof SchoolsNewRoute;
+  "/schools/": typeof SchoolsIndexRoute;
+  "/schools/$schoolId/integrations": typeof SchoolsSchoolIdIntegrationsRouteRouteWithChildren;
+  "/schools/$schoolId/trips": typeof SchoolsSchoolIdTripsRouteRouteWithChildren;
+  "/schools/$schoolId/edit": typeof SchoolsSchoolIdEditRoute;
+  "/schools/$schoolId/home": typeof SchoolsSchoolIdHomeRoute;
+  "/trips/$tripId/summary": typeof TripsTripIdSummaryRoute;
+  "/schools/$schoolId/": typeof SchoolsSchoolIdIndexRoute;
+  "/schools/$schoolId/integrations/wix": typeof SchoolsSchoolIdIntegrationsWixRouteRouteWithChildren;
+  "/schools/$schoolId/trips/$tripId": typeof SchoolsSchoolIdTripsTripIdRouteRouteWithChildren;
+  "/schools/$schoolId/trips/new": typeof SchoolsSchoolIdTripsNewRoute;
+  "/trips/$tripId/passengers/new": typeof TripsTripIdPassengersNewRoute;
+  "/schools/$schoolId/trips/": typeof SchoolsSchoolIdTripsIndexRoute;
+  "/trips/$tripId/passengers/": typeof TripsTripIdPassengersIndexRoute;
+  "/schools/$schoolId/integrations/wix/$eventId": typeof SchoolsSchoolIdIntegrationsWixEventIdRoute;
+  "/schools/$schoolId/integrations/wix/configuration": typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute;
+  "/trips/$tripId/passengers/$passengerId/edit": typeof TripsTripIdPassengersPassengerIdEditRoute;
+  "/schools/$schoolId/integrations/wix/": typeof SchoolsSchoolIdIntegrationsWixIndexRoute;
+  "/schools/$schoolId/trips/$tripId/": typeof SchoolsSchoolIdTripsTripIdIndexRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/new": typeof SchoolsSchoolIdTripsTripIdPassengersNewRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/new": typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/": typeof SchoolsSchoolIdTripsTripIdPassengersIndexRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/": typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute;
+  "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit": typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute;
+  "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit": typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | '/'
-    | '/schools'
-    | '/schools/$schoolId'
-    | '/trips/$tripId'
-    | '/schools/new'
-    | '/schools/'
-    | '/schools/$schoolId/integrations'
-    | '/schools/$schoolId/trips'
-    | '/schools/$schoolId/edit'
-    | '/schools/$schoolId/home'
-    | '/trips/$tripId/summary'
-    | '/schools/$schoolId/'
-    | '/schools/$schoolId/integrations/wix'
-    | '/schools/$schoolId/trips/$tripId'
-    | '/schools/$schoolId/trips/new'
-    | '/trips/$tripId/passengers/new'
-    | '/schools/$schoolId/trips/'
-    | '/trips/$tripId/passengers/'
-    | '/schools/$schoolId/integrations/wix/$eventId'
-    | '/schools/$schoolId/integrations/wix/configuration'
-    | '/trips/$tripId/passengers/$passengerId/edit'
-    | '/schools/$schoolId/integrations/wix/'
-    | '/schools/$schoolId/trips/$tripId/'
-    | '/schools/$schoolId/trips/$tripId/passengers/new'
-    | '/trips/$tripId/passengers/$passengerId/payments/new'
-    | '/schools/$schoolId/trips/$tripId/passengers/'
-    | '/trips/$tripId/passengers/$passengerId/payments/'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit'
-    | '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-  fileRoutesByTo: FileRoutesByTo
+    | "/"
+    | "/schools"
+    | "/schools/$schoolId"
+    | "/trips/$tripId"
+    | "/schools/new"
+    | "/schools/"
+    | "/schools/$schoolId/integrations"
+    | "/schools/$schoolId/trips"
+    | "/schools/$schoolId/edit"
+    | "/schools/$schoolId/home"
+    | "/trips/$tripId/summary"
+    | "/schools/$schoolId/"
+    | "/schools/$schoolId/integrations/wix"
+    | "/schools/$schoolId/trips/$tripId"
+    | "/schools/$schoolId/trips/new"
+    | "/trips/$tripId/passengers/new"
+    | "/schools/$schoolId/trips/"
+    | "/trips/$tripId/passengers/"
+    | "/schools/$schoolId/integrations/wix/$eventId"
+    | "/schools/$schoolId/integrations/wix/configuration"
+    | "/trips/$tripId/passengers/$passengerId/edit"
+    | "/schools/$schoolId/integrations/wix/"
+    | "/schools/$schoolId/trips/$tripId/"
+    | "/schools/$schoolId/trips/$tripId/passengers/new"
+    | "/trips/$tripId/passengers/$passengerId/payments/new"
+    | "/schools/$schoolId/trips/$tripId/passengers/"
+    | "/trips/$tripId/passengers/$passengerId/payments/"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit"
+    | "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
+  fileRoutesByTo: FileRoutesByTo;
   to:
-    | '/'
-    | '/trips/$tripId'
-    | '/schools/new'
-    | '/schools'
-    | '/schools/$schoolId/integrations'
-    | '/schools/$schoolId/edit'
-    | '/schools/$schoolId/home'
-    | '/trips/$tripId/summary'
-    | '/schools/$schoolId'
-    | '/schools/$schoolId/trips/new'
-    | '/trips/$tripId/passengers/new'
-    | '/schools/$schoolId/trips'
-    | '/trips/$tripId/passengers'
-    | '/schools/$schoolId/integrations/wix/$eventId'
-    | '/schools/$schoolId/integrations/wix/configuration'
-    | '/trips/$tripId/passengers/$passengerId/edit'
-    | '/schools/$schoolId/integrations/wix'
-    | '/schools/$schoolId/trips/$tripId'
-    | '/schools/$schoolId/trips/$tripId/passengers/new'
-    | '/trips/$tripId/passengers/$passengerId/payments/new'
-    | '/schools/$schoolId/trips/$tripId/passengers'
-    | '/trips/$tripId/passengers/$passengerId/payments'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit'
-    | '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
+    | "/"
+    | "/trips/$tripId"
+    | "/schools/new"
+    | "/schools"
+    | "/schools/$schoolId/integrations"
+    | "/schools/$schoolId/edit"
+    | "/schools/$schoolId/home"
+    | "/trips/$tripId/summary"
+    | "/schools/$schoolId"
+    | "/schools/$schoolId/trips/new"
+    | "/trips/$tripId/passengers/new"
+    | "/schools/$schoolId/trips"
+    | "/trips/$tripId/passengers"
+    | "/schools/$schoolId/integrations/wix/$eventId"
+    | "/schools/$schoolId/integrations/wix/configuration"
+    | "/trips/$tripId/passengers/$passengerId/edit"
+    | "/schools/$schoolId/integrations/wix"
+    | "/schools/$schoolId/trips/$tripId"
+    | "/schools/$schoolId/trips/$tripId/passengers/new"
+    | "/trips/$tripId/passengers/$passengerId/payments/new"
+    | "/schools/$schoolId/trips/$tripId/passengers"
+    | "/trips/$tripId/passengers/$passengerId/payments"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit"
+    | "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
   id:
-    | '__root__'
-    | '/'
-    | '/schools'
-    | '/schools/$schoolId'
-    | '/trips/$tripId'
-    | '/schools/new'
-    | '/schools/'
-    | '/schools/$schoolId/integrations'
-    | '/schools/$schoolId/trips'
-    | '/schools/$schoolId/edit'
-    | '/schools/$schoolId/home'
-    | '/trips/$tripId/summary'
-    | '/schools/$schoolId/'
-    | '/schools/$schoolId/integrations/wix'
-    | '/schools/$schoolId/trips/$tripId'
-    | '/schools/$schoolId/trips/new'
-    | '/trips/$tripId/passengers/new'
-    | '/schools/$schoolId/trips/'
-    | '/trips/$tripId/passengers/'
-    | '/schools/$schoolId/integrations/wix/$eventId'
-    | '/schools/$schoolId/integrations/wix/configuration'
-    | '/trips/$tripId/passengers/$passengerId/edit'
-    | '/schools/$schoolId/integrations/wix/'
-    | '/schools/$schoolId/trips/$tripId/'
-    | '/schools/$schoolId/trips/$tripId/passengers/new'
-    | '/trips/$tripId/passengers/$passengerId/payments/new'
-    | '/schools/$schoolId/trips/$tripId/passengers/'
-    | '/trips/$tripId/passengers/$passengerId/payments/'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit'
-    | '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/'
-    | '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/"
+    | "/schools"
+    | "/schools/$schoolId"
+    | "/trips/$tripId"
+    | "/schools/new"
+    | "/schools/"
+    | "/schools/$schoolId/integrations"
+    | "/schools/$schoolId/trips"
+    | "/schools/$schoolId/edit"
+    | "/schools/$schoolId/home"
+    | "/trips/$tripId/summary"
+    | "/schools/$schoolId/"
+    | "/schools/$schoolId/integrations/wix"
+    | "/schools/$schoolId/trips/$tripId"
+    | "/schools/$schoolId/trips/new"
+    | "/trips/$tripId/passengers/new"
+    | "/schools/$schoolId/trips/"
+    | "/trips/$tripId/passengers/"
+    | "/schools/$schoolId/integrations/wix/$eventId"
+    | "/schools/$schoolId/integrations/wix/configuration"
+    | "/trips/$tripId/passengers/$passengerId/edit"
+    | "/schools/$schoolId/integrations/wix/"
+    | "/schools/$schoolId/trips/$tripId/"
+    | "/schools/$schoolId/trips/$tripId/passengers/new"
+    | "/trips/$tripId/passengers/$passengerId/payments/new"
+    | "/schools/$schoolId/trips/$tripId/passengers/"
+    | "/trips/$tripId/passengers/$passengerId/payments/"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit"
+    | "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/"
+    | "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  SchoolsRouteRoute: typeof SchoolsRouteRouteWithChildren
-  TripsTripIdRouteRoute: typeof TripsTripIdRouteRouteWithChildren
+  IndexRoute: typeof IndexRoute;
+  SchoolsRouteRoute: typeof SchoolsRouteRouteWithChildren;
+  TripsTripIdRouteRoute: typeof TripsTripIdRouteRouteWithChildren;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/schools': {
-      id: '/schools'
-      path: '/schools'
-      fullPath: '/schools'
-      preLoaderRoute: typeof SchoolsRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/schools/': {
-      id: '/schools/'
-      path: '/'
-      fullPath: '/schools/'
-      preLoaderRoute: typeof SchoolsIndexRouteImport
-      parentRoute: typeof SchoolsRouteRoute
-    }
-    '/schools/new': {
-      id: '/schools/new'
-      path: '/new'
-      fullPath: '/schools/new'
-      preLoaderRoute: typeof SchoolsNewRouteImport
-      parentRoute: typeof SchoolsRouteRoute
-    }
-    '/trips/$tripId': {
-      id: '/trips/$tripId'
-      path: '/trips/$tripId'
-      fullPath: '/trips/$tripId'
-      preLoaderRoute: typeof TripsTripIdRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/schools/$schoolId': {
-      id: '/schools/$schoolId'
-      path: '/$schoolId'
-      fullPath: '/schools/$schoolId'
-      preLoaderRoute: typeof SchoolsSchoolIdRouteRouteImport
-      parentRoute: typeof SchoolsRouteRoute
-    }
-    '/schools/$schoolId/': {
-      id: '/schools/$schoolId/'
-      path: '/'
-      fullPath: '/schools/$schoolId/'
-      preLoaderRoute: typeof SchoolsSchoolIdIndexRouteImport
-      parentRoute: typeof SchoolsSchoolIdRouteRoute
-    }
-    '/trips/$tripId/summary': {
-      id: '/trips/$tripId/summary'
-      path: '/summary'
-      fullPath: '/trips/$tripId/summary'
-      preLoaderRoute: typeof TripsTripIdSummaryRouteImport
-      parentRoute: typeof TripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/home': {
-      id: '/schools/$schoolId/home'
-      path: '/home'
-      fullPath: '/schools/$schoolId/home'
-      preLoaderRoute: typeof SchoolsSchoolIdHomeRouteImport
-      parentRoute: typeof SchoolsSchoolIdRouteRoute
-    }
-    '/schools/$schoolId/edit': {
-      id: '/schools/$schoolId/edit'
-      path: '/edit'
-      fullPath: '/schools/$schoolId/edit'
-      preLoaderRoute: typeof SchoolsSchoolIdEditRouteImport
-      parentRoute: typeof SchoolsSchoolIdRouteRoute
-    }
-    '/schools/$schoolId/trips': {
-      id: '/schools/$schoolId/trips'
-      path: '/trips'
-      fullPath: '/schools/$schoolId/trips'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsRouteRouteImport
-      parentRoute: typeof SchoolsSchoolIdRouteRoute
-    }
-    '/schools/$schoolId/integrations': {
-      id: '/schools/$schoolId/integrations'
-      path: '/integrations'
-      fullPath: '/schools/$schoolId/integrations'
-      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsRouteRouteImport
-      parentRoute: typeof SchoolsSchoolIdRouteRoute
-    }
-    '/trips/$tripId/passengers/': {
-      id: '/trips/$tripId/passengers/'
-      path: '/passengers'
-      fullPath: '/trips/$tripId/passengers/'
-      preLoaderRoute: typeof TripsTripIdPassengersIndexRouteImport
-      parentRoute: typeof TripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/trips/': {
-      id: '/schools/$schoolId/trips/'
-      path: '/'
-      fullPath: '/schools/$schoolId/trips/'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsIndexRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsRouteRoute
-    }
-    '/trips/$tripId/passengers/new': {
-      id: '/trips/$tripId/passengers/new'
-      path: '/passengers/new'
-      fullPath: '/trips/$tripId/passengers/new'
-      preLoaderRoute: typeof TripsTripIdPassengersNewRouteImport
-      parentRoute: typeof TripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/trips/new': {
-      id: '/schools/$schoolId/trips/new'
-      path: '/new'
-      fullPath: '/schools/$schoolId/trips/new'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsNewRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsRouteRoute
-    }
-    '/schools/$schoolId/trips/$tripId': {
-      id: '/schools/$schoolId/trips/$tripId'
-      path: '/$tripId'
-      fullPath: '/schools/$schoolId/trips/$tripId'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdRouteRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsRouteRoute
-    }
-    '/schools/$schoolId/integrations/wix': {
-      id: '/schools/$schoolId/integrations/wix'
-      path: '/wix'
-      fullPath: '/schools/$schoolId/integrations/wix'
-      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRouteImport
-      parentRoute: typeof SchoolsSchoolIdIntegrationsRouteRoute
-    }
-    '/schools/$schoolId/trips/$tripId/': {
-      id: '/schools/$schoolId/trips/$tripId/'
-      path: '/'
-      fullPath: '/schools/$schoolId/trips/$tripId/'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdIndexRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/integrations/wix/': {
-      id: '/schools/$schoolId/integrations/wix/'
-      path: '/'
-      fullPath: '/schools/$schoolId/integrations/wix/'
-      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsWixIndexRouteImport
-      parentRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRoute
-    }
-    '/trips/$tripId/passengers/$passengerId/edit': {
-      id: '/trips/$tripId/passengers/$passengerId/edit'
-      path: '/passengers/$passengerId/edit'
-      fullPath: '/trips/$tripId/passengers/$passengerId/edit'
-      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdEditRouteImport
-      parentRoute: typeof TripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/integrations/wix/configuration': {
-      id: '/schools/$schoolId/integrations/wix/configuration'
-      path: '/configuration'
-      fullPath: '/schools/$schoolId/integrations/wix/configuration'
-      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsWixConfigurationRouteImport
-      parentRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRoute
-    }
-    '/schools/$schoolId/integrations/wix/$eventId': {
-      id: '/schools/$schoolId/integrations/wix/$eventId'
-      path: '/$eventId'
-      fullPath: '/schools/$schoolId/integrations/wix/$eventId'
-      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsWixEventIdRouteImport
-      parentRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRoute
-    }
-    '/trips/$tripId/passengers/$passengerId/payments/': {
-      id: '/trips/$tripId/passengers/$passengerId/payments/'
-      path: '/passengers/$passengerId/payments'
-      fullPath: '/trips/$tripId/passengers/$passengerId/payments/'
-      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport
-      parentRoute: typeof TripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/trips/$tripId/passengers/': {
-      id: '/schools/$schoolId/trips/$tripId/passengers/'
-      path: '/passengers'
-      fullPath: '/schools/$schoolId/trips/$tripId/passengers/'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersIndexRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute
-    }
-    '/trips/$tripId/passengers/$passengerId/payments/new': {
-      id: '/trips/$tripId/passengers/$passengerId/payments/new'
-      path: '/passengers/$passengerId/payments/new'
-      fullPath: '/trips/$tripId/passengers/$passengerId/payments/new'
-      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRouteImport
-      parentRoute: typeof TripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/trips/$tripId/passengers/new': {
-      id: '/schools/$schoolId/trips/$tripId/passengers/new'
-      path: '/passengers/new'
-      fullPath: '/schools/$schoolId/trips/$tripId/passengers/new'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersNewRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute
-    }
-    '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': {
-      id: '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-      path: '/passengers/$passengerId/payments/$paymentId/edit'
-      fullPath: '/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport
-      parentRoute: typeof TripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit': {
-      id: '/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit'
-      path: '/passengers/$passengerId/edit'
-      fullPath: '/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/': {
-      id: '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/'
-      path: '/passengers/$passengerId/payments'
-      fullPath: '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new': {
-      id: '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new'
-      path: '/passengers/$passengerId/payments/new'
-      fullPath: '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute
-    }
-    '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit': {
-      id: '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-      path: '/passengers/$passengerId/payments/$paymentId/edit'
-      fullPath: '/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit'
-      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport
-      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute
-    }
+    "/schools": {
+      id: "/schools";
+      path: "/schools";
+      fullPath: "/schools";
+      preLoaderRoute: typeof SchoolsRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/schools/": {
+      id: "/schools/";
+      path: "/";
+      fullPath: "/schools/";
+      preLoaderRoute: typeof SchoolsIndexRouteImport;
+      parentRoute: typeof SchoolsRouteRoute;
+    };
+    "/schools/new": {
+      id: "/schools/new";
+      path: "/new";
+      fullPath: "/schools/new";
+      preLoaderRoute: typeof SchoolsNewRouteImport;
+      parentRoute: typeof SchoolsRouteRoute;
+    };
+    "/trips/$tripId": {
+      id: "/trips/$tripId";
+      path: "/trips/$tripId";
+      fullPath: "/trips/$tripId";
+      preLoaderRoute: typeof TripsTripIdRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/schools/$schoolId": {
+      id: "/schools/$schoolId";
+      path: "/$schoolId";
+      fullPath: "/schools/$schoolId";
+      preLoaderRoute: typeof SchoolsSchoolIdRouteRouteImport;
+      parentRoute: typeof SchoolsRouteRoute;
+    };
+    "/schools/$schoolId/": {
+      id: "/schools/$schoolId/";
+      path: "/";
+      fullPath: "/schools/$schoolId/";
+      preLoaderRoute: typeof SchoolsSchoolIdIndexRouteImport;
+      parentRoute: typeof SchoolsSchoolIdRouteRoute;
+    };
+    "/trips/$tripId/summary": {
+      id: "/trips/$tripId/summary";
+      path: "/summary";
+      fullPath: "/trips/$tripId/summary";
+      preLoaderRoute: typeof TripsTripIdSummaryRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/home": {
+      id: "/schools/$schoolId/home";
+      path: "/home";
+      fullPath: "/schools/$schoolId/home";
+      preLoaderRoute: typeof SchoolsSchoolIdHomeRouteImport;
+      parentRoute: typeof SchoolsSchoolIdRouteRoute;
+    };
+    "/schools/$schoolId/edit": {
+      id: "/schools/$schoolId/edit";
+      path: "/edit";
+      fullPath: "/schools/$schoolId/edit";
+      preLoaderRoute: typeof SchoolsSchoolIdEditRouteImport;
+      parentRoute: typeof SchoolsSchoolIdRouteRoute;
+    };
+    "/schools/$schoolId/trips": {
+      id: "/schools/$schoolId/trips";
+      path: "/trips";
+      fullPath: "/schools/$schoolId/trips";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsRouteRouteImport;
+      parentRoute: typeof SchoolsSchoolIdRouteRoute;
+    };
+    "/schools/$schoolId/integrations": {
+      id: "/schools/$schoolId/integrations";
+      path: "/integrations";
+      fullPath: "/schools/$schoolId/integrations";
+      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsRouteRouteImport;
+      parentRoute: typeof SchoolsSchoolIdRouteRoute;
+    };
+    "/trips/$tripId/passengers/": {
+      id: "/trips/$tripId/passengers/";
+      path: "/passengers";
+      fullPath: "/trips/$tripId/passengers/";
+      preLoaderRoute: typeof TripsTripIdPassengersIndexRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/trips/": {
+      id: "/schools/$schoolId/trips/";
+      path: "/";
+      fullPath: "/schools/$schoolId/trips/";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsIndexRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsRouteRoute;
+    };
+    "/trips/$tripId/passengers/new": {
+      id: "/trips/$tripId/passengers/new";
+      path: "/passengers/new";
+      fullPath: "/trips/$tripId/passengers/new";
+      preLoaderRoute: typeof TripsTripIdPassengersNewRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/trips/new": {
+      id: "/schools/$schoolId/trips/new";
+      path: "/new";
+      fullPath: "/schools/$schoolId/trips/new";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsNewRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsRouteRoute;
+    };
+    "/schools/$schoolId/trips/$tripId": {
+      id: "/schools/$schoolId/trips/$tripId";
+      path: "/$tripId";
+      fullPath: "/schools/$schoolId/trips/$tripId";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdRouteRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsRouteRoute;
+    };
+    "/schools/$schoolId/integrations/wix": {
+      id: "/schools/$schoolId/integrations/wix";
+      path: "/wix";
+      fullPath: "/schools/$schoolId/integrations/wix";
+      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRouteImport;
+      parentRoute: typeof SchoolsSchoolIdIntegrationsRouteRoute;
+    };
+    "/schools/$schoolId/trips/$tripId/": {
+      id: "/schools/$schoolId/trips/$tripId/";
+      path: "/";
+      fullPath: "/schools/$schoolId/trips/$tripId/";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdIndexRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/integrations/wix/": {
+      id: "/schools/$schoolId/integrations/wix/";
+      path: "/";
+      fullPath: "/schools/$schoolId/integrations/wix/";
+      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsWixIndexRouteImport;
+      parentRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRoute;
+    };
+    "/trips/$tripId/passengers/$passengerId/edit": {
+      id: "/trips/$tripId/passengers/$passengerId/edit";
+      path: "/passengers/$passengerId/edit";
+      fullPath: "/trips/$tripId/passengers/$passengerId/edit";
+      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdEditRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/integrations/wix/configuration": {
+      id: "/schools/$schoolId/integrations/wix/configuration";
+      path: "/configuration";
+      fullPath: "/schools/$schoolId/integrations/wix/configuration";
+      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsWixConfigurationRouteImport;
+      parentRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRoute;
+    };
+    "/schools/$schoolId/integrations/wix/$eventId": {
+      id: "/schools/$schoolId/integrations/wix/$eventId";
+      path: "/$eventId";
+      fullPath: "/schools/$schoolId/integrations/wix/$eventId";
+      preLoaderRoute: typeof SchoolsSchoolIdIntegrationsWixEventIdRouteImport;
+      parentRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRoute;
+    };
+    "/trips/$tripId/passengers/$passengerId/payments/": {
+      id: "/trips/$tripId/passengers/$passengerId/payments/";
+      path: "/passengers/$passengerId/payments";
+      fullPath: "/trips/$tripId/passengers/$passengerId/payments/";
+      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/trips/$tripId/passengers/": {
+      id: "/schools/$schoolId/trips/$tripId/passengers/";
+      path: "/passengers";
+      fullPath: "/schools/$schoolId/trips/$tripId/passengers/";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersIndexRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute;
+    };
+    "/trips/$tripId/passengers/$passengerId/payments/new": {
+      id: "/trips/$tripId/passengers/$passengerId/payments/new";
+      path: "/passengers/$passengerId/payments/new";
+      fullPath: "/trips/$tripId/passengers/$passengerId/payments/new";
+      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/trips/$tripId/passengers/new": {
+      id: "/schools/$schoolId/trips/$tripId/passengers/new";
+      path: "/passengers/new";
+      fullPath: "/schools/$schoolId/trips/$tripId/passengers/new";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersNewRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute;
+    };
+    "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit": {
+      id: "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
+      path: "/passengers/$passengerId/payments/$paymentId/edit";
+      fullPath: "/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
+      preLoaderRoute: typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport;
+      parentRoute: typeof TripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit": {
+      id: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit";
+      path: "/passengers/$passengerId/edit";
+      fullPath: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/edit";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/": {
+      id: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/";
+      path: "/passengers/$passengerId/payments";
+      fullPath: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new": {
+      id: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new";
+      path: "/passengers/$passengerId/payments/new";
+      fullPath: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/new";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute;
+    };
+    "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit": {
+      id: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
+      path: "/passengers/$passengerId/payments/$paymentId/edit";
+      fullPath: "/schools/$schoolId/trips/$tripId/passengers/$passengerId/payments/$paymentId/edit";
+      preLoaderRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRouteImport;
+      parentRoute: typeof SchoolsSchoolIdTripsTripIdRouteRoute;
+    };
   }
 }
 
 interface SchoolsSchoolIdIntegrationsWixRouteRouteChildren {
-  SchoolsSchoolIdIntegrationsWixEventIdRoute: typeof SchoolsSchoolIdIntegrationsWixEventIdRoute
-  SchoolsSchoolIdIntegrationsWixConfigurationRoute: typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute
-  SchoolsSchoolIdIntegrationsWixIndexRoute: typeof SchoolsSchoolIdIntegrationsWixIndexRoute
+  SchoolsSchoolIdIntegrationsWixEventIdRoute: typeof SchoolsSchoolIdIntegrationsWixEventIdRoute;
+  SchoolsSchoolIdIntegrationsWixConfigurationRoute: typeof SchoolsSchoolIdIntegrationsWixConfigurationRoute;
+  SchoolsSchoolIdIntegrationsWixIndexRoute: typeof SchoolsSchoolIdIntegrationsWixIndexRoute;
 }
 
 const SchoolsSchoolIdIntegrationsWixRouteRouteChildren: SchoolsSchoolIdIntegrationsWixRouteRouteChildren =
@@ -675,36 +675,36 @@ const SchoolsSchoolIdIntegrationsWixRouteRouteChildren: SchoolsSchoolIdIntegrati
       SchoolsSchoolIdIntegrationsWixConfigurationRoute,
     SchoolsSchoolIdIntegrationsWixIndexRoute:
       SchoolsSchoolIdIntegrationsWixIndexRoute,
-  }
+  };
 
 const SchoolsSchoolIdIntegrationsWixRouteRouteWithChildren =
   SchoolsSchoolIdIntegrationsWixRouteRoute._addFileChildren(
     SchoolsSchoolIdIntegrationsWixRouteRouteChildren,
-  )
+  );
 
 interface SchoolsSchoolIdIntegrationsRouteRouteChildren {
-  SchoolsSchoolIdIntegrationsWixRouteRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRouteWithChildren
+  SchoolsSchoolIdIntegrationsWixRouteRoute: typeof SchoolsSchoolIdIntegrationsWixRouteRouteWithChildren;
 }
 
 const SchoolsSchoolIdIntegrationsRouteRouteChildren: SchoolsSchoolIdIntegrationsRouteRouteChildren =
   {
     SchoolsSchoolIdIntegrationsWixRouteRoute:
       SchoolsSchoolIdIntegrationsWixRouteRouteWithChildren,
-  }
+  };
 
 const SchoolsSchoolIdIntegrationsRouteRouteWithChildren =
   SchoolsSchoolIdIntegrationsRouteRoute._addFileChildren(
     SchoolsSchoolIdIntegrationsRouteRouteChildren,
-  )
+  );
 
 interface SchoolsSchoolIdTripsTripIdRouteRouteChildren {
-  SchoolsSchoolIdTripsTripIdIndexRoute: typeof SchoolsSchoolIdTripsTripIdIndexRoute
-  SchoolsSchoolIdTripsTripIdPassengersNewRoute: typeof SchoolsSchoolIdTripsTripIdPassengersNewRoute
-  SchoolsSchoolIdTripsTripIdPassengersIndexRoute: typeof SchoolsSchoolIdTripsTripIdPassengersIndexRoute
-  SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute
-  SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute
-  SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute
-  SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
+  SchoolsSchoolIdTripsTripIdIndexRoute: typeof SchoolsSchoolIdTripsTripIdIndexRoute;
+  SchoolsSchoolIdTripsTripIdPassengersNewRoute: typeof SchoolsSchoolIdTripsTripIdPassengersNewRoute;
+  SchoolsSchoolIdTripsTripIdPassengersIndexRoute: typeof SchoolsSchoolIdTripsTripIdPassengersIndexRoute;
+  SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdEditRoute;
+  SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute;
+  SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute: typeof SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
 }
 
 const SchoolsSchoolIdTripsTripIdRouteRouteChildren: SchoolsSchoolIdTripsTripIdRouteRouteChildren =
@@ -722,17 +722,17 @@ const SchoolsSchoolIdTripsTripIdRouteRouteChildren: SchoolsSchoolIdTripsTripIdRo
       SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsIndexRoute,
     SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute:
       SchoolsSchoolIdTripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute,
-  }
+  };
 
 const SchoolsSchoolIdTripsTripIdRouteRouteWithChildren =
   SchoolsSchoolIdTripsTripIdRouteRoute._addFileChildren(
     SchoolsSchoolIdTripsTripIdRouteRouteChildren,
-  )
+  );
 
 interface SchoolsSchoolIdTripsRouteRouteChildren {
-  SchoolsSchoolIdTripsTripIdRouteRoute: typeof SchoolsSchoolIdTripsTripIdRouteRouteWithChildren
-  SchoolsSchoolIdTripsNewRoute: typeof SchoolsSchoolIdTripsNewRoute
-  SchoolsSchoolIdTripsIndexRoute: typeof SchoolsSchoolIdTripsIndexRoute
+  SchoolsSchoolIdTripsTripIdRouteRoute: typeof SchoolsSchoolIdTripsTripIdRouteRouteWithChildren;
+  SchoolsSchoolIdTripsNewRoute: typeof SchoolsSchoolIdTripsNewRoute;
+  SchoolsSchoolIdTripsIndexRoute: typeof SchoolsSchoolIdTripsIndexRoute;
 }
 
 const SchoolsSchoolIdTripsRouteRouteChildren: SchoolsSchoolIdTripsRouteRouteChildren =
@@ -741,19 +741,19 @@ const SchoolsSchoolIdTripsRouteRouteChildren: SchoolsSchoolIdTripsRouteRouteChil
       SchoolsSchoolIdTripsTripIdRouteRouteWithChildren,
     SchoolsSchoolIdTripsNewRoute: SchoolsSchoolIdTripsNewRoute,
     SchoolsSchoolIdTripsIndexRoute: SchoolsSchoolIdTripsIndexRoute,
-  }
+  };
 
 const SchoolsSchoolIdTripsRouteRouteWithChildren =
   SchoolsSchoolIdTripsRouteRoute._addFileChildren(
     SchoolsSchoolIdTripsRouteRouteChildren,
-  )
+  );
 
 interface SchoolsSchoolIdRouteRouteChildren {
-  SchoolsSchoolIdIntegrationsRouteRoute: typeof SchoolsSchoolIdIntegrationsRouteRouteWithChildren
-  SchoolsSchoolIdTripsRouteRoute: typeof SchoolsSchoolIdTripsRouteRouteWithChildren
-  SchoolsSchoolIdEditRoute: typeof SchoolsSchoolIdEditRoute
-  SchoolsSchoolIdHomeRoute: typeof SchoolsSchoolIdHomeRoute
-  SchoolsSchoolIdIndexRoute: typeof SchoolsSchoolIdIndexRoute
+  SchoolsSchoolIdIntegrationsRouteRoute: typeof SchoolsSchoolIdIntegrationsRouteRouteWithChildren;
+  SchoolsSchoolIdTripsRouteRoute: typeof SchoolsSchoolIdTripsRouteRouteWithChildren;
+  SchoolsSchoolIdEditRoute: typeof SchoolsSchoolIdEditRoute;
+  SchoolsSchoolIdHomeRoute: typeof SchoolsSchoolIdHomeRoute;
+  SchoolsSchoolIdIndexRoute: typeof SchoolsSchoolIdIndexRoute;
 }
 
 const SchoolsSchoolIdRouteRouteChildren: SchoolsSchoolIdRouteRouteChildren = {
@@ -763,35 +763,35 @@ const SchoolsSchoolIdRouteRouteChildren: SchoolsSchoolIdRouteRouteChildren = {
   SchoolsSchoolIdEditRoute: SchoolsSchoolIdEditRoute,
   SchoolsSchoolIdHomeRoute: SchoolsSchoolIdHomeRoute,
   SchoolsSchoolIdIndexRoute: SchoolsSchoolIdIndexRoute,
-}
+};
 
 const SchoolsSchoolIdRouteRouteWithChildren =
-  SchoolsSchoolIdRouteRoute._addFileChildren(SchoolsSchoolIdRouteRouteChildren)
+  SchoolsSchoolIdRouteRoute._addFileChildren(SchoolsSchoolIdRouteRouteChildren);
 
 interface SchoolsRouteRouteChildren {
-  SchoolsSchoolIdRouteRoute: typeof SchoolsSchoolIdRouteRouteWithChildren
-  SchoolsNewRoute: typeof SchoolsNewRoute
-  SchoolsIndexRoute: typeof SchoolsIndexRoute
+  SchoolsSchoolIdRouteRoute: typeof SchoolsSchoolIdRouteRouteWithChildren;
+  SchoolsNewRoute: typeof SchoolsNewRoute;
+  SchoolsIndexRoute: typeof SchoolsIndexRoute;
 }
 
 const SchoolsRouteRouteChildren: SchoolsRouteRouteChildren = {
   SchoolsSchoolIdRouteRoute: SchoolsSchoolIdRouteRouteWithChildren,
   SchoolsNewRoute: SchoolsNewRoute,
   SchoolsIndexRoute: SchoolsIndexRoute,
-}
+};
 
 const SchoolsRouteRouteWithChildren = SchoolsRouteRoute._addFileChildren(
   SchoolsRouteRouteChildren,
-)
+);
 
 interface TripsTripIdRouteRouteChildren {
-  TripsTripIdSummaryRoute: typeof TripsTripIdSummaryRoute
-  TripsTripIdPassengersNewRoute: typeof TripsTripIdPassengersNewRoute
-  TripsTripIdPassengersIndexRoute: typeof TripsTripIdPassengersIndexRoute
-  TripsTripIdPassengersPassengerIdEditRoute: typeof TripsTripIdPassengersPassengerIdEditRoute
-  TripsTripIdPassengersPassengerIdPaymentsNewRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute
-  TripsTripIdPassengersPassengerIdPaymentsIndexRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute
-  TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute: typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute
+  TripsTripIdSummaryRoute: typeof TripsTripIdSummaryRoute;
+  TripsTripIdPassengersNewRoute: typeof TripsTripIdPassengersNewRoute;
+  TripsTripIdPassengersIndexRoute: typeof TripsTripIdPassengersIndexRoute;
+  TripsTripIdPassengersPassengerIdEditRoute: typeof TripsTripIdPassengersPassengerIdEditRoute;
+  TripsTripIdPassengersPassengerIdPaymentsNewRoute: typeof TripsTripIdPassengersPassengerIdPaymentsNewRoute;
+  TripsTripIdPassengersPassengerIdPaymentsIndexRoute: typeof TripsTripIdPassengersPassengerIdPaymentsIndexRoute;
+  TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute: typeof TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute;
 }
 
 const TripsTripIdRouteRouteChildren: TripsTripIdRouteRouteChildren = {
@@ -806,25 +806,26 @@ const TripsTripIdRouteRouteChildren: TripsTripIdRouteRouteChildren = {
     TripsTripIdPassengersPassengerIdPaymentsIndexRoute,
   TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute:
     TripsTripIdPassengersPassengerIdPaymentsPaymentIdEditRoute,
-}
+};
 
 const TripsTripIdRouteRouteWithChildren =
-  TripsTripIdRouteRoute._addFileChildren(TripsTripIdRouteRouteChildren)
+  TripsTripIdRouteRoute._addFileChildren(TripsTripIdRouteRouteChildren);
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SchoolsRouteRoute: SchoolsRouteRouteWithChildren,
   TripsTripIdRouteRoute: TripsTripIdRouteRouteWithChildren,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
+import type { createStart } from "@tanstack/react-start";
+import type { getRouter } from "./router.tsx";
+
+declare module "@tanstack/react-start" {
   interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
+    ssr: true;
+    router: Awaited<ReturnType<typeof getRouter>>;
   }
 }

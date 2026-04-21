@@ -11,6 +11,7 @@ import {
   ListPaneScrollArea,
   ListPaneShell,
 } from "@/components/layout/list-pane-layout";
+import { ActivateSchoolDialog } from "@/components/schools/activate-school-dialog";
 import { DeactivateSchoolDialog } from "@/components/schools/deactivate-school-dialog";
 import { DeleteSchoolDialog } from "@/components/schools/delete-school-dialog";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
@@ -101,6 +102,8 @@ export function SchoolsDirectorySchoolsTablePane({
     (s) => s.setIncludeInactiveSchools,
   );
 
+  const [schoolPendingActivate, setSchoolPendingActivate] =
+    useState<School | null>(null);
   const [schoolPendingDeactivate, setSchoolPendingDeactivate] =
     useState<School | null>(null);
   const [schoolPendingDelete, setSchoolPendingDelete] = useState<School | null>(
@@ -261,6 +264,17 @@ export function SchoolsDirectorySchoolsTablePane({
                       label: ptBR.actions.viewTrips,
                       onClick: () => navigateToSchoolTrips(navigate, s.id),
                     },
+                    ...(!s.active
+                      ? [
+                          {
+                            id: "activate" as const,
+                            label: ptBR.actions.activate,
+                            onClick: () => {
+                              setSchoolPendingActivate(s);
+                            },
+                          },
+                        ]
+                      : []),
                     ...(s.active
                       ? [
                           {
@@ -293,6 +307,16 @@ export function SchoolsDirectorySchoolsTablePane({
 
   return (
     <ListPaneShell>
+      <ActivateSchoolDialog
+        open={schoolPendingActivate != null}
+        onOpenChange={(next) => {
+          if (!next) {
+            setSchoolPendingActivate(null);
+          }
+        }}
+        school={schoolPendingActivate}
+        includeInactive={includeInactive}
+      />
       <DeactivateSchoolDialog
         open={schoolPendingDeactivate != null}
         onOpenChange={(next) => {
