@@ -16,7 +16,8 @@ export const tripSchema = z.object({
   title: z.string().nullable(),
   description: z.string().nullable(),
   imageUrl: z.string().nullable(),
-  wixMediaFileId: z.string().nullable(),
+  /** Present once API/DB migration is deployed; omit on older responses. */
+  wixMediaFileId: z.string().nullable().optional(),
   createdAt: dateTimeStringSchema,
   updatedAt: dateTimeStringSchema,
 });

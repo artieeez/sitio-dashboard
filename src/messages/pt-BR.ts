@@ -44,7 +44,7 @@ export const ptBR = {
     wixProductClear: "Remover produto",
     wixProductPageUrl: "URL da página do produto",
     wixProductId: "ID do produto (Wix)",
-    imagePreview: "Pré-visualização da imagem",
+    imagePreview: "Imagem",
     schoolUrlForFaviconOnly: "URL da página (apenas favicon)",
     slug: "Slug",
     visibility: "Visibilidade",

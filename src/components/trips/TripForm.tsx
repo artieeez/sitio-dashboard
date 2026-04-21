@@ -214,7 +214,8 @@ export function TripForm(props: {
     "w-full min-w-0 rounded border border-input bg-background px-2 py-1";
   const readOnlyFieldClass = `${fieldClass} cursor-not-allowed bg-muted/60 text-muted-foreground`;
 
-  const schoolReady = mode !== "create" || schoolQuery.isSuccess;
+  /** Edit never waits on school fetch; create waits for Wix collection check. */
+  const schoolReady = mode === "edit" || schoolQuery.isSuccess;
   const hasWixCollection =
     mode === "create" && !!schoolQuery.data?.wixCollectionId?.trim();
 
@@ -347,7 +348,7 @@ export function TripForm(props: {
               />
             </div>
 
-            {mode === "create" && wixProductId ? (
+            {wixProductId ? (
               <>
                 <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
                   <span>{ptBR.fields.wixProductId}</span>
@@ -379,51 +380,10 @@ export function TripForm(props: {
               </>
             ) : null}
 
-            {mode === "edit" && trip?.wixProductId ? (
-              <>
-                <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
-                  <span>{ptBR.fields.wixProductId}</span>
-                  <span className="border-input bg-muted/40 rounded-md border px-3 py-2 font-mono text-xs">
-                    {trip.wixProductId}
-                  </span>
-                </div>
-                <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
-                  <span>{ptBR.fields.slug}</span>
-                  <span className="border-input bg-muted/40 rounded-md border px-3 py-2 text-sm">
-                    {trip.wixProductSlug || "—"}
-                  </span>
-                </div>
-                <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
-                  <span>{ptBR.fields.wixProductPageUrl}</span>
-                  {trip.wixProductPageUrl &&
-                  trip.wixProductPageUrl.length > 0 ? (
-                    <a
-                      href={trip.wixProductPageUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-primary text-sm underline"
-                    >
-                      {trip.wixProductPageUrl}
-                    </a>
-                  ) : (
-                    <span className="text-muted-foreground text-sm">—</span>
-                  )}
-                </div>
-              </>
-            ) : null}
-
             <div className="flex min-w-0 flex-col gap-2 md:col-span-2">
               <span className="text-sm">{ptBR.fields.imagePreview}</span>
-              {imageUrl.trim().length > 0 ? (
-                <img
-                  src={imageUrl}
-                  alt=""
-                  className="border-input max-h-48 max-w-full rounded-md border object-contain"
-                />
-              ) : (
-                <p className="text-muted-foreground text-sm">—</p>
-              )}
               <TripImageFilePond
+                coverImageUrl={imageUrl}
                 disabled={submitting || detailLoading}
                 onUploaded={({ imageUrl: url, wixMediaFileId: id }) => {
                   setImageUrl(url);

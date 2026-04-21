@@ -122,18 +122,20 @@ export function TripSummaryDetail({
 
   return (
     <div className="min-w-0 p-6">
-      <DetailPanePageHeader
-        className="mb-6"
-        rowLayout="loose"
-        title={`${ptBR.actions.edit} ${ptBR.entities.trip}`}
-        onClose={requestCloseDetail}
-      />
-      <TripForm
-        mode="edit"
-        schoolId={schoolId}
-        trip={trip}
-        onSuccess={onSaved}
-      />
+      <div className="flex w-full min-w-0 max-w-xl flex-col gap-6">
+        <DetailPanePageHeader
+          className="mb-0"
+          rowLayout="loose"
+          title={`${ptBR.actions.edit} ${ptBR.entities.trip}`}
+          onClose={requestCloseDetail}
+        />
+        <TripForm
+          mode="edit"
+          schoolId={schoolId}
+          trip={trip}
+          onSuccess={onSaved}
+        />
+      </div>
     </div>
   );
 }
