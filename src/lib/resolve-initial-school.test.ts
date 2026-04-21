@@ -7,6 +7,7 @@ import {
 const schools = [
   {
     id: "00000000-0000-0000-0000-000000000001",
+    wixCollectionId: null,
     title: "A",
     description: null,
     imageUrl: null,
@@ -18,6 +19,7 @@ const schools = [
   },
   {
     id: "00000000-0000-0000-0000-000000000002",
+    wixCollectionId: null,
     title: "B",
     description: null,
     imageUrl: null,

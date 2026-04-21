@@ -3,6 +3,8 @@ export const queryKeys = {
   schools: (includeInactive: boolean) =>
     ["schools", { includeInactive }] as const,
   school: (id: string) => ["school", id] as const,
+  schoolDeactivateEligibility: (schoolId: string) =>
+    ["school-deactivate-eligibility", schoolId] as const,
   trips: (schoolId: string, includeInactive: boolean) =>
     ["trips", schoolId, { includeInactive }] as const,
   trip: (id: string) => ["trip", id] as const,

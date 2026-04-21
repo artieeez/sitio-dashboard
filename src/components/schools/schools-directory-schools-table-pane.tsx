@@ -1,7 +1,7 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
 import {
@@ -11,12 +11,13 @@ import {
   ListPaneScrollArea,
   ListPaneShell,
 } from "@/components/layout/list-pane-layout";
+import { DeleteSchoolDialog } from "@/components/schools/delete-school-dialog";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import { buttonVariants } from "@/components/ui/button";
 import { RowKebabMenu } from "@/components/ui/row-kebab-menu";
 import type { SortableListTableSortState } from "@/components/ui/sortable-list-table";
 import { SortableListTable } from "@/components/ui/sortable-list-table";
-import { apiDelete, apiJson } from "@/lib/api-client";
+import { apiJson } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import type { School } from "@/lib/schemas/school";
 import { schoolSchema } from "@/lib/schemas/school";
@@ -91,13 +92,16 @@ export function SchoolsDirectorySchoolsTablePane({
   highlightSchoolId,
 }: SchoolsDirectorySchoolsTablePaneProps) {
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const { selectedKey, requestSelect } = useListDetailLayout();
   const includeInactive = useUiPreferencesStore(
     (s) => s.includeInactiveSchools,
   );
   const setIncludeInactive = useUiPreferencesStore(
     (s) => s.setIncludeInactiveSchools,
+  );
+
+  const [schoolPendingDelete, setSchoolPendingDelete] = useState<School | null>(
+    null,
   );
 
   const schoolsQuery = useQuery({
@@ -258,11 +262,8 @@ export function SchoolsDirectorySchoolsTablePane({
                       id: "delete",
                       label: ptBR.actions.delete,
                       destructive: true,
-                      onClick: async () => {
-                        await apiDelete(`/schools/${s.id}`);
-                        await qc.invalidateQueries({
-                          queryKey: queryKeys.schools(includeInactive),
-                        });
+                      onClick: () => {
+                        setSchoolPendingDelete(s);
                       },
                     },
                   ]}
@@ -273,18 +274,21 @@ export function SchoolsDirectorySchoolsTablePane({
         },
       },
     ],
-    [
-      highlightSchoolId,
-      includeInactive,
-      navigate,
-      qc,
-      requestSelect,
-      selectedKey,
-    ],
+    [highlightSchoolId, navigate, requestSelect, selectedKey],
   );
 
   return (
     <ListPaneShell>
+      <DeleteSchoolDialog
+        open={schoolPendingDelete != null}
+        onOpenChange={(next) => {
+          if (!next) {
+            setSchoolPendingDelete(null);
+          }
+        }}
+        school={schoolPendingDelete}
+        includeInactive={includeInactive}
+      />
       <ListPaneScrollArea>
         <ListPaneLead>
           <ListPanePageHeader

@@ -26,4 +26,17 @@ export const schoolCreateSchema = z.object({
 
 export const schoolUpdateSchema = schoolCreateSchema.partial();
 
+/** `GET /schools/:schoolId/deactivate-eligibility` */
+export const schoolDeactivateEligibilitySchema = z.object({
+  canDelete: z.boolean(),
+  hasWixCollection: z.boolean(),
+  productCount: z.number().nullable(),
+  wixCollectionMissing: z.boolean().optional(),
+  errorCode: z.enum(["WIX_NOT_CONFIGURED", "WIX_QUERY_FAILED"]).optional(),
+});
+
+export type SchoolDeactivateEligibility = z.infer<
+  typeof schoolDeactivateEligibilitySchema
+>;
+
 export type School = z.infer<typeof schoolSchema>;

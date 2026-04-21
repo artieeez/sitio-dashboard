@@ -141,6 +141,26 @@ export const ptBR = {
     trips: "Nenhuma viagem para esta escola (com os filtros atuais).",
     payments: "Nenhum pagamento registrado.",
   },
+  /** School row delete: AlertDialog + Wix collection product check. */
+  deleteSchoolDialog: {
+    title: "Excluir escola",
+    intro: (name: string) =>
+      `A escola “${name}” será marcada como inativa e sumirá das listas padrão.`,
+    checking: "Verificando a coleção Wix…",
+    cannotBlockedProducts: (n: number) =>
+      `Não é possível excluir: a coleção Wix desta escola tem ${n} produto(s). Remova os produtos da coleção no Wix e tente novamente.`,
+    wixNotConfigured:
+      "Não foi possível verificar a coleção Wix (integração sem chave de API). Configure a integração Wix e tente novamente.",
+    wixQueryFailed:
+      "Não foi possível consultar a coleção Wix. Tente novamente em instantes.",
+    orphanCollectionHint:
+      "A coleção salva não foi encontrada no Wix; a escola pode ser excluída normalmente.",
+    emptyCollectionHint:
+      "A coleção Wix está vazia; ela será removida ao confirmar a exclusão.",
+    deleteFailed: "Não foi possível excluir a escola. Tente novamente.",
+    deleteConflict:
+      "A coleção Wix passou a ter produtos; atualize e tente novamente.",
+  },
   /** Passenger detail + payments index shared chrome (tabs under header). */
   passengerWorkspace: {
     tabNavAria: "Seções do passageiro",
