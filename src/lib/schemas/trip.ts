@@ -44,7 +44,13 @@ export const passengerStatusAggregatesSchema = z.object({
   unavailableCount: z.number().int().min(0),
 });
 
+export const tripDeleteEligibilitySchema = z.object({
+  canDelete: z.boolean(),
+  passengerCount: z.number().int().min(0),
+});
+
 export type Trip = z.infer<typeof tripSchema>;
 export type PassengerStatusAggregates = z.infer<
   typeof passengerStatusAggregatesSchema
 >;
+export type TripDeleteEligibility = z.infer<typeof tripDeleteEligibilitySchema>;

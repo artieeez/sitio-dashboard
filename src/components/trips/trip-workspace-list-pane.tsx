@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { ArrowLeft, Plus } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { z } from "zod";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
@@ -10,6 +10,9 @@ import {
   ListPaneScrollArea,
   ListPaneShell,
 } from "@/components/layout/list-pane-layout";
+import { ActivateTripDialog } from "@/components/trips/activate-trip-dialog";
+import { DeactivateTripDialog } from "@/components/trips/deactivate-trip-dialog";
+import { DeleteTripDialog } from "@/components/trips/delete-trip-dialog";
 import { PassengerTable } from "@/components/trips/PassengerTable";
 import { TripWorkspaceListOptionsMenu } from "@/components/trips/trip-workspace-list-options-menu";
 import { Button } from "@/components/ui/button";
@@ -44,6 +47,9 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const { requestSelect } = useListDetailLayout();
+  const [pendingActivate, setPendingActivate] = useState<Trip | null>(null);
+  const [pendingDeactivate, setPendingDeactivate] = useState<Trip | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Trip | null>(null);
   const tripIdValid = isUuid(tripId);
 
   const includeRemoved = useUiPreferencesStore(
@@ -110,8 +116,56 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
     );
   }
 
+  const trip = tripQuery.data;
+  const schoolIdForCache = trip?.schoolId;
+
   return (
     <ListPaneShell className="pt-4">
+      {schoolIdForCache ? (
+        <>
+          <ActivateTripDialog
+            open={pendingActivate != null}
+            onOpenChange={(next) => {
+              if (!next) {
+                setPendingActivate(null);
+              }
+            }}
+            trip={pendingActivate}
+            schoolId={schoolIdForCache}
+          />
+          <DeactivateTripDialog
+            open={pendingDeactivate != null}
+            onOpenChange={(next) => {
+              if (!next) {
+                setPendingDeactivate(null);
+              }
+            }}
+            trip={pendingDeactivate}
+            schoolId={schoolIdForCache}
+          />
+          <DeleteTripDialog
+            open={pendingDelete != null}
+            onOpenChange={(next) => {
+              if (!next) {
+                setPendingDelete(null);
+              }
+            }}
+            trip={pendingDelete}
+            schoolId={schoolIdForCache}
+            onDeleted={() => {
+              requestSelect(null);
+              if (schoolIdForCache) {
+                void navigate({
+                  to: "/schools/$schoolId/trips",
+                  params: { schoolId: schoolIdForCache },
+                });
+              } else {
+                void navigate({ to: "/schools" });
+              }
+            }}
+          />
+        </>
+      ) : null}
       <ListPaneScrollArea>
         <header className="flex min-w-0 items-start gap-3">
           <div className="mt-0.5 shrink-0">
@@ -176,10 +230,27 @@ export function TripWorkspaceListPane({ tripId }: TripWorkspaceListPaneProps) {
             )}
           </div>
           <div className="mt-0.5 shrink-0">
-            <TripWorkspaceListOptionsMenu
-              tripId={tripId}
-              {...(paymentsSchoolId ? { schoolId: paymentsSchoolId } : {})}
-            />
+            {trip ? (
+              <TripWorkspaceListOptionsMenu
+                trip={trip}
+                schoolScopeForLinks={paymentsSchoolId}
+                openActivateDialog={() => {
+                  if (tripQuery.data) {
+                    setPendingActivate(tripQuery.data);
+                  }
+                }}
+                openDeactivateDialog={() => {
+                  if (tripQuery.data) {
+                    setPendingDeactivate(tripQuery.data);
+                  }
+                }}
+                openDeleteDialog={() => {
+                  if (tripQuery.data) {
+                    setPendingDelete(tripQuery.data);
+                  }
+                }}
+              />
+            ) : null}
           </div>
         </header>
         <ListPanePageHeader

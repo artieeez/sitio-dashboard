@@ -188,6 +188,37 @@ export const ptBR = {
     deleteConflict:
       "A coleção Wix passou a ter produtos; atualize e tente novamente.",
   },
+  /** Trip row: soft deactivate (inactive). */
+  deactivateTripDialog: {
+    title: "Desativar viagem",
+    intro: (name: string) =>
+      `A viagem “${name}” será marcada como inativa e deixará de aparecer na lista padrão.`,
+    hint: "Você ainda pode vê-la com o filtro “Incluir viagens inativas”.",
+    deactivateFailed: "Não foi possível desativar a viagem. Tente novamente.",
+  },
+  /** Trip row: activate inactive trip. */
+  activateTripDialog: {
+    title: "Ativar viagem",
+    intro: (name: string) =>
+      `A viagem “${name}” voltará a aparecer na lista padrão e poderá ser usada normalmente.`,
+    activateFailed: "Não foi possível ativar a viagem. Tente novamente.",
+  },
+  /** Trip row: hard delete when there are no passengers. */
+  deleteTripDialog: {
+    title: "Excluir viagem permanentemente",
+    intro: (name: string) =>
+      `A viagem “${name}” será removida do sistema. Esta ação não pode ser desfeita.`,
+    checking: "Verificando passageiros…",
+    cannotWithPassengers: (n: number) =>
+      `Não é possível excluir: há ${n} passageiro(s) nesta viagem. Remova os passageiros e tente novamente.`,
+    readyHint:
+      "Não há passageiros registrados; a viagem pode ser excluída com segurança.",
+    eligibilityError:
+      "Não foi possível verificar os passageiros. Tente novamente.",
+    deleteFailed: "Não foi possível excluir a viagem. Tente novamente.",
+    deleteConflict:
+      "A viagem passou a ter passageiros; atualize e tente novamente.",
+  },
   /** Passenger detail + payments index shared chrome (tabs under header). */
   passengerWorkspace: {
     tabNavAria: "Seções do passageiro",

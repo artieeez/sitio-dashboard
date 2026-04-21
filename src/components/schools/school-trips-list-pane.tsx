@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 
 import { useListDetailLayout } from "@/components/layout/list-detail-layout";
@@ -12,6 +12,9 @@ import {
   ListPaneScrollArea,
   ListPaneShell,
 } from "@/components/layout/list-pane-layout";
+import { ActivateTripDialog } from "@/components/trips/activate-trip-dialog";
+import { DeactivateTripDialog } from "@/components/trips/deactivate-trip-dialog";
+import { DeleteTripDialog } from "@/components/trips/delete-trip-dialog";
 import { TripWorkspaceListOptionsMenu } from "@/components/trips/trip-workspace-list-options-menu";
 import { BooleanFilterChip } from "@/components/ui/boolean-filter-chip";
 import { buttonVariants } from "@/components/ui/button";
@@ -69,7 +72,10 @@ function navigateToSchoolTripPassengers(
 
 export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
   const navigate = useNavigate();
-  const { selectedKey } = useListDetailLayout();
+  const { selectedKey, requestSelect } = useListDetailLayout();
+  const [pendingActivate, setPendingActivate] = useState<Trip | null>(null);
+  const [pendingDeactivate, setPendingDeactivate] = useState<Trip | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Trip | null>(null);
   const includeInactive = useUiPreferencesStore((s) => s.includeInactiveTrips);
   const setIncludeInactive = useUiPreferencesStore(
     (s) => s.setIncludeInactiveTrips,
@@ -194,9 +200,12 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
               )}
             >
               <TripWorkspaceListOptionsMenu
-                tripId={t.id}
-                schoolId={schoolId}
+                trip={t}
+                schoolScopeForLinks={schoolId}
                 showViewPassengers
+                openActivateDialog={() => setPendingActivate(t)}
+                openDeactivateDialog={() => setPendingDeactivate(t)}
+                openDeleteDialog={() => setPendingDelete(t)}
               />
             </div>
           </div>
@@ -216,6 +225,41 @@ export function SchoolTripsListPane({ schoolId }: SchoolTripsListPaneProps) {
 
   return (
     <ListPaneShell>
+      <ActivateTripDialog
+        open={pendingActivate != null}
+        onOpenChange={(next) => {
+          if (!next) {
+            setPendingActivate(null);
+          }
+        }}
+        trip={pendingActivate}
+        schoolId={schoolId}
+      />
+      <DeactivateTripDialog
+        open={pendingDeactivate != null}
+        onOpenChange={(next) => {
+          if (!next) {
+            setPendingDeactivate(null);
+          }
+        }}
+        trip={pendingDeactivate}
+        schoolId={schoolId}
+      />
+      <DeleteTripDialog
+        open={pendingDelete != null}
+        onOpenChange={(next) => {
+          if (!next) {
+            setPendingDelete(null);
+          }
+        }}
+        trip={pendingDelete}
+        schoolId={schoolId}
+        onDeleted={(id) => {
+          if (selectedKey === id) {
+            requestSelect(null);
+          }
+        }}
+      />
       <ListPaneScrollArea>
         <ListPaneLead>
           <ListPanePageHeader

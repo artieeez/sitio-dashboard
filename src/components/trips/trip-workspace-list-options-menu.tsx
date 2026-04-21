@@ -1,35 +1,55 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Pencil, Share2, Trash2, Users } from "lucide-react";
+import { Pencil, Power, PowerOff, Share2, Trash2, Users } from "lucide-react";
 import { useMemo } from "react";
 
 import {
   RowKebabMenu,
   type RowKebabMenuItem,
 } from "@/components/ui/row-kebab-menu";
+import type { Trip } from "@/lib/schemas/trip";
 import { passengersListLink, tripSummaryLink } from "@/lib/trip-payment-links";
 import { ptBR } from "@/messages/pt-BR";
 
 export function TripWorkspaceListOptionsMenu(props: {
-  tripId: string;
-  schoolId?: string;
+  trip: Trip;
   /**
-   * School trips table: include “Ver passageiros” and use horizontal ⋯ in dense cells.
+   * When set, “Ver passageiros” / “Editar” use `/schools/.../trips/...` routes; when
+   * omitted, use global `/trips/...` links (URL has no school scope).
+   */
+  schoolScopeForLinks?: string;
+  openActivateDialog: () => void;
+  openDeactivateDialog: () => void;
+  openDeleteDialog: () => void;
+  /**
+   * When set (e.g. school trips table), include “Ver passageiros” and horizontal ⋯ in dense cells.
    */
   showViewPassengers?: boolean;
 }) {
   const navigate = useNavigate();
-  const { tripId, schoolId, showViewPassengers } = props;
+  const {
+    trip,
+    schoolScopeForLinks,
+    openActivateDialog,
+    openDeactivateDialog,
+    openDeleteDialog,
+    showViewPassengers,
+  } = props;
+  const tripId = trip.id;
 
   const items = useMemo((): RowKebabMenuItem[] => {
-    const scope = { tripId, ...(schoolId ? { schoolId } : {}) };
     const out: RowKebabMenuItem[] = [];
-    if (showViewPassengers && schoolId) {
+    if (showViewPassengers && schoolScopeForLinks) {
       out.push({
         id: "passengers",
         icon: <Users className="text-muted-foreground" aria-hidden />,
         label: ptBR.actions.viewPassengers,
         onClick: () => {
-          void navigate(passengersListLink({ tripId, schoolId }));
+          void navigate(
+            passengersListLink({
+              tripId,
+              schoolId: schoolScopeForLinks,
+            }),
+          );
         },
       });
     }
@@ -43,7 +63,9 @@ export function TripWorkspaceListOptionsMenu(props: {
           </>
         ),
         onClick: () => {
-          void navigate(tripSummaryLink(scope));
+          void navigate(
+            tripSummaryLink({ tripId, schoolId: schoolScopeForLinks }),
+          );
         },
       },
       {
@@ -52,21 +74,52 @@ export function TripWorkspaceListOptionsMenu(props: {
         label: ptBR.actions.share,
         disabled: true,
       },
-      {
-        id: "delete",
-        icon: <Trash2 className="text-muted-foreground" aria-hidden />,
+    );
+    if (trip.active) {
+      out.push({
+        id: "deactivate",
+        icon: <PowerOff className="text-muted-foreground" aria-hidden />,
         label: (
           <>
-            {ptBR.actions.delete} {ptBR.entities.trip}
+            {ptBR.actions.deactivate} {ptBR.entities.trip}
           </>
         ),
-        onClick: () => {
-          /* trip delete not implemented */
-        },
-      },
-    );
+        onClick: () => openDeactivateDialog(),
+      });
+    } else {
+      out.push({
+        id: "activate",
+        icon: <Power className="text-muted-foreground" aria-hidden />,
+        label: (
+          <>
+            {ptBR.actions.activate} {ptBR.entities.trip}
+          </>
+        ),
+        onClick: () => openActivateDialog(),
+      });
+    }
+    out.push({
+      id: "delete-permanent",
+      icon: <Trash2 className="text-destructive" aria-hidden />,
+      label: (
+        <span className="text-destructive">
+          {ptBR.actions.deletePermanently} {ptBR.entities.trip}
+        </span>
+      ),
+      destructive: true,
+      onClick: () => openDeleteDialog(),
+    });
     return out;
-  }, [tripId, schoolId, showViewPassengers, navigate]);
+  }, [
+    tripId,
+    trip.active,
+    schoolScopeForLinks,
+    showViewPassengers,
+    navigate,
+    openActivateDialog,
+    openDeactivateDialog,
+    openDeleteDialog,
+  ]);
 
   return (
     <RowKebabMenu
