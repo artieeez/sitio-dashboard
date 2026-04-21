@@ -39,6 +39,12 @@ export const ptBR = {
     wixCollection: "Coleção Wix",
     wixCollectionSearchPlaceholder: "Buscar coleção pelo nome…",
     wixCollectionClear: "Remover coleção",
+    wixProduct: "Produto Wix",
+    wixProductSearchPlaceholder: "Buscar produto pelo nome…",
+    wixProductClear: "Remover produto",
+    wixProductPageUrl: "URL da página do produto",
+    wixProductId: "ID do produto (Wix)",
+    imagePreview: "Pré-visualização da imagem",
     schoolUrlForFaviconOnly: "URL da página (apenas favicon)",
     slug: "Slug",
     visibility: "Visibilidade",
@@ -197,6 +203,9 @@ export const ptBR = {
     optionsMenuAria: "Mais opções da viagem",
     /** Placeholder until the header uses `trip.createdAt` from the API. */
     subtitleDateMock: "Criada em 9 de abr. de 2026",
+    /** New trip form: school must have `wixCollectionId`. */
+    tripNewRequiresWixCollection:
+      "Configure uma coleção Wix na escola antes de criar uma viagem.",
   },
   /** M3 list–detail regions (004); shell `aria-label`s. */
   listDetail: {

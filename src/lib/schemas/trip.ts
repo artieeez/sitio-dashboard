@@ -9,8 +9,10 @@ export const tripSchema = z.object({
   id: uuidStringSchema,
   schoolId: uuidStringSchema,
   active: z.boolean(),
+  wixProductId: z.string().nullable(),
+  wixProductSlug: z.string().nullable(),
+  wixProductPageUrl: z.string().nullable(),
   defaultExpectedAmountMinor: moneyMinorSchema.nullable(),
-  url: z.string().nullable(),
   title: z.string().nullable(),
   description: z.string().nullable(),
   imageUrl: z.string().nullable(),
@@ -19,19 +21,19 @@ export const tripSchema = z.object({
 });
 
 export const tripCreateSchema = z.object({
+  wixProductId: z.string().nullable().optional(),
+  wixProductSlug: z.string().nullable().optional(),
+  wixProductPageUrl: z.string().nullable().optional(),
   defaultExpectedAmountMinor: moneyMinorSchema.nullable().optional(),
-  url: z.string().nullable().optional(),
   title: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
   active: z.boolean().optional(),
 });
 
-/** PATCH does not accept title or defaultExpectedAmountMinor (sourced from landing URL). */
+/** PATCH: description and active only (product-linked fields are immutable). */
 export const tripUpdateSchema = z.object({
-  url: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  imageUrl: z.string().nullable().optional(),
   active: z.boolean().optional(),
 });
 

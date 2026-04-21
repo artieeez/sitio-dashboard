@@ -1,37 +1,41 @@
+import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
+
+import { WixProductAutocomplete } from "@/components/trips/wix-product-autocomplete";
 import { FormFooter } from "@/components/ui/form-footer";
 import { useReportWorkspaceDirty } from "@/contexts/workspace-dirty-context";
-import { ApiError, apiPatchJson, apiPostJson } from "@/lib/api-client";
-import {
-  fetchPageRequestSchema,
-  landingMetadataSchema,
-} from "@/lib/schemas/metadata";
+import { ApiError, apiJson, apiPatchJson, apiPostJson } from "@/lib/api-client";
+import { queryKeys } from "@/lib/query-keys";
+import { schoolSchema } from "@/lib/schemas/school";
 import type { Trip } from "@/lib/schemas/trip";
 import { tripCreateSchema, tripUpdateSchema } from "@/lib/schemas/trip";
+import { wixProductSummarySchema } from "@/lib/schemas/wix-product";
 import { ptBR } from "@/messages/pt-BR";
-
-const METADATA_DEBOUNCE_MS = 600;
 
 type Mode = "create" | "edit";
 
 type TripFormSnapshot = {
   defaultExpectedAmountMinor: string;
-  url: string;
   title: string;
   description: string;
   imageUrl: string;
+  wixProductId: string | null;
+  wixProductSlug: string | null;
+  wixProductPageUrl: string | null;
 };
 
 function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
   if (mode === "create" || !trip) {
     return {
       defaultExpectedAmountMinor: "",
-      url: "",
       title: "",
       description: "",
       imageUrl: "",
+      wixProductId: null,
+      wixProductSlug: null,
+      wixProductPageUrl: null,
     };
   }
   return {
@@ -39,10 +43,12 @@ function tripBaseline(trip: Trip | undefined, mode: Mode): TripFormSnapshot {
       trip.defaultExpectedAmountMinor != null
         ? String(trip.defaultExpectedAmountMinor)
         : "",
-    url: trip.url ?? "",
     title: trip.title ?? "",
     description: trip.description ?? "",
     imageUrl: trip.imageUrl ?? "",
+    wixProductId: trip.wixProductId,
+    wixProductSlug: trip.wixProductSlug?.trim() || null,
+    wixProductPageUrl: trip.wixProductPageUrl?.trim() || null,
   };
 }
 
@@ -58,26 +64,45 @@ export function TripForm(props: {
       ? String(trip.defaultExpectedAmountMinor)
       : "",
   );
-  const [url, setUrl] = useState(trip?.url ?? "");
   const [title, setTitle] = useState(trip?.title ?? "");
   const [description, setDescription] = useState(trip?.description ?? "");
   const [imageUrl, setImageUrl] = useState(trip?.imageUrl ?? "");
+  const [wixProductId, setWixProductId] = useState<string | null>(
+    trip?.wixProductId ?? null,
+  );
+  const [pickedName, setPickedName] = useState<string | null>(null);
+  const [wixProductSlug, setWixProductSlug] = useState(
+    trip?.wixProductSlug ?? "",
+  );
+  const [wixProductPageUrl, setWixProductPageUrl] = useState(
+    trip?.wixProductPageUrl ?? "",
+  );
   const [submitting, setSubmitting] = useState(false);
-  const [metadataLoading, setMetadataLoading] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saveCommitted, setSaveCommitted] = useState(false);
-  const metadataAbortRef = useRef<AbortController | null>(null);
-  const metadataGenerationRef = useRef(0);
 
   const baseline = useMemo(() => tripBaseline(trip, mode), [trip, mode]);
+
+  const schoolQuery = useQuery({
+    queryKey: queryKeys.school(schoolId),
+    queryFn: async () => {
+      const raw = await apiJson<unknown>(`/schools/${schoolId}`);
+      return schoolSchema.parse(raw);
+    },
+    enabled: mode === "create",
+  });
 
   useEffect(() => {
     setSaveCommitted(false);
     setDefaultExpectedAmountMinor(baseline.defaultExpectedAmountMinor);
-    setUrl(baseline.url);
     setTitle(baseline.title);
     setDescription(baseline.description);
     setImageUrl(baseline.imageUrl);
+    setWixProductId(baseline.wixProductId);
+    setPickedName(null);
+    setWixProductSlug(baseline.wixProductSlug ?? "");
+    setWixProductPageUrl(baseline.wixProductPageUrl ?? "");
     setError(null);
   }, [baseline]);
 
@@ -87,105 +112,27 @@ export function TripForm(props: {
     }
     const current: TripFormSnapshot = {
       defaultExpectedAmountMinor,
-      url,
       title,
       description,
       imageUrl,
+      wixProductId,
+      wixProductSlug: wixProductSlug.trim() || null,
+      wixProductPageUrl: wixProductPageUrl.trim() || null,
     };
     return JSON.stringify(current) !== JSON.stringify(baseline);
   }, [
     saveCommitted,
     baseline,
     defaultExpectedAmountMinor,
-    url,
     title,
     description,
     imageUrl,
+    wixProductId,
+    wixProductSlug,
+    wixProductPageUrl,
   ]);
 
   useReportWorkspaceDirty(isDirty);
-
-  useEffect(() => {
-    const trimmed = url.trim();
-    if (trimmed === baseline.url.trim()) {
-      return;
-    }
-    const parsed = fetchPageRequestSchema.safeParse({ url: trimmed });
-    if (!parsed.success) {
-      return;
-    }
-
-    const generation = metadataGenerationRef.current;
-    const timeoutId = window.setTimeout(() => {
-      if (metadataGenerationRef.current !== generation) return;
-
-      metadataAbortRef.current?.abort();
-      const ac = new AbortController();
-      metadataAbortRef.current = ac;
-
-      void (async () => {
-        setMetadataLoading(true);
-        setError(null);
-        try {
-          const raw = await apiPostJson<unknown>(
-            "/metadata/fetch-page",
-            parsed.data,
-            { signal: ac.signal },
-          );
-          if (
-            ac.signal.aborted ||
-            metadataGenerationRef.current !== generation
-          ) {
-            return;
-          }
-          const meta = landingMetadataSchema.parse(raw);
-          if (meta.title) {
-            setTitle(meta.title);
-          }
-          if (meta.defaultExpectedAmountMinor != null) {
-            setDefaultExpectedAmountMinor(
-              String(meta.defaultExpectedAmountMinor),
-            );
-          }
-          if (meta.description) {
-            setDescription(meta.description);
-          }
-          if (meta.imageUrl) {
-            setImageUrl(meta.imageUrl);
-          }
-        } catch (e) {
-          if (
-            ac.signal.aborted ||
-            metadataGenerationRef.current !== generation
-          ) {
-            return;
-          }
-          if (e instanceof ApiError && e.status === 502) {
-            setError(
-              "Não foi possível buscar a página. Preencha os campos manualmente.",
-            );
-          } else {
-            setError("Falha ao buscar metadados.");
-          }
-        } finally {
-          if (
-            metadataGenerationRef.current === generation &&
-            !ac.signal.aborted
-          ) {
-            setMetadataLoading(false);
-          }
-        }
-      })();
-    }, METADATA_DEBOUNCE_MS);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      metadataAbortRef.current?.abort();
-      metadataAbortRef.current = null;
-      metadataGenerationRef.current += 1;
-      setMetadataLoading(false);
-    };
-  }, [url, baseline.url]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -202,9 +149,21 @@ export function TripForm(props: {
         return;
       }
       if (mode === "create") {
+        if (!schoolQuery.data?.wixCollectionId?.trim()) {
+          setError(ptBR.tripWorkspace.tripNewRequiresWixCollection);
+          setSubmitting(false);
+          return;
+        }
+        if (!wixProductId?.trim()) {
+          setError("Selecione um produto Wix.");
+          setSubmitting(false);
+          return;
+        }
         const body = tripCreateSchema.parse({
+          wixProductId: wixProductId.trim(),
+          wixProductSlug: wixProductSlug.trim() || null,
+          wixProductPageUrl: wixProductPageUrl.trim() || null,
           defaultExpectedAmountMinor: minor,
-          url: url.trim() || null,
           title: title.trim() || null,
           description: description.trim() || null,
           imageUrl: imageUrl.trim() || null,
@@ -213,9 +172,7 @@ export function TripForm(props: {
         await apiPostJson(`/schools/${schoolId}/trips`, body);
       } else if (trip) {
         const body = tripUpdateSchema.parse({
-          url: url.trim() || null,
           description: description.trim() || null,
-          imageUrl: imageUrl.trim() || null,
           active: trip.active,
         });
         await apiPatchJson(`/trips/${trip.id}`, body);
@@ -242,6 +199,10 @@ export function TripForm(props: {
     "w-full min-w-0 rounded border border-input bg-background px-2 py-1";
   const readOnlyFieldClass = `${fieldClass} cursor-not-allowed bg-muted/60 text-muted-foreground`;
 
+  const schoolReady = mode !== "create" || schoolQuery.isSuccess;
+  const hasWixCollection =
+    mode === "create" && !!schoolQuery.data?.wixCollectionId?.trim();
+
   return (
     <form
       onSubmit={submit}
@@ -256,66 +217,206 @@ export function TripForm(props: {
             {error}
           </p>
         ) : null}
-        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
-          <span className="flex items-center gap-2">
-            {ptBR.fields.url}
-            {metadataLoading ? (
-              <Loader2
-                className="size-4 shrink-0 animate-spin text-muted-foreground"
-                aria-hidden
+
+        {mode === "create" && schoolQuery.isLoading ? (
+          <div className="text-muted-foreground flex items-center gap-2 text-sm md:col-span-2">
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+            Carregando escola…
+          </div>
+        ) : null}
+
+        {mode === "create" && schoolQuery.isError ? (
+          <p className="text-destructive text-sm md:col-span-2" role="alert">
+            Não foi possível carregar a escola.
+          </p>
+        ) : null}
+
+        {mode === "create" && schoolQuery.isSuccess && !hasWixCollection ? (
+          <p
+            className="text-amber-800 md:col-span-2 dark:text-amber-200"
+            role="status"
+          >
+            {ptBR.tripWorkspace.tripNewRequiresWixCollection}
+          </p>
+        ) : null}
+
+        {mode === "create" && hasWixCollection ? (
+          <div className="md:col-span-2">
+            <WixProductAutocomplete
+              schoolId={schoolId}
+              valueId={wixProductId}
+              valueName={
+                pickedName ?? (title.trim() ? title : wixProductId ? "…" : null)
+              }
+              disabled={submitting || detailLoading}
+              onSelect={(s) => {
+                setWixProductId(s.id);
+                setPickedName(s.name);
+                setTitle(s.name);
+                setDetailLoading(true);
+                setError(null);
+                void (async () => {
+                  try {
+                    const raw = await apiJson<unknown>(
+                      `/integrations/wix/products/${encodeURIComponent(s.id)}`,
+                    );
+                    const full = wixProductSummarySchema.parse(raw);
+                    setTitle(full.name);
+                    setDescription(full.description?.trim() ?? "");
+                    setImageUrl(full.imageUrl ?? "");
+                    setWixProductSlug(full.slug ?? "");
+                    setWixProductPageUrl(full.productPageUrl ?? "");
+                    if (full.defaultExpectedAmountMinor != null) {
+                      setDefaultExpectedAmountMinor(
+                        String(full.defaultExpectedAmountMinor),
+                      );
+                    }
+                  } catch {
+                    setError("Não foi possível carregar os dados do produto.");
+                  } finally {
+                    setDetailLoading(false);
+                  }
+                })();
+              }}
+              onClear={() => {
+                setWixProductId(null);
+                setPickedName(null);
+                setWixProductSlug("");
+                setWixProductPageUrl("");
+                setTitle("");
+                setDescription("");
+                setImageUrl("");
+                setDefaultExpectedAmountMinor("");
+              }}
+            />
+            {detailLoading ? (
+              <p className="text-muted-foreground mt-1 flex items-center gap-2 text-xs">
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                Carregando produto…
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+
+        {schoolReady ? (
+          <>
+            <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+              <span>{ptBR.fields.defaultExpectedAmount}</span>
+              <input
+                className={readOnlyFieldClass}
+                readOnly
+                aria-readonly="true"
+                inputMode="numeric"
+                value={defaultExpectedAmountMinor}
+                placeholder="ex.: 15000 (= R$ 150,00)"
               />
+            </label>
+            <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+              <span>{ptBR.fields.title}</span>
+              <input
+                className={readOnlyFieldClass}
+                readOnly
+                aria-readonly="true"
+                value={title}
+              />
+            </label>
+            <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+              <span>Descrição</span>
+              <textarea
+                className={`min-h-[4rem] ${fieldClass}`}
+                value={description}
+                onChange={(ev) => setDescription(ev.target.value)}
+              />
+            </label>
+
+            {mode === "create" && wixProductId ? (
+              <>
+                <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+                  <span>{ptBR.fields.wixProductId}</span>
+                  <span className="border-input bg-muted/40 rounded-md border px-3 py-2 font-mono text-xs">
+                    {wixProductId}
+                  </span>
+                </div>
+                <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+                  <span>{ptBR.fields.slug}</span>
+                  <span className="border-input bg-muted/40 rounded-md border px-3 py-2 text-sm">
+                    {wixProductSlug || "—"}
+                  </span>
+                </div>
+                <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+                  <span>{ptBR.fields.wixProductPageUrl}</span>
+                  {wixProductPageUrl.trim().length > 0 ? (
+                    <a
+                      href={wixProductPageUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-primary text-sm underline"
+                    >
+                      {wixProductPageUrl}
+                    </a>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">—</span>
+                  )}
+                </div>
+              </>
             ) : null}
-            {metadataLoading ? (
-              <span className="sr-only">Carregando dados da página…</span>
+
+            {mode === "edit" && trip?.wixProductId ? (
+              <>
+                <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+                  <span>{ptBR.fields.wixProductId}</span>
+                  <span className="border-input bg-muted/40 rounded-md border px-3 py-2 font-mono text-xs">
+                    {trip.wixProductId}
+                  </span>
+                </div>
+                <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+                  <span>{ptBR.fields.slug}</span>
+                  <span className="border-input bg-muted/40 rounded-md border px-3 py-2 text-sm">
+                    {trip.wixProductSlug || "—"}
+                  </span>
+                </div>
+                <div className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
+                  <span>{ptBR.fields.wixProductPageUrl}</span>
+                  {trip.wixProductPageUrl &&
+                  trip.wixProductPageUrl.length > 0 ? (
+                    <a
+                      href={trip.wixProductPageUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-primary text-sm underline"
+                    >
+                      {trip.wixProductPageUrl}
+                    </a>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">—</span>
+                  )}
+                </div>
+              </>
             ) : null}
-          </span>
-          <input
-            className={fieldClass}
-            value={url}
-            onChange={(ev) => setUrl(ev.target.value)}
-            placeholder="https://"
-            aria-busy={metadataLoading}
-          />
-        </label>
-        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
-          <span>{ptBR.fields.defaultExpectedAmount}</span>
-          <input
-            className={readOnlyFieldClass}
-            readOnly
-            aria-readonly="true"
-            inputMode="numeric"
-            value={defaultExpectedAmountMinor}
-            placeholder="ex.: 15000 (= R$ 150,00)"
-          />
-        </label>
-        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
-          <span>Título</span>
-          <input
-            className={readOnlyFieldClass}
-            readOnly
-            aria-readonly="true"
-            value={title}
-          />
-        </label>
-        <label className="flex min-w-0 flex-col gap-1 text-sm md:col-span-2">
-          <span>Descrição</span>
-          <textarea
-            className={`min-h-[4rem] ${fieldClass}`}
-            value={description}
-            onChange={(ev) => setDescription(ev.target.value)}
-          />
-        </label>
-        <label className="flex min-w-0 flex-col gap-1 text-sm">
-          <span>URL da imagem</span>
-          <input
-            className={fieldClass}
-            value={imageUrl}
-            onChange={(ev) => setImageUrl(ev.target.value)}
-          />
-        </label>
+
+            <div className="flex min-w-0 flex-col gap-2 md:col-span-2">
+              <span className="text-sm">{ptBR.fields.imagePreview}</span>
+              {imageUrl.trim().length > 0 ? (
+                <img
+                  src={imageUrl}
+                  alt=""
+                  className="border-input max-h-48 max-w-full rounded-md border object-contain"
+                />
+              ) : (
+                <p className="text-muted-foreground text-sm">—</p>
+              )}
+            </div>
+          </>
+        ) : null}
+
         <FormFooter
           className="pt-1 md:col-span-2"
-          primaryProps={{ disabled: submitting }}
+          primaryProps={{
+            disabled:
+              submitting ||
+              (mode === "create" &&
+                (!schoolQuery.isSuccess || !hasWixCollection || !wixProductId)),
+          }}
         >
           {ptBR.actions.save}
         </FormFooter>
