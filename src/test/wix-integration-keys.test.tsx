@@ -14,7 +14,7 @@ function KeyFieldsHarness() {
       publicKey={publicKey}
       privateApiKeyPrefix={privateApiKeyPrefix}
       onPublicKeyChange={setPublicKey}
-      onPrivateApiKeyChange={(v) => setPrivateApiKeyPrefix(v.slice(0, 4))}
+      onPrivateApiKeyChange={(v) => setPrivateApiKeyPrefix(v.slice(0, 10))}
     />
   );
 }

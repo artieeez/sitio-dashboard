@@ -14,10 +14,12 @@ export type WixIntegrationKeyFieldsProps = {
   onPrivateApiKeyChange: (value: string) => void;
 };
 
-/** Private key: prefix plus censored tail (API never returns the full secret). */
+const PRIVATE_KEY_VISIBLE_LEN = 10;
+
+/** Private key: first chars plus censored tail (API never returns the full secret). */
 function formatMaskedFromPrefix(prefix: string | null): string {
   if (!prefix) return "";
-  const p = prefix.slice(0, 4);
+  const p = prefix.slice(0, PRIVATE_KEY_VISIBLE_LEN);
   return `${p}${"•".repeat(10)}`;
 }
 

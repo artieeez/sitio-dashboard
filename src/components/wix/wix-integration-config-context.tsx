@@ -6,6 +6,7 @@ export const WIX_CONFIG_SELECTED_KEY = "__wix_configuration__";
 export type WixIntegrationConfigContextValue = {
   /** Full public key for webhook signing (returned by the API). */
   publicKey: string | null;
+  /** First 10 characters of the private key (API only; full secret never sent). */
   privateApiKeyPrefix: string | null;
   isLoading: boolean;
   setPublicKey: (value: string) => void;
