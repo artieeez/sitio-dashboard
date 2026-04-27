@@ -8,8 +8,6 @@ on:
 env:
   REGISTRY: vcp.ocir.io
   IMAGE_NAME: sitio-dashboard
-  VITE_API_URL: https://sitio-api-staging.artr.com.br/api
-  VITE_TINYAUTH_APP_URL: https://tinyauth.artr.com.br
 
 jobs:
   build-push:
@@ -48,9 +46,6 @@ jobs:
           platforms: linux/arm64
           provenance: false
           sbom: false
-          build-args: |
-            VITE_API_URL=${{ env.VITE_API_URL }}
-            VITE_TINYAUTH_APP_URL=${{ env.VITE_TINYAUTH_APP_URL }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -66,9 +61,13 @@ jobs:
       - name: Update dashboard image tag in GitOps
         env:
           SHORT_SHA: ${{ github.sha }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          OCIR_NAMESPACE: ${{ secrets.OCIR_NAMESPACE }}
         run: |
           SHORT_SHA="${SHORT_SHA::7}"
-          sed -i "s|image: vcp.ocir.io/axtvnrdemzo7/sitio-dashboard:.*|image: vcp.ocir.io/axtvnrdemzo7/sitio-dashboard:sha-${SHORT_SHA}|" artr-gitops/apps/sitio-staging/sitio-dashboard/deployment.yaml
+          NEW_IMAGE="${REGISTRY}/${OCIR_NAMESPACE}/${IMAGE_NAME}:sha-${SHORT_SHA}"
+          sed -i "s|image: .*${IMAGE_NAME}:.*|image: ${NEW_IMAGE}|" artr-gitops/apps/sitio-staging/sitio-dashboard/deployment.yaml
 
       - name: Commit and push GitOps change
         run: |

@@ -1,9 +1,22 @@
 import { navigateToTinyAuthLoginIfConfigured } from "@/lib/tinyauth-login";
 
+/** API base (must end with `/api` or be full origin + `/api`). */
 function apiBase(): string {
-  const raw = import.meta.env.VITE_API_URL;
-  if (typeof raw === "string" && raw.length > 0) {
-    return raw.replace(/\/$/, "");
+  const fromVite = import.meta.env.VITE_API_URL;
+  if (typeof fromVite === "string" && fromVite.length > 0) {
+    return fromVite.replace(/\/$/, "");
+  }
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}/api`.replace(/\/$/, "");
+  }
+  const fromEnv =
+    typeof process !== "undefined" &&
+    typeof process.env.VITE_API_URL === "string" &&
+    process.env.VITE_API_URL.length > 0
+      ? process.env.VITE_API_URL.replace(/\/$/, "")
+      : undefined;
+  if (fromEnv) {
+    return fromEnv;
   }
   return "http://localhost:3000/api";
 }

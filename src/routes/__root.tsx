@@ -11,8 +11,8 @@ import { queryClient } from "@/lib/query-client";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
+  head: () => {
+    const meta = [
       {
         charSet: "utf-8",
       },
@@ -23,14 +23,29 @@ export const Route = createRootRoute({
       {
         title: "Sítio — Viagens escolares",
       },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  }),
+    ];
+    const tinyAuthUrl =
+      typeof process !== "undefined" &&
+      typeof process.env.VITE_TINYAUTH_APP_URL === "string" &&
+      process.env.VITE_TINYAUTH_APP_URL.trim().length > 0
+        ? process.env.VITE_TINYAUTH_APP_URL.trim()
+        : undefined;
+    if (tinyAuthUrl) {
+      meta.push({
+        name: "sitio:tinyauth-app-url",
+        content: tinyAuthUrl,
+      });
+    }
+    return {
+      meta,
+      links: [
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+      ],
+    };
+  },
   shellComponent: RootDocument,
 });
 
