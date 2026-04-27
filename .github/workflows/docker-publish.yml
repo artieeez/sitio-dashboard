@@ -53,3 +53,27 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Checkout GitOps repository
+        uses: actions/checkout@v4
+        with:
+          repository: artieeez/artr-gitops
+          token: ${{ secrets.ARTR_GITOPS_REPO_TOKEN }}
+          path: artr-gitops
+
+      - name: Update dashboard image tag in GitOps
+        env:
+          SHORT_SHA: ${{ github.sha }}
+        run: |
+          SHORT_SHA="${SHORT_SHA::7}"
+          sed -i "s|image: vcp.ocir.io/axtvnrdemzo7/sitio-dashboard:.*|image: vcp.ocir.io/axtvnrdemzo7/sitio-dashboard:sha-${SHORT_SHA}|" artr-gitops/apps/sitio-staging/sitio-dashboard/deployment.yaml
+
+      - name: Commit and push GitOps change
+        run: |
+          cd artr-gitops
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/sitio-staging/sitio-dashboard/deployment.yaml
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(gitops): bump sitio-dashboard image to sha-${GITHUB_SHA::7}"
+          git push origin HEAD
