@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: sa-vinhedo-1.ocir.io
+  REGISTRY: vcp.ocir.io
   IMAGE_NAME: sitio-dashboard
   VITE_API_URL: https://sitio-api-staging.artr.com.br/api
 
