@@ -15,8 +15,8 @@ function tinyAuthAppUrlRaw(): string | null {
 }
 
 /**
- * Browser redirect to TinyAuth after API 401. Matches common TinyAuth flow:
- * `https://tinyauth…/?redirect_uri=https://your-app…` (see GitOps `TINYAUTH_APPURL`).
+ * Browser redirect to TinyAuth after API 401. TinyAuth v5 expects `redirect_uri` on **`/login`**
+ * (see `tinyauth` `App.tsx` → `/login` navigate strips query from `/`).
  */
 export function tinyAuthBrowserLoginUrl(): string | null {
   const raw = tinyAuthAppUrlRaw();
@@ -35,6 +35,11 @@ export function tinyAuthBrowserLoginUrl(): string | null {
   if (window.location.origin === login.origin) {
     return null;
   }
+  // TinyAuth serves `LoginPage` on `/login` and reads `redirect_uri` from the location search.
+  // `/` immediately `<Navigate to="/login" replace />` without preserving query — so never send
+  // users to `/?redirect_uri=…` or the return URL is lost after sign-in.
+  login.pathname = "/login";
+  login.search = "";
   login.searchParams.set("redirect_uri", window.location.href);
   return login.href;
 }
