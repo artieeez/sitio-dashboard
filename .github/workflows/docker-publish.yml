@@ -9,6 +9,7 @@ env:
   REGISTRY: vcp.ocir.io
   IMAGE_NAME: sitio-dashboard
   VITE_API_URL: https://sitio-api-staging.artr.com.br/api
+  VITE_TINYAUTH_APP_URL: https://tinyauth.artr.com.br
 
 jobs:
   build-push:
@@ -49,6 +50,7 @@ jobs:
           sbom: false
           build-args: |
             VITE_API_URL=${{ env.VITE_API_URL }}
+            VITE_TINYAUTH_APP_URL=${{ env.VITE_TINYAUTH_APP_URL }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha

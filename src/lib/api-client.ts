@@ -1,3 +1,5 @@
+import { navigateToTinyAuthLoginIfConfigured } from "@/lib/tinyauth-login";
+
 function apiBase(): string {
   const raw = import.meta.env.VITE_API_URL;
   if (typeof raw === "string" && raw.length > 0) {
@@ -34,21 +36,36 @@ function resolveUrl(path: string): string {
   return `${base}${p}`;
 }
 
+function defaultApiFetchInit(init?: RequestInit): RequestInit {
+  return {
+    credentials: "include",
+    ...init,
+  };
+}
+
 /**
  * Typed JSON fetch against `VITE_API_URL` (OpenAPI servers base includes `/api`).
  */
 export async function apiJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const merged = defaultApiFetchInit(init);
   const res = await fetch(resolveUrl(path), {
-    ...init,
+    ...merged,
     headers: {
       Accept: "application/json",
-      ...(init?.body ? { "Content-Type": "application/json" } : {}),
-      ...init?.headers,
+      ...(merged.body ? { "Content-Type": "application/json" } : {}),
+      ...merged.headers,
     },
   });
 
   const text = await res.text();
   if (!res.ok) {
+    if (res.status === 401 && navigateToTinyAuthLoginIfConfigured()) {
+      throw new ApiError(
+        401,
+        text ? parseJsonSafe(text) : null,
+        "Redirecting to sign-in…",
+      );
+    }
     throw new ApiError(
       res.status,
       text ? parseJsonSafe(text) : null,
@@ -99,12 +116,20 @@ export async function apiPutJson<TRes>(
 }
 
 export async function apiDelete(path: string): Promise<void> {
-  const res = await fetch(resolveUrl(path), {
+  const merged = defaultApiFetchInit({
     method: "DELETE",
     headers: { Accept: "application/json" },
   });
+  const res = await fetch(resolveUrl(path), merged);
   const text = await res.text();
   if (!res.ok) {
+    if (res.status === 401 && navigateToTinyAuthLoginIfConfigured()) {
+      throw new ApiError(
+        401,
+        text ? parseJsonSafe(text) : null,
+        "Redirecting to sign-in…",
+      );
+    }
     throw new ApiError(
       res.status,
       text ? parseJsonSafe(text) : null,

@@ -4,6 +4,8 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
+ARG VITE_TINYAUTH_APP_URL
+ENV VITE_TINYAUTH_APP_URL=${VITE_TINYAUTH_APP_URL}
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
